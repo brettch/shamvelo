@@ -147,8 +147,27 @@ app.get('/registercode', function(req, res) {
 			}
 		});
 	}
+});
 
+// Display information available for a specific athlete.
+app.get('/athlete/:id', function(req, res) {
+	var athleteId = req.params.id;
 
+	if (stravaCode == null) {
+		var description = 'Query parameter "id" is missing';
+		console.log(description);
+		sendError(res, description);
+	} else {
+		getActivities(athleteId, function(err, activities) {
+			if (err) sendError(res);
+			else {
+				res.render('athlete.handlebars', {
+					athleteId: athleteId,
+					activities: activities
+				});
+			}
+		});
+	}
 });
 
 // Create a HTTP listener.
@@ -156,4 +175,3 @@ console.log('Creating HTTP listener');
 var server = app.listen(config.express.port, function() {
 	console.log('Listening on port %d', server.address().port);
 });
-
