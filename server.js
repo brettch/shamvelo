@@ -103,10 +103,13 @@ app.get('/', function (req, res) {
 	});
 });
 
+// Initiate OAuth registration of a new Strava athlete/user.
 app.get('/register', function(req, res) {
+	// Redirect the browser to the Strava OAuth grant page.
 	res.redirect(strava.oauth.getRequestAccessURL({}));
 });
 
+// Handle the OAuth callback from Strava, and exchange the temporary code for an access token.
 app.get('/registercode', function(req, res) {
 	var stravaCode = req.query.code;
 
@@ -116,6 +119,7 @@ app.get('/registercode', function(req, res) {
 		sendError(res, description);
 	}
 
+	// Exchange the temporary code for an access token.
 	strava.oauth.getToken(stravaCode, function(err, payload) {
 		if (err) {
 			console.log("Received error from getToken service:\n" + stringify(err));
@@ -127,6 +131,7 @@ app.get('/registercode', function(req, res) {
 			athlete.accessToken = payload.access_token;
 			athlete.name = payload.athlete.firstname + ' ' + payload.athlete.lastname;
 
+			// Save athlete information to the database.
 			saveAthlete(athlete, function(err) {
 				if (err) sendError(res);
 				else res.redirect('./');
