@@ -126,12 +126,13 @@ app.get('/registercode', function(req, res) {
 			sendError(res, "Unable to process Strava authorisation request");
 		} else {
 			console.log("Received oauth payload:\n" + stringify(payload));
-			var athlete = {};
-			athlete.id = payload.athlete.id;
-			athlete.accessToken = payload.access_token;
-			athlete.name = payload.athlete.firstname + ' ' + payload.athlete.lastname;
 
 			// Save athlete information to the database.
+			var athlete = {
+				id: payload.athlete.id,
+				accessToken: payload.access_token,
+				name: payload.athlete.firstname + ' ' + payload.athlete.lastname
+			};
 			saveAthlete(athlete, function(err) {
 				if (err) sendError(res);
 				else res.redirect('./');
