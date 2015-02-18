@@ -59,7 +59,6 @@ function saveAthlete(athlete, callback) {
 function getAthletes(callback) {
 	mongodb.collection('athletes').find({}, {}).toArray(function(err, athletes) {
 		if (err) console.log('Unable to retrieve athletes\n' + stringify(err));
-		//else console.log('Successfully retrieved athletes\n' + stringify(athletes));
 		else console.log('Successfully retrieved athletes');
 		callback(err, athletes);
 	});
