@@ -126,28 +126,30 @@ app.get('/registercode', function(req, res) {
 		var description = 'Query parameter "code" is missing';
 		console.log(description);
 		sendError(res, description);
+	} else {
+		// Exchange the temporary code for an access token.
+		strava.oauth.getToken(stravaCode, function(err, payload) {
+			if (err) {
+				console.log("Received error from getToken service:\n" + stringify(err));
+				sendError(res, "Unable to process Strava authorisation request");
+			} else {
+				console.log("Received oauth payload:\n" + stringify(payload));
+
+				// Save athlete information to the database.
+				var athlete = {
+					id: payload.athlete.id,
+					accessToken: payload.access_token,
+					name: payload.athlete.firstname + ' ' + payload.athlete.lastname
+				};
+				saveAthlete(athlete, function(err) {
+					if (err) sendError(res);
+					else res.redirect('./');
+				});
+			}
+		});
 	}
 
-	// Exchange the temporary code for an access token.
-	strava.oauth.getToken(stravaCode, function(err, payload) {
-		if (err) {
-			console.log("Received error from getToken service:\n" + stringify(err));
-			sendError(res, "Unable to process Strava authorisation request");
-		} else {
-			console.log("Received oauth payload:\n" + stringify(payload));
 
-			// Save athlete information to the database.
-			var athlete = {
-				id: payload.athlete.id,
-				accessToken: payload.access_token,
-				name: payload.athlete.firstname + ' ' + payload.athlete.lastname
-			};
-			saveAthlete(athlete, function(err) {
-				if (err) sendError(res);
-				else res.redirect('./');
-			});
-		}
-	});
 });
 
 // Create a HTTP listener.
