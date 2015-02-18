@@ -1,0 +1,9 @@
+<h1>{{athlete.name}} ({{athlete.id}})</h1>
+<form action="./{{athlete.id}}/refresh" method="POST">
+	<input type="submit" name="btnRefresh" value="Refresh"/>
+</form>
+<ul>
+	{{#each activities}}
+	<li>{{this.id}}</li>
+	{{/each}}
+</ul>
