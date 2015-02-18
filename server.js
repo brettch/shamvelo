@@ -55,22 +55,16 @@ function saveAthlete(athlete, callback) {
 	);
 }
 
-// Load all existing athletes.
-function getAthletes(callback) {
-	mongodb.collection('athletes').find({}, {}).toArray(function(err, athletes) {
-		if (err) console.log('Unable to retrieve athletes\n' + stringify(err));
-		else console.log('Successfully retrieved athletes');
-		callback(err, athletes);
+// Search for items in the specified collection.
+function getItems(collection, criteria, callback) {
+	console.log('Searching ' + collection + ' with criteria ' + stringify(criteria));
+	mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
+		if (err) console.log('Unable to retrieve items\n' + stringify(err));
+		else console.log('Successfully retrieved items\n' + stringify(items));
+		callback(err, items);
 	});
 }
 
-// Load all activities for an athlete.
-function getActivities(athleteId, callback) {
-	mongodb.collection('activities').find({}, {}).toArray(function(err, activities) {
-		if (err) console.log('Unable to retrieve athletes\n' + stringify(err));
-		else console.log('Successfully retrieved activities');
-		callback(err, activities);
-	});
 }
 
 // Send an error message back to the user.
@@ -103,7 +97,7 @@ app.set('view engine', 'handlebars');
 
 // Configure the home page to be the default.
 app.get('/', function (req, res) {
-	getAthletes(function(err, athletes) {
+	getItems('athletes', {}, function(err, athletes) {
 		if (err) sendError(res);
 		else res.render('home.handlebars', {
 			athletes : athletes
@@ -157,8 +151,7 @@ app.get('/athlete/:id', function(req, res) {
 		var description = 'Query parameter "id" is missing';
 		console.log(description);
 		sendError(res, description);
-	} else {
-		getActivities(athleteId, function(err, activities) {
+	} else getItems('athletes', { id : athleteId }, function(err, athletes) {
 			if (err) sendError(res);
 			else {
 				res.render('athlete.handlebars', {
