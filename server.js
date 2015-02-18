@@ -65,6 +65,15 @@ function getAthletes(callback) {
 	});
 }
 
+// Load all activities for an athlete.
+function getActivities(athleteId, callback) {
+	mongodb.collection('activities').find({}, {}).toArray(function(err, activities) {
+		if (err) console.log('Unable to retrieve athletes\n' + stringify(err));
+		else console.log('Successfully retrieved activities');
+		callback(err, activities);
+	});
+}
+
 // Send an error message back to the user.
 function sendError(res, description) {
 	res.render('error.handlebars', {
