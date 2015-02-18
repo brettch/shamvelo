@@ -145,22 +145,23 @@ app.get('/registercode', function(req, res) {
 
 // Display information available for a specific athlete.
 app.get('/athlete/:id', function(req, res) {
-	var athleteId = req.params.id;
+	var athleteId = parseInt(req.params.id);
 
-	if (stravaCode == null) {
-		var description = 'Query parameter "id" is missing';
+	if (isNaN(athleteId)) {
+		var description = 'Athlete identifier is missing';
 		console.log(description);
 		sendErrorMessage(res, description);
 	} else getItems('athletes', { id : athleteId }, function(err, athletes) {
+		if (err) sendError(res);
+		else getItems('activites', { athleteId : athleteId }, function(err, activities) {
 			if (err) sendError(res);
-			else {
-				res.render('athlete.handlebars', {
-					athleteId: athleteId,
-					activities: activities
-				});
-			}
+			else res.render('athlete.handlebars', {
+				athlete: athletes[0],
+				activities: activities
+			});
 		});
-	}
+	});
+});
 });
 
 // Create a HTTP listener.
