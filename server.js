@@ -65,6 +65,10 @@ function getItems(collection, criteria, callback) {
 	});
 }
 
+// Refresh athlete details in our database.
+function refreshAthlete(athleteId, callback) {
+	console.log('Refreshing athlete ' + athleteId);
+	callback(null);
 }
 
 // Send an error message back to the user.
@@ -162,6 +166,18 @@ app.get('/athlete/:id', function(req, res) {
 		});
 	});
 });
+
+app.post('/athlete/:id/refresh', function(req, res) {
+	var athleteId = parseInt(req.params.id);
+
+	if (isNaN(athleteId)) {
+		var description = 'Athlete identifier is missing';
+		console.log(description);
+		sendErrorMessage(res, description);
+	} else refreshAthlete(athleteId, function(err) {
+		if (err) sendError(res);
+		else res.redirect('../' + athleteId);
+	});
 });
 
 // Create a HTTP listener.
