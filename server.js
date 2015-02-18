@@ -68,7 +68,7 @@ function getItems(collection, criteria, callback) {
 }
 
 // Send an error message back to the user.
-function sendError(res, description) {
+function sendErrorMessage(res, description) {
 	res.render('error.handlebars', {
 		error : { description : description }
 	});
@@ -118,13 +118,13 @@ app.get('/registercode', function(req, res) {
 	if (stravaCode == null) {
 		var description = 'Query parameter "code" is missing';
 		console.log(description);
-		sendError(res, description);
+		sendErrorMessage(res, description);
 	} else {
 		// Exchange the temporary code for an access token.
 		strava.oauth.getToken(stravaCode, function(err, payload) {
 			if (err) {
 				console.log("Received error from getToken service:\n" + stringify(err));
-				sendError(res, "Unable to process Strava authorisation request");
+				sendErrorMessage(res, "Unable to process Strava authorisation request");
 			} else {
 				console.log("Received oauth payload:\n" + stringify(payload));
 
@@ -150,7 +150,7 @@ app.get('/athlete/:id', function(req, res) {
 	if (stravaCode == null) {
 		var description = 'Query parameter "id" is missing';
 		console.log(description);
-		sendError(res, description);
+		sendErrorMessage(res, description);
 	} else getItems('athletes', { id : athleteId }, function(err, athletes) {
 			if (err) sendError(res);
 			else {
