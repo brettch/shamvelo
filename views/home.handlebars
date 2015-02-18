@@ -1,7 +1,7 @@
 <h1>Registered Athletes</h1>
 <ul>
 	{{#each athletes}}
-	<li>{{this.name}} ({{this.id}})</li>
+	<li><a href="./athlete/{{this.id}}">{{this.name}} ({{this.id}})</a></li>
 	{{/each}}
 </ul>
 <a href="register">Register</a>
