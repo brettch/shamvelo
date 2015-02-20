@@ -17,11 +17,15 @@ var bodyParser = require('body-parser');
 // Handlebars templating engine
 var exphbs  = require('express-handlebars');
 
-// Strava API.
-var strava = require('strava-v3');
-
 // MongoDB database driver.
 var mongoClient = require('mongodb').MongoClient
+
+// Strava module.
+var strava = require('./strava');
+
+// Util module.
+var util = require('./util');
+
 
 // Load application configuration.
 var config = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json', 'utf8'));
@@ -34,10 +38,6 @@ mongoClient.connect(config.mongo.url, function(err, db) {
 	mongodb = db;
 });
 
-function stringify(obj) {
-	return JSON.stringify(obj, null, 2);
-}
-
 // Save or refresh an athlete.
 function saveAthlete(athlete, callback) {
 	// Get the documents collection
@@ -48,7 +48,7 @@ function saveAthlete(athlete, callback) {
 		athlete,
 		{ upsert : true },
 		function(err) {
-			if (err) console.log('Unable to insert athlete\n' + stringify(err));
+			if (err) console.log('Unable to insert athlete\n' + util.stringify(err));
 			else console.log('Successfully inserted athlete ' + athlete.id);
 			callback(err);
 		}
@@ -63,7 +63,7 @@ function saveAthleteToken(id, token, callback) {
 		{ id: id, token: token },
 		{ upsert: true },
 		function (err) {
-			if (err) console.log('Unable to insert token\n' + stringify(err));
+			if (err) console.log('Unable to insert token\n' + util.stringify(err));
 			else console.log('Successfully inserted token ' + id);
 			callback(err);
 		}
@@ -72,10 +72,10 @@ function saveAthleteToken(id, token, callback) {
 
 // Search for items in the specified collection.
 function getItems(collection, criteria, callback) {
-	console.log('Searching ' + collection + ' with criteria ' + stringify(criteria));
+	console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
 	mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
-		if (err) console.log('Unable to retrieve items\n' + stringify(err));
-		else console.log('Successfully retrieved items\n' + stringify(items));
+		if (err) console.log('Unable to retrieve items\n' + util.stringify(err));
+		else console.log('Successfully retrieved items\n' + util.stringify(items));
 		callback(err, items);
 	});
 }
@@ -127,7 +127,7 @@ app.get('/', function (req, res) {
 // Initiate OAuth registration of a new Strava athlete/user.
 app.get('/register', function(req, res) {
 	// Redirect the browser to the Strava OAuth grant page.
-	res.redirect(strava.oauth.getRequestAccessURL({}));
+	res.redirect(strava.getOAuthRequestAccessUrl());
 });
 
 // Handle the OAuth callback from Strava, and exchange the temporary code for an access token.
@@ -140,13 +140,10 @@ app.get('/registercode', function(req, res) {
 		sendErrorMessage(res, description);
 	} else {
 		// Exchange the temporary code for an access token.
-		strava.oauth.getToken(stravaCode, function(err, payload) {
+		strava.getOAuthToken(stravaCode, function(err, payload) {
 			if (err) {
-				console.log("Received error from getToken service:\n" + stringify(err));
 				sendErrorMessage(res, "Unable to process Strava authorisation request");
 			} else {
-				console.log("Received oauth payload:\n" + stringify(payload));
-
 				// Save athlete information to the database.
 				var athlete = payload.athlete;
 				var token = payload.access_token;
