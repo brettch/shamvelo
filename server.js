@@ -31,6 +31,25 @@ var config = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json', 'utf8'));
 // Start the database.
 var db = dbEngine.start(config.mongo.url);
 
+function registerAthlete(stravaCode, callback) {
+	// Exchange the temporary code for an access token.
+	strava.getOAuthToken(stravaCode, function(err, payload) {
+		if (err) {
+			callback(err);
+		} else {
+			// Save athlete information to the database.
+			var athlete = payload.athlete;
+			var token = payload.access_token;
+			db.saveAthlete(athlete, function(err) {
+				if (err) callback(err);
+				else db.saveAthleteToken(athlete.id, token, function(err) {
+					callback(err);
+				});
+			});
+		}
+	});
+}
+
 // Refresh athlete details in our database.
 function refreshAthlete(athleteId, callback) {
 	console.log('Refreshing athlete ' + athleteId);
@@ -90,22 +109,9 @@ app.get('/registercode', function(req, res) {
 		console.log(description);
 		sendErrorMessage(res, description);
 	} else {
-		// Exchange the temporary code for an access token.
-		strava.getOAuthToken(stravaCode, function(err, payload) {
-			if (err) {
-				sendErrorMessage(res, "Unable to process Strava authorisation request");
-			} else {
-				// Save athlete information to the database.
-				var athlete = payload.athlete;
-				var token = payload.access_token;
-				db.saveAthlete(athlete, function(err) {
-					if (err) sendError(res);
-					else db.saveAthleteToken(athlete.id, token, function(err) {
-						if (err) sendError(res);
-						else res.redirect('./');
-					});
-				});
-			}
+		registerAthlete(stravaCode, function(err) {
+			if (err) sendErrorMessage(res, "Unable to process Strava authorisation request");
+			else res.redirect('./');
 		});
 	}
 });
