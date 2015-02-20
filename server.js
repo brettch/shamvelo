@@ -38,7 +38,7 @@ function stringify(obj) {
 	return JSON.stringify(obj, null, 2);
 }
 
-// Save a new athlete.
+// Save or refresh an athlete.
 function saveAthlete(athlete, callback) {
 	// Get the documents collection
 	var collection = mongodb.collection('athletes');
@@ -50,6 +50,21 @@ function saveAthlete(athlete, callback) {
 		function(err) {
 			if (err) console.log('Unable to insert athlete\n' + stringify(err));
 			else console.log('Successfully inserted athlete ' + athlete.id);
+			callback(err);
+		}
+	);
+}
+
+// Save or refresh an athlete's token.
+function saveAthleteToken(id, token, callback) {
+	var collection = mongodb.collection('tokens');
+	collection.update(
+		{ id: id },
+		{ id: id, token: token },
+		{ upsert: true },
+		function (err) {
+			if (err) console.log('Unable to insert token\n' + stringify(err));
+			else console.log('Successfully inserted token ' + id);
 			callback(err);
 		}
 	);
@@ -133,14 +148,14 @@ app.get('/registercode', function(req, res) {
 				console.log("Received oauth payload:\n" + stringify(payload));
 
 				// Save athlete information to the database.
-				var athlete = {
-					id: payload.athlete.id,
-					accessToken: payload.access_token,
-					name: payload.athlete.firstname + ' ' + payload.athlete.lastname
-				};
+				var athlete = payload.athlete;
+				var token = payload.access_token;
 				saveAthlete(athlete, function(err) {
 					if (err) sendError(res);
-					else res.redirect('./');
+					else saveAthleteToken(athlete.id, token, function(err) {
+						if (err) sendError(res);
+						else res.redirect('./');
+					});
 				});
 			}
 		});
