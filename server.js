@@ -1,7 +1,5 @@
 'use strict';
 
-var assert = require('assert')
-
 var fs = require("fs");
 
 // Base express framework.
@@ -17,8 +15,8 @@ var bodyParser = require('body-parser');
 // Handlebars templating engine
 var exphbs  = require('express-handlebars');
 
-// MongoDB database driver.
-var mongoClient = require('mongodb').MongoClient
+// Database module;
+var dbEngine = require('./db');
 
 // Strava module.
 var strava = require('./strava');
@@ -30,55 +28,8 @@ var util = require('./util');
 // Load application configuration.
 var config = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json', 'utf8'));
 
-// Connect to Mongo DB.
-var mongodb;
-mongoClient.connect(config.mongo.url, function(err, db) {
-	assert.equal(null, err);
-	console.log('Connected to MongoDB');
-	mongodb = db;
-});
-
-// Save or refresh an athlete.
-function saveAthlete(athlete, callback) {
-	// Get the documents collection
-	var collection = mongodb.collection('athletes');
-	// Add or update the athlete
-	collection.update(
-		{ id : athlete.id },
-		athlete,
-		{ upsert : true },
-		function(err) {
-			if (err) console.log('Unable to insert athlete\n' + util.stringify(err));
-			else console.log('Successfully inserted athlete ' + athlete.id);
-			callback(err);
-		}
-	);
-}
-
-// Save or refresh an athlete's token.
-function saveAthleteToken(id, token, callback) {
-	var collection = mongodb.collection('tokens');
-	collection.update(
-		{ id: id },
-		{ id: id, token: token },
-		{ upsert: true },
-		function (err) {
-			if (err) console.log('Unable to insert token\n' + util.stringify(err));
-			else console.log('Successfully inserted token ' + id);
-			callback(err);
-		}
-	);
-}
-
-// Search for items in the specified collection.
-function getItems(collection, criteria, callback) {
-	console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
-	mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
-		if (err) console.log('Unable to retrieve items\n' + util.stringify(err));
-		else console.log('Successfully retrieved items\n' + util.stringify(items));
-		callback(err, items);
-	});
-}
+// Start the database.
+var db = dbEngine.start(config.mongo.url);
 
 // Refresh athlete details in our database.
 function refreshAthlete(athleteId, callback) {
@@ -116,7 +67,7 @@ app.set('view engine', 'handlebars');
 
 // Configure the home page to be the default.
 app.get('/', function (req, res) {
-	getItems('athletes', {}, function(err, athletes) {
+	db.getItems('athletes', {}, function(err, athletes) {
 		if (err) sendError(res);
 		else res.render('home.handlebars', {
 			athletes : athletes
@@ -147,9 +98,9 @@ app.get('/registercode', function(req, res) {
 				// Save athlete information to the database.
 				var athlete = payload.athlete;
 				var token = payload.access_token;
-				saveAthlete(athlete, function(err) {
+				db.saveAthlete(athlete, function(err) {
 					if (err) sendError(res);
-					else saveAthleteToken(athlete.id, token, function(err) {
+					else db.saveAthleteToken(athlete.id, token, function(err) {
 						if (err) sendError(res);
 						else res.redirect('./');
 					});
@@ -167,9 +118,9 @@ app.get('/athlete/:id', function(req, res) {
 		var description = 'Athlete identifier is missing';
 		console.log(description);
 		sendErrorMessage(res, description);
-	} else getItems('athletes', { id : athleteId }, function(err, athletes) {
+	} else db.getItems('athletes', { id : athleteId }, function(err, athletes) {
 		if (err) sendError(res);
-		else getItems('activites', { athleteId : athleteId }, function(err, activities) {
+		else db.getItems('activites', { athleteId : athleteId }, function(err, activities) {
 			if (err) sendError(res);
 			else res.render('athlete.handlebars', {
 				athlete: athletes[0],
