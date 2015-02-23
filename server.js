@@ -32,6 +32,7 @@ var config = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json', 'utf8'));
 var db = dbEngine.start(config.mongo.url);
 
 function registerAthlete(stravaCode, callback) {
+	console.log('Registering athlete with code ' + stravaCode);
 	// Exchange the temporary code for an access token.
 	strava.getOAuthToken(stravaCode, function(err, payload) {
 		if (err) {
@@ -53,7 +54,16 @@ function registerAthlete(stravaCode, callback) {
 // Refresh athlete details in our database.
 function refreshAthlete(athleteId, callback) {
 	console.log('Refreshing athlete ' + athleteId);
-	callback(null);
+	db.getItems('tokens', { id : athleteId }, function(err, tokens) {
+		if (err) callback(err);
+		else strava.getAthlete(tokens[0].token, function(err, athlete) {
+			if (err) callback(err);
+			else db.saveAthlete(athlete, function(err) {
+				if (err) callback(err);
+				else callback(null);
+			});
+		});
+	});
 }
 
 // Send an error message back to the user.
