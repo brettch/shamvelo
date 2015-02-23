@@ -39,9 +39,23 @@ function getAthlete(token, callback) {
 	});
 }
 
+function getActivities(token, callback) {
+	console.log('Getting athlete activities with token ' + token);
+	strava.athlete.listActivities({ 'access_token': token, 'after': 0 }, function(err, payload) {
+		if (err) {
+			console.log("Received error from athlete.listActivities service:\n" + util.stringify(err));
+			callback(err);
+		} else {
+			console.log("Received activities payload:\n" + util.stringify(payload));
+			callback(null, payload);
+		}
+	});
+}
+
 module.exports = {
 	getOAuthRequestAccessUrl: getOAuthRequestAccessUrl,
 	getOAuthToken: getOAuthToken,
-	getAthlete: getAthlete
+	getAthlete: getAthlete,
+	getActivities: getActivities
 };
 

@@ -21,6 +21,16 @@ module.exports.start = function(url) {
 	// Return accessor methods.
 	return {
 
+		// Search for items in the specified collection.
+		getItems: function(collection, criteria, callback) {
+			console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
+			mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
+				if (err) console.log('Unable to retrieve items\n' + util.stringify(err));
+				else console.log('Successfully retrieved items\n' + util.stringify(items));
+				callback(err, items);
+			});
+		},
+
 		// Save or refresh an athlete.
 		saveAthlete: function(athlete, callback) {
 			// Get the documents collection
@@ -53,16 +63,34 @@ module.exports.start = function(url) {
 			);
 		},
 
-		// Search for items in the specified collection.
-		getItems: function(collection, criteria, callback) {
-			console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
-			mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
-				if (err) console.log('Unable to retrieve items\n' + util.stringify(err));
-				else console.log('Successfully retrieved items\n' + util.stringify(items));
-				callback(err, items);
-			});
-		}
+		// Save or refresh a list of activities.
+		saveActivities: function(activities, callback) {
+			var collection = mongodb.collection('activities');
 
+			// Create recursive function to insert all activities.
+			var insertActivity = function(activities, i, callback) {
+				if (i < activities.length) {
+					var activity = activities[i];
+					collection.update(
+						{ id: activity.id },
+						activity,
+						{ upsert: true },
+						function (err) {
+							if (err) {
+								console.log('Unable to insert activity\n' + util.stringify(err));
+								callback(err);
+							} else {
+								console.log('Successfully inserted activity ' + activity.id);
+								insertActivity(activities, i + 1, callback);
+							}
+						}
+					);
+				} else callback(null);
+			};
+
+			// Initiate recursive insert.
+			insertActivity(activities, 0, callback);
+		},
 	}
 };
 

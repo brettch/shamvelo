@@ -59,8 +59,21 @@ function refreshAthlete(athleteId, callback) {
 		else strava.getAthlete(tokens[0].token, function(err, athlete) {
 			if (err) callback(err);
 			else db.saveAthlete(athlete, function(err) {
-				if (err) callback(err);
-				else callback(null);
+				callback(err);
+			});
+		});
+	});
+}
+
+// Refresh an athlete's activities in our database.
+function refreshAthleteActivities(athleteId, callback) {
+	console.log('Refreshing athlete activities ' + athleteId);
+	db.getItems('tokens', { id : athleteId }, function(err, tokens) {
+		if (err) callback(err);
+		else strava.getActivities(tokens[0].token, function(err, activities) {
+			if (err) callback(err);
+			else db.saveActivities(activities, function(err) {
+				callback(err);
 			});
 		});
 	});
@@ -159,8 +172,22 @@ app.post('/athlete/:id/refresh', function(req, res) {
 	});
 });
 
+app.post('/athlete/:id/refreshactivities', function(req, res) {
+	var athleteId = parseInt(req.params.id);
+
+	if (isNaN(athleteId)) {
+		var description = 'Athlete identifier is missing';
+		console.log(description);
+		sendErrorMessage(res, description);
+	} else refreshAthleteActivities(athleteId, function(err) {
+		if (err) sendError(res);
+		else res.redirect('../' + athleteId);
+	});
+});
+
 // Create a HTTP listener.
 console.log('Creating HTTP listener');
 var server = app.listen(config.express.port, function() {
 	console.log('Listening on port %d', server.address().port);
 });
+
