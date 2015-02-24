@@ -48,7 +48,7 @@ function getActivities(token, pageCallback, callback) {
 			{
 				'access_token': token,
 				'page': page,
-				'page_size': 100
+				'per_page': 100
 			},
 			function(err, payload) {
 				if (err) {
