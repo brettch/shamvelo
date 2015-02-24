@@ -164,6 +164,36 @@ app.get('/athlete/:id', function(req, res) {
 	});
 });
 
+// Download athlete activities as a CSV.
+app.get('/athlete/:id/activitiescsv', function(req, res) {
+	var athleteId = parseInt(req.params.id);
+
+	if (isNaN(athleteId)) {
+		var description = 'Athlete identifier is missing';
+		console.log(description);
+		sendErrorMessage(res, description);
+	} else db.getItems('activities', { "athlete.id" : athleteId }, function(err, activities) {
+		if (err) sendError(res);
+		else {
+			res.set({
+				'Content-Type': 'text/csv',
+				'Content-Disposition': 'attachment;filename=activities-' + athleteId + '.csv'
+			});
+			res.write('id,start_date_local,timezone,distance,moving_time,elapsed_time,total_elevation_gain,type,average_speed,max_speed,name\n');
+			for (var i = 0; i < activities.length; i++) {
+				var activity = activities[i];
+				res.write(
+					activity.id + ',' + activity.start_date_local + ',' + activity.timezone + ','
+					+ activity.distance + ',' + activity.moving_time + ',' + activity.elapsed_time + ','
+					+ activity.total_elevation_gain + ',' + activity.type + ',' + activity.average_speed + ','
+					+ activity.max_speed + ',' + util.csvString(activity.name) + '\n');
+			}
+			res.end();
+		}
+	});
+});
+
+// Refresh the athlete in the database.
 app.post('/athlete/:id/refresh', function(req, res) {
 	var athleteId = parseInt(req.params.id);
 
@@ -177,6 +207,7 @@ app.post('/athlete/:id/refresh', function(req, res) {
 	});
 });
 
+// Refresh all activities in the database for the athlete.
 app.post('/athlete/:id/refreshactivities', function(req, res) {
 	var athleteId = parseInt(req.params.id);
 
