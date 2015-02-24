@@ -1,0 +1,9 @@
+// Delete these comments and update the first three parameters below from the API settings page:
+// https://www.strava.com/settings/api
+// The redirect_url parameter must be set to the public endpoint of the application.
+{
+	"access_token" : "",
+	"client_id" : "",
+	"client_secret" : "",
+	"redirect_uri" : "http://localhost:8080/registercode"
+}
