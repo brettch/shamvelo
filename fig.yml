@@ -1,0 +1,4 @@
+mongo:
+    image: mongodb:3.0.0
+
+
