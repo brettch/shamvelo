@@ -70,12 +70,17 @@ function refreshAthleteActivities(athleteId, callback) {
 	console.log('Refreshing athlete activities ' + athleteId);
 	db.getItems('tokens', { id : athleteId }, function(err, tokens) {
 		if (err) callback(err);
-		else strava.getActivities(tokens[0].token, function(err, activities) {
-			if (err) callback(err);
-			else db.saveActivities(activities, function(err) {
+		else {
+			var pageCallback = function(activities, pageCallbackCallback) {
+				db.saveActivities(activities, function(err) {
+					pageCallbackCallback(err);
+				});
+			}
+			var finalCallback = function(err) {
 				callback(err);
-			});
-		});
+			}
+			strava.getActivities(tokens[0].token, pageCallback, finalCallback);
+		}
 	});
 }
 
@@ -190,4 +195,3 @@ console.log('Creating HTTP listener');
 var server = app.listen(config.express.port, function() {
 	console.log('Listening on port %d', server.address().port);
 });
-

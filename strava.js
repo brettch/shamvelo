@@ -39,17 +39,36 @@ function getAthlete(token, callback) {
 	});
 }
 
-function getActivities(token, callback) {
+function getActivities(token, pageCallback, callback) {
 	console.log('Getting athlete activities with token ' + token);
-	strava.athlete.listActivities({ 'access_token': token, 'after': 0 }, function(err, payload) {
-		if (err) {
-			console.log("Received error from athlete.listActivities service:\n" + util.stringify(err));
-			callback(err);
-		} else {
-			console.log("Received activities payload:\n" + util.stringify(payload));
-			callback(null, payload);
-		}
-	});
+	// Create recursive function to retrieve all activity pages.
+	var getActivityPage = function(page) {
+		console.log('Getting athlete activities page ' + page);
+		strava.athlete.listActivities(
+			{
+				'access_token': token,
+				'page': page,
+				'page_size': 100
+			},
+			function(err, payload) {
+				if (err) {
+					console.log("Received error from athlete.listActivities service:\n" + util.stringify(err));
+					callback(err);
+				} else {
+					console.log("Received activities payload:\n" + util.stringify(payload));
+					if (payload.length > 0) {
+						pageCallback(payload, function(err) {
+							if (err) callback(err);
+							else getActivityPage(page + 1);
+						});
+					} else callback(null);
+				}
+			}
+		);
+	}
+
+	// Begin retrieving pages from page 1.
+	getActivityPage(1);
 }
 
 module.exports = {
