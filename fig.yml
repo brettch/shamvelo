@@ -1,4 +1,10 @@
 mongo:
     image: mongodb:3.0.0
 
+app:
+    build: .
+    links:
+    - mongo
+    ports:
+    - "8081:8081"
 
