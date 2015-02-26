@@ -17,6 +17,13 @@ var exphbs  = require('express-handlebars');
 
 // Config module.
 var config = require('./config');
+// Write strava config out to file in time for loading by the Strava module.
+try {
+	fs.mkdirSync(__dirname + '/data');
+} catch (err) {
+	if (err.code != 'EEXIST') throw err;
+}
+fs.writeFileSync(__dirname + '/data/strava_config', JSON.stringify(config.strava));
 
 // Database module;
 var dbEngine = require('./db');

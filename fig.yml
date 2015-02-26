@@ -7,4 +7,10 @@ app:
     - mongo
     ports:
     - "8080:8080"
+    environment:
+        SHAMVELO_MONGO_URL: 'mongodb://mongo:27017/shamvelo'
+        SHAMVELO_STRAVA_ACCESS_TOKEN:
+        SHAMVELO_STRAVA_CLIENT_ID:
+        SHAMVELO_STRAVA_CLIENT_SECRET:
+        SHAMVELO_BASE_URI:
 
