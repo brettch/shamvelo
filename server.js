@@ -15,6 +15,9 @@ var bodyParser = require('body-parser');
 // Handlebars templating engine
 var exphbs  = require('express-handlebars');
 
+// Config module.
+var config = require('./config');
+
 // Database module;
 var dbEngine = require('./db');
 
@@ -24,9 +27,6 @@ var strava = require('./strava');
 // Util module.
 var util = require('./util');
 
-
-// Load application configuration.
-var config = JSON.parse(fs.readFileSync(__dirname + '/appconfig.json', 'utf8'));
 
 // Start the database.
 var db = dbEngine.start(config.mongo.url);

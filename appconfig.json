@@ -1,8 +1,0 @@
-{
-	"express" : {
-		"port" : 8080
-	},
-	"mongo" : {
-		"url" : "mongodb://localhost:27017/shamvelo"
-	}
-}
