@@ -2,6 +2,19 @@
 
 // Example leaderboard
 //{
+//	"years" : [
+//		{
+//			"year" : 2015
+//			"records" : {
+//				"distance" : [
+//					{
+//						"athleteId" : 1234,
+//						"distance" : 2500
+//					}
+//				]
+//			}
+//		}
+//	]
 //	"2015" : {
 //		"records" : {
 //			"distance" : {
@@ -16,18 +29,20 @@ function getYear(dateString) {
 }
 
 function getYearlyRecords(leaderboard, year) {
-	if (!leaderboard.hasOwnProperty(year)) {
-		var records = {};
-		leaderboard[year] = { records : records };
-		return records;
-	} else {
-		return leaderboard[year].records;
+	var yearlyLeaderboard = leaderboard.years.find(function(a) { a.year == year });
+
+	if (!yearlyLeaderboard) {
+		yearlyLeaderboard = { year: year, distance: 0 };
+		leaderboard.years.push(yearlyLeaderboard);
 	}
+
+	return yearlyLeaderboard.records;
 }
 
 var leaderboardBuilders = {
 	distance : {
 		itemHandler : function(record, activity) {
+			var athleteRecord = record
 			var athleteId = activity.athlete.id;
 			var existingDistance = record[athleteId];
 			if (!existingDistance) {
@@ -36,17 +51,20 @@ var leaderboardBuilders = {
 			record[athleteId] = existingDistance + activity.distance;
 		},
 		finalHandler : function(record) {
+
 			// Sort by descending distance.
 		}
 	}
 }
 
 function buildLeaderboard(activities, callback) {
-	var initialValue = {};
+	var initialValue = {
+		"years" : {}
+	};
 	var leaderboard = activities.reduce(
 		function(leaderboard, activity, index, array) {
 			// Get the year portion of the activity date.
-			var year = getYear(activity.start_date);
+			var year = Date.parse(activity.start_date).getFullYear();
 			// Get the records item for the year.
 			var records = getYearlyRecords(leaderboard, year);
 
