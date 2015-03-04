@@ -5,21 +5,41 @@ var jsonPath = require('JSONPath');
 var util = require('./util');
 
 // Example leaderboard
-//{
-//	"year" : [
-//		{
-//			"year" : 2015
-//			"distance" : [
-//				{
-//					"athleteId" : 1234,
-//					"distance" : 2500
-//				}
-//			]
-//		}
-//	]
-//}
-
-function distanceBuilder(leaderboard) {
+var exampleLeaderboard = {
+	"year" : [
+		{
+			"year" : 2015,
+			"distance" : [
+				{
+					"athleteId" : 1234,
+					"distance" : 2500
+				}
+			],
+			"distanceByAthleteId" : {
+				"1234" : {
+					"athleteId" : 1234,
+					"distance" : 2500
+				}
+			}
+		}
+	],
+	"yearById" : {
+		"2015" : {
+			"year" : 2015,
+			"distance" : [
+				{
+					"athleteId" : 1234,
+					"distance" : 2500
+				}
+			],
+			"distanceByAthleteId" : {
+				"1234" : {
+					"athleteId" : 1234,
+					"distance" : 2500
+				}
+			}
+		}
+	}
 }
 
 function buildYearsSet(activities) {
@@ -50,14 +70,29 @@ function buildAthletesSet(activities) {
 }
 
 function buildSkeleton(yearsSet, athletesSet) {
+	var reduceDistanceById = function(distanceByAthleteId, distanceRecord) {
+		distanceByAthleteId[distanceRecord.athleteId] = distanceRecord;
+		return distanceByAthleteId;
+	};
+
+	// Build an array of year objects.
 	var yearObj = yearsSet.map(function(currentYear) {
+		// Build an array of athlete distance objects.
 		var distance = athletesSet.map(function(currentAthlete) {
 			return { athleteId: currentAthlete, distance: 0 };
 		});
-		return { year: currentYear, distance: distance };
-	});
+		// Create an index of athlete distance objects by athlete id.
+		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
 
-	return { year: yearObj };
+		return { year: currentYear, distance: distance, distanceByAthleteId: distanceByAthleteId };
+	});
+	// Create an index of year objects by year id.
+	var yearById = yearObj.reduce(function(yearById, yearRecord) {
+		yearById[yearRecord.year] = yearRecord;
+		return yearById;
+	}, {});
+
+	return { year: yearObj, yearById: yearById };
 }
 
 function calculateYearlyDistance(leaderboard, activities) {
@@ -65,8 +100,7 @@ function calculateYearlyDistance(leaderboard, activities) {
 		// Get the year portion of the activity date.
 		var year = new Date(activity.start_date).getFullYear();
 
-		var distanceItem = jsonPath.eval(leaderboard, '$.year[?(@.year == ' + year + ')].distance[?(@.athleteId == ' + activity.athlete.id + ')]')[0];
-		console.log('distanceItem: ' + util.stringify(distanceItem));
+		var distanceItem = leaderboard.yearById[year].distanceByAthleteId[activity.athlete.id];
 		distanceItem.distance += activity.distance;
 	});
 }
@@ -82,6 +116,8 @@ function buildLeaderboard(activities) {
 
 	// Calculate yearly athlete distances.
 	calculateYearlyDistance(leaderboard, activities);
+
+	console.log("leaderboard: " + util.stringify(leaderboard));
 
 	return leaderboard;
 }
