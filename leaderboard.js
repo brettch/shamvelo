@@ -1,7 +1,8 @@
 'use strict';
 
-var jsonPath = require('JSONPath');
 var _ = require('underscore');
+var jsonPath = require('JSONPath');
+var util = require('./util');
 
 // Example leaderboard
 //{
@@ -59,6 +60,17 @@ function buildSkeleton(yearsSet, athletesSet) {
 	return { year: yearObj };
 }
 
+function calculateYearlyDistance(leaderboard, activities) {
+	_.each(activities, function(activity) {
+		// Get the year portion of the activity date.
+		var year = new Date(activity.start_date).getFullYear();
+
+		var distanceItem = jsonPath.eval(leaderboard, '$.year[?(@.year == ' + year + ')].distance[?(@.athleteId == ' + activity.athlete.id + ')]')[0];
+		console.log('distanceItem: ' + util.stringify(distanceItem));
+		distanceItem.distance += activity.distance;
+	});
+}
+
 function buildLeaderboard(activities) {
 	// Build the complete set of years.
 	var yearsSet = buildYearsSet(activities);
@@ -67,6 +79,9 @@ function buildLeaderboard(activities) {
 
 	// Build the skeleton leaderboard.
 	var leaderboard = buildSkeleton(yearsSet, athletesSet);
+
+	// Calculate yearly athlete distances.
+	calculateYearlyDistance(leaderboard, activities);
 
 	return leaderboard;
 }
