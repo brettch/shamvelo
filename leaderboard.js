@@ -1,92 +1,75 @@
 'use strict';
 
+var jsonPath = require('JSONPath');
+var _ = require('underscore');
+
 // Example leaderboard
 //{
-//	"years" : [
+//	"year" : [
 //		{
 //			"year" : 2015
-//			"records" : {
-//				"distance" : [
-//					{
-//						"athleteId" : 1234,
-//						"distance" : 2500
-//					}
-//				]
-//			}
+//			"distance" : [
+//				{
+//					"athleteId" : 1234,
+//					"distance" : 2500
+//				}
+//			]
 //		}
 //	]
-//	"2015" : {
-//		"records" : {
-//			"distance" : {
-//				"1234" : "2500"
-//			}
-//		}
-//	}
 //}
 
-function getYear(dateString) {
-	var date = Date.parse(dateString).getFullYear();
+function distanceBuilder(leaderboard) {
 }
 
-function getYearlyRecords(leaderboard, year) {
-	var yearlyLeaderboard = leaderboard.years.find(function(a) { a.year == year });
+function buildYearsSet(activities) {
+	var reduceFunction = function(yearsSet, activity) {
+		// Get the year portion of the activity date.
+		var year = new Date(activity.start_date).getFullYear();
 
-	if (!yearlyLeaderboard) {
-		yearlyLeaderboard = { year: year, distance: 0 };
-		leaderboard.years.push(yearlyLeaderboard);
-	}
-
-	return yearlyLeaderboard.records;
-}
-
-var leaderboardBuilders = {
-	distance : {
-		itemHandler : function(record, activity) {
-			var athleteRecord = record
-			var athleteId = activity.athlete.id;
-			var existingDistance = record[athleteId];
-			if (!existingDistance) {
-				existingDistance = 0;
-			}
-			record[athleteId] = existingDistance + activity.distance;
-		},
-		finalHandler : function(record) {
-
-			// Sort by descending distance.
+		if (!_.contains(yearsSet, year)) {
+			yearsSet.push(year);
 		}
-	}
+
+		return yearsSet;
+	};
+
+	return activities.reduce(reduceFunction, []).sort();
 }
 
-function buildLeaderboard(activities, callback) {
-	var initialValue = {
-		"years" : {}
+function buildAthletesSet(activities) {
+	var reduceFunction = function(athletesSet, activity) {
+		if (!_.contains(athletesSet, activity.athlete.id)) {
+			athletesSet.push(activity.athlete.id);
+		}
+
+		return athletesSet;
 	};
-	var leaderboard = activities.reduce(
-		function(leaderboard, activity, index, array) {
-			// Get the year portion of the activity date.
-			var year = Date.parse(activity.start_date).getFullYear();
-			// Get the records item for the year.
-			var records = getYearlyRecords(leaderboard, year);
 
-			// Process each of the record types.
-			Object.keys(leaderboardBuilders).forEach(function(leaderboardKey, index, array) {
-				var leaderboardHandler = leaderboardBuilders[leaderboardKey].itemHandler;
+	return activities.reduce(reduceFunction, []).sort();
+}
 
-				// Get the specific leaderboard record.
-				if (!records.hasOwnProperty(leaderboardKey)) {
-					records[leaderboardKey] = {};
-				}
-				var record = records[leaderboardKey];
+function buildSkeleton(yearsSet, athletesSet) {
+	var yearObj = yearsSet.map(function(currentYear) {
+		var distance = athletesSet.map(function(currentAthlete) {
+			return { athleteId: currentAthlete, distance: 0 };
+		});
+		return { year: currentYear, distance: distance };
+	});
 
-				// Incorporate the activity in the results using the leaderboard builder.
-				leaderboardHandler(record, activity);
-			});
-		},
-		initialValue);
-	// Perform finalization of leaderboard.
-	//TODO: Finalize leaderboard.
+	return { year: yearObj };
+}
+
+function buildLeaderboard(activities) {
+	// Build the complete set of years.
+	var yearsSet = buildYearsSet(activities);
+	// Build the complete set of athletes.
+	var athletesSet = buildAthletesSet(activities);
+
+	// Build the skeleton leaderboard.
+	var leaderboard = buildSkeleton(yearsSet, athletesSet);
+
 	return leaderboard;
 }
 
-module.exports.buildLeaderboard = buildLeaderboard;
+module.exports.build = buildLeaderboard;
 

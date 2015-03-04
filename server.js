@@ -25,8 +25,11 @@ try {
 }
 fs.writeFileSync(__dirname + '/data/strava_config', JSON.stringify(config.strava));
 
-// Database module;
+// Database module.
 var dbEngine = require('./db');
+
+// Leaderboard module.
+var leaderboardEngine = require('./leaderboard');
 
 // Strava module.
 var strava = require('./strava');
@@ -225,6 +228,19 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
 	} else refreshAthleteActivities(athleteId, function(err) {
 		if (err) sendError(res);
 		else res.redirect('../' + athleteId);
+	});
+});
+
+// Display the leaderboard.
+app.get('/leaderboard', function(req, res) {
+	db.getItems('activities', {}, function(err, activities) {
+		if (err) sendError(res);
+		else {
+			var leaderboard = leaderboardEngine.build(activities);
+			res.render('leaderboard.handlebars', {
+				leaderboard : util.stringify(leaderboard)
+			});
+		}
 	});
 });
 
