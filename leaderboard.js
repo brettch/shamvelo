@@ -57,24 +57,57 @@ function buildDateSet(activities, dateMapper) {
 	return activities.reduce(reduceFunction, []);
 }
 
+// Get the year portion of the date as an integer.
 function yearFromDate(date) {
 	return date.getFullYear();
 }
 
+// Get the unique list of years present in the list of activities.
 function buildYearsSet(activities) {
 	return buildDateSet(activities, yearFromDate);
 }
 
+// Get the month of the date as an integer in format yyyymm.
 function monthFromDate(date) {
-	return date.getFullYear() * 100 + date.getMonth();
+	return date.getFullYear() * 100 + (date.getMonth() + 1);
 }
 
+// Get the year portion of an integer date in format yyyymm.
 function yearFromMonth(month) {
-	return Math.round(month / 100);
+	return Math.floor(month / 100);
 }
 
+// Get the unique list of months present in the list of activities.
 function buildMonthsSet(activities) {
 	return buildDateSet(activities, monthFromDate);
+}
+
+// Get the week of the date as an integer in format yyyyww.
+function weekFromDate(date) {
+	// Clone the date so that we don't affect the provided date
+    var tmpDate = new Date(+date);
+    // Zero out time portion of the date.
+    tmpDate.setHours(0, 0, 0);
+    // Set the date to the nearest Thursday: current date + 4 - current day number
+    // Make Sunday day 7 instead of 0.
+    tmpDate.setDate(tmpDate.getDate() + 4 - (tmpDate.getDay() || 7));
+    // Get the first day of the same year.
+    var yearStart = new Date(tmpDate.getFullYear(),0,1);
+    // Calculate the number of weeks between the start of the year and the nearest Thursday.
+    var week = Math.ceil(( ( (tmpDate - yearStart) / 86400000) + 1) / 7);
+    // Return array of year and week number
+    // Return integer in format yyyyww.
+    return tmpDate.getFullYear() * 100 + week;
+}
+
+// Get the year portion of an integer date in format yyyyww.
+function yearFromWeek(week) {
+	return Math.floor(week / 100);
+}
+
+// Get the unique list of weeks present in the list of activities.
+function buildWeeksSet(activities) {
+	return buildDateSet(activities, weekFromDate);
 }
 
 function buildAthletesSet(activities) {
@@ -89,7 +122,7 @@ function buildAthletesSet(activities) {
 	return activities.reduce(reduceFunction, []).sort();
 }
 
-function buildSkeleton(yearsSet, monthsSet, athletesSet) {
+function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 	var reduceDistanceById = function(distanceByAthleteId, distanceRecord) {
 		distanceByAthleteId[distanceRecord.athleteId] = distanceRecord;
 		return distanceByAthleteId;
@@ -104,7 +137,7 @@ function buildSkeleton(yearsSet, monthsSet, athletesSet) {
 		// Create an index of athlete distance objects by athlete id.
 		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
 
-		return { year: currentYear, distance: distance, distanceByAthleteId: distanceByAthleteId, month: [] };
+		return { year: currentYear, distance: distance, distanceByAthleteId: distanceByAthleteId, month: [], week: [] };
 	}).sort(function(a, b) {
 		return b.year - a.year;
 	});
@@ -138,6 +171,30 @@ function buildSkeleton(yearsSet, monthsSet, athletesSet) {
 		}, {});
 	});
 
+	// Build arrays of week objects grouped by year and sorted by reverse chronological time.
+	weeksSet.forEach(function(currentWeek) {
+		// Build an array of athlete distance objects.
+		var distance = athletesSet.map(function(currentAthlete) {
+			return { athleteId: currentAthlete, distance: 0 };
+		});
+		// Create an index of athlete distance objects by athlete id.
+		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
+
+		// Add the week to the relevant year.
+		var weekObj = { week: currentWeek, distance: distance, distanceByAthleteId: distanceByAthleteId };
+		yearById[yearFromWeek(currentWeek)].week.push(weekObj);
+	});
+	// Sort the week records by reverse chronological time, and create indexes of week objects by week id within each year.
+	yearObj.forEach(function(yearRecord) {
+		yearRecord.week.sort(function(a, b) {
+			return b.week - a.week;
+		});
+		yearRecord.weekById = yearRecord.week.reduce(function(weekById, weekRecord) {
+			weekById[weekRecord.week] = weekRecord;
+			return weekById;
+		}, {});
+	});
+
 	return { year: yearObj, yearById: yearById };
 }
 
@@ -147,13 +204,18 @@ function calculateDistance(leaderboard, activities) {
 		var date = new Date(activity.start_date);
 		var year = yearFromDate(date);
 		var month = monthFromDate(date);
+		var monthYear = yearFromMonth(month);
+		var week = weekFromDate(date);
+		var weekYear = yearFromWeek(week);
 
 		// Get all the distance records that the activity fits into.
 		var distanceItems = [
 			// yearly record
 			leaderboard.yearById[year].distanceByAthleteId[activity.athlete.id],
 			// monthly record
-			leaderboard.yearById[year].monthById[month].distanceByAthleteId[activity.athlete.id]
+			leaderboard.yearById[monthYear].monthById[month].distanceByAthleteId[activity.athlete.id],
+			// weekly record
+			leaderboard.yearById[weekYear].weekById[week].distanceByAthleteId[activity.athlete.id]
 		];
 		distanceItems.forEach(function (distanceItem) {
 			distanceItem.distance += activity.distance;
@@ -172,16 +234,18 @@ function buildLeaderboard(activities) {
 	var yearsSet = buildYearsSet(activities);
 	// Build the complete set of months.
 	var monthsSet = buildMonthsSet(activities);
+	// Build the complete set of weeks.
+	var weeksSet = buildWeeksSet(activities);
 	// Build the complete set of athletes.
 	var athletesSet = buildAthletesSet(activities);
 
 	// Build the skeleton leaderboard.
-	var leaderboard = buildSkeleton(yearsSet, monthsSet, athletesSet);
+	var leaderboard = buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet);
 
 	// Calculate athlete distances.
 	calculateDistance(leaderboard, activities);
 
-	//console.log("leaderboard: " + util.stringify(leaderboard));
+	console.log("leaderboard: " + util.stringify(leaderboard));
 
 	return leaderboard;
 }
