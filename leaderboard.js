@@ -3,68 +3,6 @@
 var _ = require('underscore');
 var util = require('./util');
 
-// Example leaderboard
-var exampleLeaderboard = {
-	"year" : [
-		{
-			"year" : 2015,
-			"distance" : [
-				{
-					"athleteId" : 1234,
-					"distance" : 2500
-				}
-			],
-			"distanceByAthleteId" : {
-				"1234" : {
-					"athleteId" : 1234,
-					"distance" : 2500
-				}
-			},
-			"monthlyWins" : [
-				{
-					"athleteId" : 1234,
-					"wins" : 1
-				}
-			],
-			"monthlyWinsByAthleteId" : {
-				"1234" : {
-					"athleteId" : 1234,
-					"wins" : 1
-				}
-			},
-			"weeklyWins" : [
-				{
-					"athleteId" : 1234,
-					"wins" : 1
-				}
-			],
-			"weeklyWinsByAthleteId" : {
-				"1234" : {
-					"athleteId" : 1234,
-					"wins" : 1
-				}
-			}
-		}
-	],
-	"yearById" : {
-		"2015" : {
-			"year" : 2015,
-			"distance" : [
-				{
-					"athleteId" : 1234,
-					"distance" : 2500
-				}
-			],
-			"distanceByAthleteId" : {
-				"1234" : {
-					"athleteId" : 1234,
-					"distance" : 2500
-				}
-			}
-		}
-	}
-}
-
 function buildDateSet(activities, dateMapper) {
 	var reduceFunction = function(resultSet, activity) {
 		// Reduce the date to an integer of reduced granularity.
