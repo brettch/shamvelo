@@ -291,6 +291,25 @@ function calculateDistance(leaderboard, activities) {
 	});
 }
 
+function calculateWins(leaderboard) {
+	leaderboard.year.forEach(function(yearObj) {
+		yearObj.month.forEach(function(monthObj) {
+			var athleteId = monthObj.distance[0].athleteId;
+			yearObj.monthlyWinsByAthleteId[athleteId].wins += 1;
+		});
+		yearObj.monthlyWins.sort(function(a, b) {
+			return b.wins - a.wins;
+		});
+		yearObj.week.forEach(function(weekObj) {
+			var athleteId = weekObj.distance[0].athleteId;
+			yearObj.weeklyWinsByAthleteId[athleteId].wins += 1;
+		});
+		yearObj.weeklyWins.sort(function(a, b) {
+			return b.wins - a.wins;
+		});
+	});
+}
+
 function buildLeaderboard(activities) {
 	// Build the complete set of years.
 	var yearsSet = buildYearsSet(activities);
@@ -307,10 +326,12 @@ function buildLeaderboard(activities) {
 	// Calculate athlete distances.
 	calculateDistance(leaderboard, activities);
 
+	// Calculate total wins.
+	calculateWins(leaderboard);
+
 	console.log("leaderboard: " + util.stringify(leaderboard));
 
 	return leaderboard;
 }
 
 module.exports.build = buildLeaderboard;
-
