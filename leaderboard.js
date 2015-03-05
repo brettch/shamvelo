@@ -110,6 +110,7 @@ function buildWeeksSet(activities) {
 	return buildDateSet(activities, weekFromDate);
 }
 
+// Get the unique set of athlete ids.
 function buildAthletesSet(activities) {
 	var reduceFunction = function(athletesSet, activity) {
 		if (!_.contains(athletesSet, activity.athlete.id)) {
@@ -122,20 +123,31 @@ function buildAthletesSet(activities) {
 	return activities.reduce(reduceFunction, []).sort();
 }
 
-function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
+// For each athlete create a distance object with athlete id and distance.
+// Return a tuple containing a list of these objects, and a map keyed by athlete id.
+function buildAthletesDistanceSet(athletesSet) {
 	var reduceDistanceById = function(distanceByAthleteId, distanceRecord) {
 		distanceByAthleteId[distanceRecord.athleteId] = distanceRecord;
 		return distanceByAthleteId;
 	};
 
+	// Build an array of athlete distance objects.
+	var distance = athletesSet.map(function(currentAthlete) {
+		return { athleteId: currentAthlete, distance: 0 };
+	});
+	// Create an index of athlete distance objects by athlete id.
+	var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
+
+	return [distance, distanceByAthleteId];
+}
+
+function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 	// Build an array of year objects sorted by reverse chronological time.
 	var yearObj = yearsSet.map(function(currentYear) {
-		// Build an array of athlete distance objects.
-		var distance = athletesSet.map(function(currentAthlete) {
-			return { athleteId: currentAthlete, distance: 0 };
-		});
-		// Create an index of athlete distance objects by athlete id.
-		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
+		// Build athlete distance objects.
+		var distanceTuple = buildAthletesDistanceSet(athletesSet);
+		var distance = distanceTuple[0];
+		var distanceByAthleteId = distanceTuple[1];
 
 		return { year: currentYear, distance: distance, distanceByAthleteId: distanceByAthleteId, month: [], week: [] };
 	}).sort(function(a, b) {
@@ -149,12 +161,10 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 
 	// Build arrays of month objects grouped by year and sorted by reverse chronological time.
 	monthsSet.forEach(function(currentMonth) {
-		// Build an array of athlete distance objects.
-		var distance = athletesSet.map(function(currentAthlete) {
-			return { athleteId: currentAthlete, distance: 0 };
-		});
-		// Create an index of athlete distance objects by athlete id.
-		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
+		// Build athlete distance objects.
+		var distanceTuple = buildAthletesDistanceSet(athletesSet);
+		var distance = distanceTuple[0];
+		var distanceByAthleteId = distanceTuple[1];
 
 		// Add the month to the relevant year.
 		var monthObj = { month: currentMonth, distance: distance, distanceByAthleteId: distanceByAthleteId };
@@ -173,12 +183,10 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 
 	// Build arrays of week objects grouped by year and sorted by reverse chronological time.
 	weeksSet.forEach(function(currentWeek) {
-		// Build an array of athlete distance objects.
-		var distance = athletesSet.map(function(currentAthlete) {
-			return { athleteId: currentAthlete, distance: 0 };
-		});
-		// Create an index of athlete distance objects by athlete id.
-		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
+		// Build athlete distance objects.
+		var distanceTuple = buildAthletesDistanceSet(athletesSet);
+		var distance = distanceTuple[0];
+		var distanceByAthleteId = distanceTuple[1];
 
 		// Add the week to the relevant year.
 		var weekObj = { week: currentWeek, distance: distance, distanceByAthleteId: distanceByAthleteId };
