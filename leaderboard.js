@@ -20,6 +20,30 @@ var exampleLeaderboard = {
 					"athleteId" : 1234,
 					"distance" : 2500
 				}
+			},
+			"monthlyWins" : [
+				{
+					"athleteId" : 1234,
+					"wins" : 1
+				}
+			],
+			"monthlyWinsByAthleteId" : {
+				"1234" : {
+					"athleteId" : 1234,
+					"wins" : 1
+				}
+			},
+			"weeklyWins" : [
+				{
+					"athleteId" : 1234,
+					"wins" : 1
+				}
+			],
+			"weeklyWinsByAthleteId" : {
+				"1234" : {
+					"athleteId" : 1234,
+					"wins" : 1
+				}
 			}
 		}
 	],
@@ -141,6 +165,22 @@ function buildAthletesDistanceSet(athletesSet) {
 	return [distance, distanceByAthleteId];
 }
 
+function buildAthletesWinsSet(athletesSet) {
+	var reduceById = function(winsByAthleteId, winsRecord) {
+		winsByAthleteId[winsRecord.athleteId] = winsRecord;
+		return winsByAthleteId;
+	};
+
+	// Build an array of athlete win objects.
+	var wins = athletesSet.map(function(currentAthlete) {
+		return { athleteId: currentAthlete, wins: 0 };
+	});
+	// Create an index of athlete wins objects by athlete id.
+	var winsByAthleteId = wins.reduce(reduceById, {});
+
+	return [wins, winsByAthleteId];
+}
+
 function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 	// Build an array of year objects sorted by reverse chronological time.
 	var yearObj = yearsSet.map(function(currentYear) {
@@ -149,7 +189,21 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 		var distance = distanceTuple[0];
 		var distanceByAthleteId = distanceTuple[1];
 
-		return { year: currentYear, distance: distance, distanceByAthleteId: distanceByAthleteId, month: [], week: [] };
+		// Build monthly and weekly win totals objects.
+		var monthlyWinsTuple = buildAthletesWinsSet(athletesSet);
+		var weeklyWinsTuple = buildAthletesWinsSet(athletesSet);
+
+		return {
+			year: currentYear,
+			distance: distance,
+			distanceByAthleteId: distanceByAthleteId,
+			month: [],
+			week: [],
+			monthlyWins: monthlyWinsTuple[0],
+			monthlyWinsByAthleteId: monthlyWinsTuple[1],
+			weeklyWins: weeklyWinsTuple[0],
+			weeklyWinsByAthleteId: weeklyWinsTuple[1]
+		};
 	}).sort(function(a, b) {
 		return b.year - a.year;
 	});
