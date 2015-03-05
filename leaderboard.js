@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('underscore');
-var jsonPath = require('JSONPath');
 var util = require('./util');
 
 // Example leaderboard
