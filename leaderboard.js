@@ -260,7 +260,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 }
 
 function calculateDistance(leaderboard, activities) {
-	_.each(activities, function(activity) {
+	activities.forEach(function(activity) {
 		// Get the year and month portions of the activity date.
 		var date = new Date(activity.start_date);
 		var year = yearFromDate(date);
