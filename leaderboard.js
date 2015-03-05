@@ -132,7 +132,6 @@ function buildSkeleton(yearsSet, monthsSet, athletesSet) {
 		yearRecord.month.sort(function(a, b) {
 			return b.month - a.month;
 		});
-		console.log('yearRecord.month sorted: ' + util.stringify(yearRecord.month));
 		yearRecord.monthById = yearRecord.month.reduce(function(monthById, monthRecord) {
 			monthById[monthRecord.month] = monthRecord;
 			return monthById;
@@ -142,13 +141,23 @@ function buildSkeleton(yearsSet, monthsSet, athletesSet) {
 	return { year: yearObj, yearById: yearById };
 }
 
-function calculateYearlyDistance(leaderboard, activities) {
+function calculateDistance(leaderboard, activities) {
 	_.each(activities, function(activity) {
-		// Get the year portion of the activity date.
-		var year = yearFromDate(new Date(activity.start_date));
+		// Get the year and month portions of the activity date.
+		var date = new Date(activity.start_date);
+		var year = yearFromDate(date);
+		var month = monthFromDate(date);
 
-		var distanceItem = leaderboard.yearById[year].distanceByAthleteId[activity.athlete.id];
-		distanceItem.distance += activity.distance;
+		// Get all the distance records that the activity fits into.
+		var distanceItems = [
+			// yearly record
+			leaderboard.yearById[year].distanceByAthleteId[activity.athlete.id],
+			// monthly record
+			leaderboard.yearById[year].monthById[month].distanceByAthleteId[activity.athlete.id]
+		];
+		distanceItems.forEach(function (distanceItem) {
+			distanceItem.distance += activity.distance;
+		});
 	});
 	// Sort distances in descending order.
 	leaderboard.year.forEach(function(year) {
@@ -169,8 +178,8 @@ function buildLeaderboard(activities) {
 	// Build the skeleton leaderboard.
 	var leaderboard = buildSkeleton(yearsSet, monthsSet, athletesSet);
 
-	// Calculate yearly athlete distances.
-	calculateYearlyDistance(leaderboard, activities);
+	// Calculate athlete distances.
+	calculateDistance(leaderboard, activities);
 
 	//console.log("leaderboard: " + util.stringify(leaderboard));
 
