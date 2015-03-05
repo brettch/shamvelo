@@ -42,23 +42,35 @@ var exampleLeaderboard = {
 	}
 }
 
-function yearFromDate(dateString) {
-	return new Date(dateString).getFullYear();
+function buildDateSet(activities, dateMapper) {
+	var reduceFunction = function(resultSet, activity) {
+		// Reduce the date to an integer of reduced granularity.
+		var item = dateMapper(new Date(activity.start_date));
+
+		if (!_.contains(resultSet, item)) {
+			resultSet.push(item);
+		}
+
+		return resultSet;
+	};
+
+	return activities.reduce(reduceFunction, []);
+}
+
+function yearFromDate(date) {
+	return date.getFullYear();
 }
 
 function buildYearsSet(activities) {
-	var reduceFunction = function(yearsSet, activity) {
-		// Get the year portion of the activity date.
-		var year = yearFromDate(activity.start_date);
+	return buildDateSet(activities, yearFromDate);
+}
 
-		if (!_.contains(yearsSet, year)) {
-			yearsSet.push(year);
-		}
+function monthFromDate(date) {
+	return date.getFullYear() * 100 + date.getMonth();
+}
 
-		return yearsSet;
-	};
-
-	return activities.reduce(reduceFunction, []).sort();
+function buildMonthsSet(activities) {
+	return buildDateSet(activities, monthFromDate);
 }
 
 function buildAthletesSet(activities) {
@@ -104,7 +116,7 @@ function buildSkeleton(yearsSet, athletesSet) {
 function calculateYearlyDistance(leaderboard, activities) {
 	_.each(activities, function(activity) {
 		// Get the year portion of the activity date.
-		var year = yearFromDate(activity.start_date);
+		var year = yearFromDate(new Date(activity.start_date));
 
 		var distanceItem = leaderboard.yearById[year].distanceByAthleteId[activity.athlete.id];
 		distanceItem.distance += activity.distance;
