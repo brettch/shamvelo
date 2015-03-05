@@ -42,10 +42,14 @@ var exampleLeaderboard = {
 	}
 }
 
+function yearFromDate(dateString) {
+	return new Date(dateString).getFullYear();
+}
+
 function buildYearsSet(activities) {
 	var reduceFunction = function(yearsSet, activity) {
 		// Get the year portion of the activity date.
-		var year = new Date(activity.start_date).getFullYear();
+		var year = yearFromDate(activity.start_date);
 
 		if (!_.contains(yearsSet, year)) {
 			yearsSet.push(year);
@@ -75,7 +79,7 @@ function buildSkeleton(yearsSet, athletesSet) {
 		return distanceByAthleteId;
 	};
 
-	// Build an array of year objects.
+	// Build an array of year objects sorted by reverse chronological time.
 	var yearObj = yearsSet.map(function(currentYear) {
 		// Build an array of athlete distance objects.
 		var distance = athletesSet.map(function(currentAthlete) {
@@ -85,6 +89,8 @@ function buildSkeleton(yearsSet, athletesSet) {
 		var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
 
 		return { year: currentYear, distance: distance, distanceByAthleteId: distanceByAthleteId };
+	}).sort(function(a, b) {
+		return a.year < b.year;
 	});
 	// Create an index of year objects by year id.
 	var yearById = yearObj.reduce(function(yearById, yearRecord) {
@@ -98,10 +104,16 @@ function buildSkeleton(yearsSet, athletesSet) {
 function calculateYearlyDistance(leaderboard, activities) {
 	_.each(activities, function(activity) {
 		// Get the year portion of the activity date.
-		var year = new Date(activity.start_date).getFullYear();
+		var year = yearFromDate(activity.start_date);
 
 		var distanceItem = leaderboard.yearById[year].distanceByAthleteId[activity.athlete.id];
 		distanceItem.distance += activity.distance;
+	});
+	// Sort distances in descending order.
+	leaderboard.year.forEach(function(year) {
+		year.distance.sort(function(a, b) {
+			return a.distance < b.distance;
+		});
 	});
 }
 
