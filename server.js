@@ -61,6 +61,21 @@ function registerAthlete(stravaCode, callback) {
 	});
 }
 
+function registerAthleteToken(stravaToken, callback) {
+	console.log('Registering athlete with token: ' + stravaToken);
+	strava.getAthlete(stravaToken, function(err, athlete) {
+		if (err) callback(err);
+		else {
+			db.saveAthlete(athlete, function(err) {
+				if (err) callback(err);
+				else db.saveAthleteToken(athlete.id, stravaToken, function(err) {
+					callback(err);
+				});
+			});
+		}
+	});
+}
+
 // Refresh athlete details in our database.
 function refreshAthlete(athleteId, callback) {
 	console.log('Refreshing athlete ' + athleteId);
@@ -149,6 +164,22 @@ app.get('/registercode', function(req, res) {
 	} else {
 		registerAthlete(stravaCode, function(err) {
 			if (err) sendErrorMessage(res, "Unable to process Strava authorisation request");
+			else res.redirect('./');
+		});
+	}
+});
+
+// Directly register a bearer token.  Primarily useful in a development setting.
+app.get('/registertoken', function(req, res) {
+	var stravaToken = req.query.token;
+
+	if (stravaToken == null) {
+		var description = 'Query parameter "token" is missing';
+		console.log(description);
+		sendErrorMessage(res, description);
+	} else {
+		registerAthleteToken(stravaToken, function(err) {
+			if (err) sendErrorMessage(res, "Unable to register Strava token");
 			else res.redirect('./');
 		});
 	}
