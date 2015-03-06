@@ -198,6 +198,9 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 }
 
 function calculateDistance(leaderboard, activities) {
+	function distanceDescendingComparator(a, b) {
+		return b.distance - a.distance;
+	}
 	activities.forEach(function(activity) {
 		// Get the year and month portions of the activity date.
 		var date = new Date(activity.start_date);
@@ -222,8 +225,12 @@ function calculateDistance(leaderboard, activities) {
 	});
 	// Sort distances in descending order.
 	leaderboard.year.forEach(function(year) {
-		year.distance.sort(function(a, b) {
-			return b.distance - a.distance;
+		year.distance.sort(distanceDescendingComparator);
+		year.month.forEach(function(month) {
+			month.distance.sort(distanceDescendingComparator);
+		});
+		year.week.forEach(function(week) {
+			week.distance.sort(distanceDescendingComparator);
 		});
 	});
 }
