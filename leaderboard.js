@@ -254,6 +254,23 @@ function calculateWins(leaderboard) {
 	});
 }
 
+function stripIndexes(leaderboard) {
+	delete leaderboard.yearById;
+	leaderboard.year.forEach(function(year) {
+		delete year.distanceByAthleteId;
+		delete year.monthById;
+		delete year.weekById;
+		delete year.monthlyWinsByAthleteId;
+		delete year.weeklyWinsByAthleteId;
+		year.month.forEach(function(month) {
+			delete month.distanceByAthleteId;
+		});
+		year.week.forEach(function(week) {
+			delete week.distanceByAthleteId;
+		});
+	});
+}
+
 function buildLeaderboard(activities) {
 	// Build the complete set of years.
 	var yearsSet = buildYearsSet(activities);
@@ -272,6 +289,9 @@ function buildLeaderboard(activities) {
 
 	// Calculate total wins.
 	calculateWins(leaderboard);
+
+	// Strip index objects out of the leaderboard.
+	stripIndexes(leaderboard);
 
 	console.log("leaderboard: " + util.stringify(leaderboard));
 
