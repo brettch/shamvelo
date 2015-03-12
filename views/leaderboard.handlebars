@@ -87,6 +87,44 @@
   </div>
 </div>
 
+{{#with leaderboard.year.[0]}}
+<h2>Current Points Details ({{year}})</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Monthly Points</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each monthlyWins}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.wins}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Weekly Points</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each weeklyWins}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.wins}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{{/with}}
+
+
+
 	<pre>{{leaderboardjson}}</pre>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
