@@ -291,7 +291,8 @@ app.get('/leaderboard', function(req, res) {
 		else {
 			var leaderboard = leaderboardEngine.build(activities);
 			res.render('leaderboard.handlebars', {
-				leaderboard : util.stringify(leaderboard)
+				leaderboardjson : util.stringify(leaderboard),
+				leaderboard : leaderboard
 			});
 		}
 	});
