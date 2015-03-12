@@ -109,6 +109,28 @@ function refreshAthleteActivities(athleteId, callback) {
 	});
 }
 
+function refreshAllAthleteActivities(callback) {
+	var refreshNextAthleteActivities = function(athletes) {
+		if (athletes.length > 0) {
+			var athlete = athletes[0];
+			refreshAthleteActivities(athlete.id, function(err) {
+				if (err) console.log('Unable to refresh athlete ' + athlete.id);
+
+				refreshNextAthleteActivities(athletes.slice(1));
+			});
+		} else {
+			console.log('Completed refreshing all athlete activities');
+			callback();
+		}
+	}
+
+	console.log('Refreshing all athlete activities');
+	db.getItems('athletes', {}, function(err, athletes) {
+		if (err) callback(err);
+		else refreshNextAthleteActivities(athletes);
+	});
+}
+
 // Send an error message back to the user.
 function sendErrorMessage(res, description) {
 	res.render('error.handlebars', {
@@ -280,3 +302,8 @@ console.log('Creating HTTP listener');
 var server = app.listen(config.express.port, function() {
 	console.log('Listening on port %d', server.address().port);
 });
+
+// Set up a regular refresh of athlete activities.
+setInterval(function() {
+	refreshAllAthleteActivities(function() {});
+}, 3600000);
