@@ -71,30 +71,21 @@ function buildWeeksSet(activities) {
 	return buildDateSet(activities, weekFromDate);
 }
 
-// Get the unique set of athlete ids.
-function buildAthletesSet(activities) {
-	var reduceFunction = function(athletesSet, activity) {
-		if (!_.contains(athletesSet, activity.athlete.id)) {
-			athletesSet.push(activity.athlete.id);
-		}
-
-		return athletesSet;
-	};
-
-	return activities.reduce(reduceFunction, []).sort();
-}
-
-// For each athlete create a distance object with athlete id and distance.
+// For each athlete create a distance object with athlete details and distance.
 // Return a tuple containing a list of these objects, and a map keyed by athlete id.
-function buildAthletesDistanceSet(athletesSet) {
+function buildAthletesDistances(athletes) {
 	var reduceDistanceById = function(distanceByAthleteId, distanceRecord) {
 		distanceByAthleteId[distanceRecord.athleteId] = distanceRecord;
 		return distanceByAthleteId;
 	};
 
 	// Build an array of athlete distance objects.
-	var distance = athletesSet.map(function(currentAthlete) {
-		return { athleteId: currentAthlete, distance: 0 };
+	var distance = athletes.map(function(athlete) {
+		return {
+			athleteId: athlete.id,
+			athleteName: athlete.firstname + ' ' + athlete.lastname,
+			distance: 0
+		};
 	});
 	// Create an index of athlete distance objects by athlete id.
 	var distanceByAthleteId = distance.reduce(reduceDistanceById, {});
@@ -102,15 +93,19 @@ function buildAthletesDistanceSet(athletesSet) {
 	return [distance, distanceByAthleteId];
 }
 
-function buildAthletesWinsSet(athletesSet) {
+function buildAthletesWins(athletes) {
 	var reduceById = function(winsByAthleteId, winsRecord) {
 		winsByAthleteId[winsRecord.athleteId] = winsRecord;
 		return winsByAthleteId;
 	};
 
 	// Build an array of athlete win objects.
-	var wins = athletesSet.map(function(currentAthlete) {
-		return { athleteId: currentAthlete, wins: 0 };
+	var wins = athletes.map(function(athlete) {
+		return {
+			athleteId: athlete.id,
+			athleteName: athlete.firstname + ' ' + athlete.lastname,
+			wins: 0
+		};
 	});
 	// Create an index of athlete wins objects by athlete id.
 	var winsByAthleteId = wins.reduce(reduceById, {});
@@ -118,17 +113,17 @@ function buildAthletesWinsSet(athletesSet) {
 	return [wins, winsByAthleteId];
 }
 
-function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
+function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
 	// Build an array of year objects sorted by reverse chronological time.
 	var yearObj = yearsSet.map(function(currentYear) {
 		// Build athlete distance objects.
-		var distanceTuple = buildAthletesDistanceSet(athletesSet);
+		var distanceTuple = buildAthletesDistances(athletes);
 		var distance = distanceTuple[0];
 		var distanceByAthleteId = distanceTuple[1];
 
 		// Build monthly and weekly win totals objects.
-		var monthlyWinsTuple = buildAthletesWinsSet(athletesSet);
-		var weeklyWinsTuple = buildAthletesWinsSet(athletesSet);
+		var monthlyWinsTuple = buildAthletesWins(athletes);
+		var weeklyWinsTuple = buildAthletesWins(athletes);
 
 		return {
 			year: currentYear,
@@ -153,7 +148,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 	// Build arrays of month objects grouped by year and sorted by reverse chronological time.
 	monthsSet.forEach(function(currentMonth) {
 		// Build athlete distance objects.
-		var distanceTuple = buildAthletesDistanceSet(athletesSet);
+		var distanceTuple = buildAthletesDistances(athletes);
 		var distance = distanceTuple[0];
 		var distanceByAthleteId = distanceTuple[1];
 
@@ -175,7 +170,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet) {
 	// Build arrays of week objects grouped by year and sorted by reverse chronological time.
 	weeksSet.forEach(function(currentWeek) {
 		// Build athlete distance objects.
-		var distanceTuple = buildAthletesDistanceSet(athletesSet);
+		var distanceTuple = buildAthletesDistances(athletes);
 		var distance = distanceTuple[0];
 		var distanceByAthleteId = distanceTuple[1];
 
@@ -271,18 +266,16 @@ function stripIndexes(leaderboard) {
 	});
 }
 
-function buildLeaderboard(activities) {
+function buildLeaderboard(athletes, activities) {
 	// Build the complete set of years.
 	var yearsSet = buildYearsSet(activities);
 	// Build the complete set of months.
 	var monthsSet = buildMonthsSet(activities);
 	// Build the complete set of weeks.
 	var weeksSet = buildWeeksSet(activities);
-	// Build the complete set of athletes.
-	var athletesSet = buildAthletesSet(activities);
 
 	// Build the skeleton leaderboard.
-	var leaderboard = buildSkeleton(yearsSet, monthsSet, weeksSet, athletesSet);
+	var leaderboard = buildSkeleton(yearsSet, monthsSet, weeksSet, athletes);
 
 	// Calculate athlete distances.
 	calculateDistance(leaderboard, activities);

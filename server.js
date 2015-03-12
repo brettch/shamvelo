@@ -286,15 +286,18 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
 
 // Display the leaderboard.
 app.get('/leaderboard', function(req, res) {
-	db.getItems('activities', {}, function(err, activities) {
+	db.getItems('athletes', {}, function(err, athletes) {
 		if (err) sendError(res);
-		else {
-			var leaderboard = leaderboardEngine.build(activities);
-			res.render('leaderboard.handlebars', {
-				leaderboardjson : util.stringify(leaderboard),
-				leaderboard : leaderboard
-			});
-		}
+		else db.getItems('activities', {}, function(err, activities) {
+			if (err) sendError(res);
+			else {
+				var leaderboard = leaderboardEngine.build(athletes, activities);
+				res.render('leaderboard.handlebars', {
+					leaderboardjson : util.stringify(leaderboard),
+					leaderboard : leaderboard
+				});
+			}
+		});
 	});
 });
 
