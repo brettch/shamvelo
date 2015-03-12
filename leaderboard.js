@@ -215,7 +215,7 @@ function calculateDistance(leaderboard, activities) {
 			leaderboard.yearById[weekYear].weekById[week].distanceByAthleteId[activity.athlete.id]
 		];
 		distanceItems.forEach(function (distanceItem) {
-			distanceItem.distance += activity.distance;
+			distanceItem.distance = Math.round(distanceItem.distance * 10 + activity.distance / 100) / 10;
 		});
 	});
 	// Sort distances in descending order.
