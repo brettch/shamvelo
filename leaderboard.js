@@ -267,6 +267,7 @@ function stripIndexes(leaderboard) {
 }
 
 function buildLeaderboard(athletes, activities) {
+	activities = activities.filter(function(activity) { return activity.type == 'Ride' } );
 	// Build the complete set of years.
 	var yearsSet = buildYearsSet(activities);
 	// Build the complete set of months.
