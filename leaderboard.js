@@ -96,7 +96,8 @@ function buildAthletesDistances(athletes) {
 		return {
 			athleteId: athlete.id,
 			athleteName: buildAthleteName(athlete),
-			distance: 0
+			distance: 0,
+			movingTime: 0
 		};
 	});
 	// Create an index of athlete distance objects by athlete id.
@@ -229,6 +230,7 @@ function calculateDistance(leaderboard, activities) {
 		];
 		distanceItems.forEach(function (distanceItem) {
 			distanceItem.distance = Math.round(distanceItem.distance * 10 + activity.distance / 100) / 10;
+			distanceItem.movingTime += activity.moving_time;
 		});
 	});
 	// Sort distances in descending order.
@@ -240,6 +242,21 @@ function calculateDistance(leaderboard, activities) {
 		year.week.forEach(function(week) {
 			week.distance.sort(distanceDescendingComparator);
 		});
+	});
+}
+
+function calculateAverageSpeed(leaderboard) {
+	leaderboard.year.forEach(function(year) {
+		// Calculate average speed for the year for each athlete and update their summaries.
+		year.distance.forEach(function(distance) {
+			if (distance.distance > 0)
+				distance.averageSpeed = Math.round(distance.distance / distance.movingTime * 3600 * 10) / 10;
+			else
+				distance.averageSpeed = 0;
+		});
+		// Sort the distance objects by average speed and store separately.
+		year.averageSpeed = year.distance.slice();
+		year.averageSpeed.sort(function(a, b) { return b.averageSpeed - a.averageSpeed });
 	});
 }
 
@@ -318,6 +335,7 @@ function buildLeaderboard(athletes, activities) {
 
 	// Calculate leaderboard statistics.
 	calculateDistance(leaderboard, activities);
+	calculateAverageSpeed(leaderboard);
 	calculateWins(leaderboard);
 	calculateLongestRides(leaderboard, activities, athletesById);
 
