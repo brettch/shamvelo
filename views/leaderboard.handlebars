@@ -26,16 +26,16 @@
   <div class="col-md-6">
     <table class="table">
       <tr><th>Jersey</th><th>Leader</th></tr>
-      <tr><td>Yellow</td><td>{{distance.[0].athleteName}}</td></tr>
-      <tr><td>Dark Green (Monthly Points)</td><td>{{monthlyWins.[0].athleteName}}</td></tr>
-      <tr><td>Light Green (Weekly Points)</td><td>{{weeklyWins.[0].athleteName}}</td></tr>
+      <tr><td>Yellow</td><td>{{distance.[0].athleteName}} ({{distance.[0].distance}} km)</td></tr>
+      <tr><td>Dark Green (Monthly Points)</td><td>{{monthlyWins.[0].athleteName}} ({{monthlyWins.[0].wins}} pts)</td></tr>
+      <tr><td>Light Green (Weekly Points)</td><td>{{weeklyWins.[0].athleteName}} ({{weeklyWins.[0].wins}} pts)</td></tr>
       {{#with longestRide}}
       <tr>
         <td>Ironman (Longest Ride)</td>
-        <td>{{athleteName}} <a href="https://www.strava.com/activities/{{activity.id}}">{{activity.name}}</a></td>
+        <td>{{athleteName}} (<a href="https://www.strava.com/activities/{{activity.id}}">{{activity.name}}</a>)</td>
       </tr>
       {{/with}}
-      <tr><td>Alley Cat (Fastest Average)</td><td>{{averageSpeed.[0].athleteName}}</td></tr>
+      <tr><td>Alley Cat (Fastest Average)</td><td>{{averageSpeed.[0].athleteName}} ({{averageSpeed.[0].averageSpeed}} km/h)</td></tr>
       <tr><td>VO2 Max (Fastest Average For Single Ride Over 10km)</td><td>TBD</td></tr>
       <tr><td>Green Warrior (Most Number Of Rides)</td><td>TBD</td></tr>
     </table>
