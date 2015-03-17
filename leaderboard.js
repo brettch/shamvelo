@@ -71,6 +71,18 @@ function buildWeeksSet(activities) {
 	return buildDateSet(activities, weekFromDate);
 }
 
+// Create a map of athletes keyed by their id.
+function buildAthletesById(athletes) {
+	return athletes.reduce(function(athletesById, athlete) {
+		athletesById[athlete.id] = athlete;
+		return athletesById;
+	}, {});
+}
+
+function buildAthleteName(athlete) {
+	return athlete.firstname + ' ' + athlete.lastname;
+}
+
 // For each athlete create a distance object with athlete details and distance.
 // Return a tuple containing a list of these objects, and a map keyed by athlete id.
 function buildAthletesDistances(athletes) {
@@ -83,7 +95,7 @@ function buildAthletesDistances(athletes) {
 	var distance = athletes.map(function(athlete) {
 		return {
 			athleteId: athlete.id,
-			athleteName: athlete.firstname + ' ' + athlete.lastname,
+			athleteName: buildAthleteName(athlete),
 			distance: 0
 		};
 	});
@@ -134,7 +146,8 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
 			monthlyWins: monthlyWinsTuple[0],
 			monthlyWinsByAthleteId: monthlyWinsTuple[1],
 			weeklyWins: weeklyWinsTuple[0],
-			weeklyWinsByAthleteId: weeklyWinsTuple[1]
+			weeklyWinsByAthleteId: weeklyWinsTuple[1],
+			longestRide: {}
 		};
 	}).sort(function(a, b) {
 		return b.year - a.year;
@@ -249,6 +262,29 @@ function calculateWins(leaderboard) {
 	});
 }
 
+function calculateLongestRides(leaderboard, activities, athletesById) {
+	activities.forEach(function(activity) {
+		var date = new Date(activity.start_date);
+		var year = yearFromDate(date);
+		var longestRideObj = leaderboard.yearById[year].longestRide;
+
+		var updateLongestRide = function() {
+			longestRideObj.activity = activity;
+			longestRideObj.athleteId = activity.athlete.id;
+			longestRideObj.athleteName = buildAthleteName(athletesById[activity.athlete.id]);
+		}
+
+		// If this activity is longer than the current longest activity, then replace
+		// the existing one.
+		if (longestRideObj.activity) {
+			if (longestRideObj.activity.distance < activity.distance)
+				updateLongestRide();
+		} else {
+			updateLongestRide();
+		}
+	});
+}
+
 function stripIndexes(leaderboard) {
 	delete leaderboard.yearById;
 	leaderboard.year.forEach(function(year) {
@@ -274,15 +310,16 @@ function buildLeaderboard(athletes, activities) {
 	var monthsSet = buildMonthsSet(activities);
 	// Build the complete set of weeks.
 	var weeksSet = buildWeeksSet(activities);
+	// Create an index of athletes by id.
+	var athletesById = buildAthletesById(athletes);
 
 	// Build the skeleton leaderboard.
 	var leaderboard = buildSkeleton(yearsSet, monthsSet, weeksSet, athletes);
 
-	// Calculate athlete distances.
+	// Calculate leaderboard statistics.
 	calculateDistance(leaderboard, activities);
-
-	// Calculate total wins.
 	calculateWins(leaderboard);
+	calculateLongestRides(leaderboard, activities, athletesById);
 
 	// Strip index objects out of the leaderboard.
 	stripIndexes(leaderboard);
