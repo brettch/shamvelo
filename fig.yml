@@ -13,4 +13,5 @@ app:
         SHAMVELO_STRAVA_CLIENT_ID:
         SHAMVELO_STRAVA_CLIENT_SECRET:
         SHAMVELO_URL_BASE:
+        TZ:
 
