@@ -280,7 +280,7 @@ function calculateWins(leaderboard) {
 	});
 }
 
-function calculateLongestRides(leaderboard, activities, athletesById) {
+function calculateLongestRide(leaderboard, activities, athletesById) {
 	activities.forEach(function(activity) {
 		var date = new Date(activity.start_date);
 		var year = yearFromDate(date);
@@ -310,7 +310,7 @@ function calculateActivitySpeed(activity) {
 		return 0;
 }
 
-function calculateFastestRides(leaderboard, activities, athletesById) {
+function calculateFastestRide(leaderboard, activities, athletesById) {
 	activities.forEach(function(activity) {
 		var date = new Date(activity.start_date);
 		var year = yearFromDate(date);
@@ -371,8 +371,8 @@ function buildLeaderboard(athletes, activities) {
 	calculateDistance(leaderboard, activities);
 	calculateAverageSpeed(leaderboard);
 	calculateWins(leaderboard);
-	calculateLongestRides(leaderboard, activities, athletesById);
-	calculateFastestRides(leaderboard, activities, athletesById);
+	calculateLongestRide(leaderboard, activities, athletesById);
+	calculateFastestRide(leaderboard, activities, athletesById);
 
 	// Strip index objects out of the leaderboard.
 	stripIndexes(leaderboard);
