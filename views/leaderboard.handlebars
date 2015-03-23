@@ -54,7 +54,7 @@
     <div class="panel panel-default">
       {{#with leaderboard.year.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Current Year ({{year}})</h3>
+        <h3 class="panel-title">Year ({{year}})</h3>
       </div>
       <div class="panel-body">
         <table class="table">
@@ -71,7 +71,7 @@
     <div class="panel panel-default">
       {{#with leaderboard.year.[0].month.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Current Month ({{month}})</h3>
+        <h3 class="panel-title">Month ({{month}})</h3>
       </div>
       <div class="panel-body">
         <table class="table">
@@ -88,13 +88,123 @@
     <div class="panel panel-default">
       {{#with leaderboard.year.[0].week.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Current Week ({{week}})</h3>
+        <h3 class="panel-title">Week ({{week}})</h3>
       </div>
       <div class="panel-body">
         <table class="table">
           <tr><th>Athlete</th><th>Distance</th></tr>
           {{#each distance}}
           <tr><td>{{this.athleteName}}</td><td>{{this.distance}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+</div>
+
+<h2>Current Speed Details</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Year ({{year}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Average Speed</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0].month.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Month ({{month}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Average Speed</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0].week.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Week ({{week}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Average Speed</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+</div>
+
+<h2>Current Ride Details</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Year ({{year}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Rides</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.activityCount}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0].month.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Month ({{month}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Rides</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.activityCount}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0].week.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Week ({{week}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Rides</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.activityCount}}</td></tr>
           {{/each}}
         </table>
       </div>
