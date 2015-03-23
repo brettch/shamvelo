@@ -148,7 +148,8 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
 			monthlyWinsByAthleteId: monthlyWinsTuple[1],
 			weeklyWins: weeklyWinsTuple[0],
 			weeklyWinsByAthleteId: weeklyWinsTuple[1],
-			longestRide: {}
+			longestRide: {},
+			fastestRide: {}
 		};
 	}).sort(function(a, b) {
 		return b.year - a.year;
@@ -302,6 +303,39 @@ function calculateLongestRides(leaderboard, activities, athletesById) {
 	});
 }
 
+function calculateActivitySpeed(activity) {
+	if (activity.distance > 0)
+		return Math.round(activity.distance / activity.moving_time * 3.600 * 10) / 10;
+	else
+		return 0;
+}
+
+function calculateFastestRides(leaderboard, activities, athletesById) {
+	activities.forEach(function(activity) {
+		var date = new Date(activity.start_date);
+		var year = yearFromDate(date);
+		var fastestRideObj = leaderboard.yearById[year].fastestRide;
+
+		var updateFastestRide = function() {
+			fastestRideObj.activity = activity;
+			fastestRideObj.athleteId = activity.athlete.id;
+			fastestRideObj.athleteName = buildAthleteName(athletesById[activity.athlete.id]);
+			fastestRideObj.averageSpeed = calculateActivitySpeed(activity);
+		}
+
+		// If the average speed for this ride is higher than the current maximum average, then
+		// replace the existing one.  Only consider rides over 10km in length.
+		if (activity.distance > 10000) {
+			if (fastestRideObj.activity) {
+				if (calculateActivitySpeed(fastestRideObj.activity) < calculateActivitySpeed(activity))
+					updateFastestRide();
+			} else {
+				updateFastestRide();
+			};
+		}
+	});
+}
+
 function stripIndexes(leaderboard) {
 	delete leaderboard.yearById;
 	leaderboard.year.forEach(function(year) {
@@ -338,6 +372,7 @@ function buildLeaderboard(athletes, activities) {
 	calculateAverageSpeed(leaderboard);
 	calculateWins(leaderboard);
 	calculateLongestRides(leaderboard, activities, athletesById);
+	calculateFastestRides(leaderboard, activities, athletesById);
 
 	// Strip index objects out of the leaderboard.
 	stripIndexes(leaderboard);
