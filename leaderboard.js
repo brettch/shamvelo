@@ -244,7 +244,7 @@ function calculateSummary(leaderboard, activities) {
 		summaryItems.forEach(function (summaryItem) {
 			summaryItem.distance = Math.round(summaryItem.distance * 10 + activity.distance / 100) / 10;
 			summaryItem.movingTime += activity.moving_time;
-			summaryItem.rides++;
+			summaryItem.activityCount++;
 
 			// The average speed on the activity object is incorrect (unsure why), so calculate it.
 			// This could be done after processing all activities, but it's a relatively simple calculation.
