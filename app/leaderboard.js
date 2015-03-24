@@ -152,7 +152,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
 			weeklyWins: weeklyWinsTuple[0],
 			weeklyWinsByAthleteId: weeklyWinsTuple[1],
 			longestRide: {},
-			fastestRide: {}
+			fastestRide: []
 		};
 	}).sort(function(a, b) {
 		return b.year - a.year;
@@ -321,36 +321,55 @@ function calculateLongestRide(leaderboard, activities, athletesById) {
 	});
 }
 
-function calculateActivitySpeed(activity) {
-	if (activity.distance > 0)
-		return Math.round(activity.distance / activity.moving_time * 3.600 * 10) / 10;
-	else
-		return 0;
-}
-
 function calculateFastestRide(leaderboard, activities, athletesById) {
+	var MIN_DISTANCE = 10000;
+	var MAX_TRACKED = 3;
+	function calculateActivitySpeed(activity) {
+		if (activity.distance > 0)
+			return Math.round(activity.distance / activity.moving_time * 3.600 * 10) / 10;
+		else
+			return 0;
+	}
+
+	function compareBySpeed(a, b) {
+		if (a.distance < MIN_DISTANCE && b.distance < MIN_DISTANCE)
+			return calculateActivitySpeed(b) - calculateActivitySpeed(a);
+		else if (a.distance < MIN_DISTANCE)
+			return 1;
+		else if (b.distance < MIN_DISTANCE)
+			return -1;
+		else
+			return calculateActivitySpeed(b) - calculateActivitySpeed(a);
+	}
+	function compareRidesBySpeed(a, b) {
+		return compareBySpeed(a.activity, b.activity);
+	}
+
 	activities.forEach(function(activity) {
 		var date = new Date(activity.start_date);
 		var year = yearFromDate(date);
-		var fastestRideObj = leaderboard.yearById[year].fastestRide;
+		var fastestRides = leaderboard.yearById[year].fastestRide;
 
-		var updateFastestRide = function() {
-			fastestRideObj.activity = activity;
-			fastestRideObj.athleteId = activity.athlete.id;
-			fastestRideObj.athleteName = buildAthleteName(athletesById[activity.athlete.id]);
-			fastestRideObj.averageSpeed = calculateActivitySpeed(activity);
+		var updateFastestRides = function() {
+			console.log('adding to list');
+			// Add this activity to the list, sort, and keep the top 3.
+			fastestRides.push({
+				activity: activity,
+				athleteId: activity.athlete.id,
+				athleteName: buildAthleteName(athletesById[activity.athlete.id]),
+				averageSpeed: calculateActivitySpeed(activity)
+			});
+			fastestRides.sort(compareRidesBySpeed);
+			if (fastestRides.length > MAX_TRACKED) fastestRides.pop();
 		}
 
-		// If the average speed for this ride is higher than the current maximum average, then
-		// replace the existing one.  Only consider rides over 10km in length.
-		if (activity.distance > 10000) {
-			if (fastestRideObj.activity) {
-				if (calculateActivitySpeed(fastestRideObj.activity) < calculateActivitySpeed(activity))
-					updateFastestRide();
-			} else {
-				updateFastestRide();
-			};
-		}
+		// Check if this activity is faster than the existing slowest activity.  If so,
+		// update the list.
+		if (fastestRides.length >= MAX_TRACKED) {
+			if (compareBySpeed(activity, fastestRides[fastestRides.length - 1].activity) < 0)
+				updateFastestRides();
+		} else
+			updateFastestRides();
 	});
 }
 

@@ -36,12 +36,10 @@
       </tr>
       {{/with}}
       <tr><td>Alley Cat (Fastest Average)</td><td>{{averageSpeed.[0].athleteName}} ({{averageSpeed.[0].averageSpeed}} km/h)</td></tr>
-      {{#with fastestRide}}
       <tr>
         <td>VO2 Max (Fastest Average For Single Ride Over 10km)</td>
-        <td>{{athleteName}} (<a href="https://www.strava.com/activities/{{activity.id}}">{{activity.name}}</a> - {{averageSpeed}} km/h)</td>
+        <td>{{fastestRide.[0].athleteName}} ({{fastestRide.[0].averageSpeed}} km/h)</td>
       </tr>
-      {{/with}}
       <tr><td>Green Warrior (Most Number Of Rides)</td><td>{{activityCount.[0].athleteName}} ({{activityCount.[0].activityCount}} rides)</td></tr>
     </table>
   </div>
@@ -103,7 +101,7 @@
   </div>
 </div>
 
-<h2>Current Speed Details</h2>
+<h2>Current Average Speed Details</h2>
 <div class="row">
   <div class="col-md-4">
     <div class="panel panel-default">
@@ -150,6 +148,27 @@
           <tr><th>Athlete</th><th>Average Speed</th></tr>
           {{#each averageSpeed}}
           <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+      {{/with}}
+    </div>
+  </div>
+</div>
+
+<h2>Current Fastest Ride Details</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      {{#with leaderboard.year.[0]}}
+      <div class="panel-heading">
+        <h3 class="panel-title">Year ({{year}})</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Average Speed</th></tr>
+          {{#each fastestRide}}
+          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}} (<a href="https://www.strava.com/activities/{{this.activity.id}}">{{this.activity.name}}</a>)</td></tr>
           {{/each}}
         </table>
       </div>
