@@ -2,7 +2,7 @@ mongo:
     image: mongo:2
 
 app:
-    build: .
+    build: ./app
     links:
     - mongo
     ports:
