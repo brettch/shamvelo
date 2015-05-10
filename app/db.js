@@ -63,6 +63,10 @@ module.exports.start = function(url) {
 			);
 		},
 
+		deleteActivities: function(athleteId, callback) {
+			mongodb.collection('activities').remove({ 'athlete.id': athleteId }, {}, callback);
+		},
+
 		// Save or refresh a list of activities.
 		saveActivities: function(activities, callback) {
 			var collection = mongodb.collection('activities');

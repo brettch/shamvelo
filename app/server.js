@@ -104,7 +104,11 @@ function refreshAthleteActivities(athleteId, callback) {
 			var finalCallback = function(err) {
 				callback(err);
 			}
-			strava.getActivities(tokens[0].token, pageCallback, finalCallback);
+			// Delete activities, and then do a full refresh from Strava.
+			db.deleteActivities(athleteId, function(err) {
+				if (err) console.log('Unable to remove activities for athlete ' + athlete.id);
+				else strava.getActivities(tokens[0].token, pageCallback, finalCallback);
+			});
 		}
 	});
 }
