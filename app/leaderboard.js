@@ -391,7 +391,11 @@ function stripIndexes(leaderboard) {
 }
 
 function buildLeaderboard(athletes, activities) {
+	var blockedRideList = [356959035, 356959045, 356959046];
+	// Only include bike rides.
 	activities = activities.filter(function(activity) { return activity.type == 'Ride' } );
+	// Block Frankenstein rides.
+	activities = activities.filter(function(activity) { return blockedRideList.indexOf(activity.id) < 0 } );
 	// Build the complete set of years.
 	var yearsSet = buildYearsSet(activities);
 	// Build the complete set of months.
