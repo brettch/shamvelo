@@ -33,7 +33,7 @@ function getAthlete(token, callback) {
 			console.log("Received error from athlete.get service:\n" + util.stringify(err));
 			callback(err);
 		} else {
-			console.log("Received athlete payload:\n" + util.stringify(payload));
+			//console.log("Received athlete payload:\n" + util.stringify(payload));
 			callback(null, payload);
 		}
 	});
@@ -55,7 +55,7 @@ function getActivities(token, pageCallback, callback) {
 					console.log("Received error from athlete.listActivities service:\n" + util.stringify(err));
 					callback(err);
 				} else {
-					console.log("Received activities payload:\n" + util.stringify(payload));
+					//console.log("Received activities payload:\n" + util.stringify(payload));
 					if (payload.length > 0) {
 						pageCallback(payload, function(err) {
 							if (err) callback(err);
@@ -77,4 +77,3 @@ module.exports = {
 	getAthlete: getAthlete,
 	getActivities: getActivities
 };
-

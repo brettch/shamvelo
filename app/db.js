@@ -26,7 +26,7 @@ module.exports.start = function(url) {
 			console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
 			mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
 				if (err) console.log('Unable to retrieve items\n' + util.stringify(err));
-				else console.log('Successfully retrieved items\n' + util.stringify(items));
+				//else console.log('Successfully retrieved items\n' + util.stringify(items));
 				callback(err, items);
 			});
 		},
@@ -42,7 +42,7 @@ module.exports.start = function(url) {
 				{ upsert : true },
 				function(err) {
 					if (err) console.log('Unable to insert athlete\n' + util.stringify(err));
-					else console.log('Successfully inserted athlete ' + athlete.id);
+					//else console.log('Successfully inserted athlete ' + athlete.id);
 					callback(err);
 				}
 			);
@@ -57,7 +57,7 @@ module.exports.start = function(url) {
 				{ upsert: true },
 				function (err) {
 					if (err) console.log('Unable to insert token\n' + util.stringify(err));
-					else console.log('Successfully inserted token ' + id);
+					//else console.log('Successfully inserted token ' + id);
 					callback(err);
 				}
 			);
@@ -84,7 +84,7 @@ module.exports.start = function(url) {
 								console.log('Unable to insert activity\n' + util.stringify(err));
 								callback(err);
 							} else {
-								console.log('Successfully inserted activity ' + activity.id);
+								//console.log('Successfully inserted activity ' + activity.id);
 								insertActivity(activities, i + 1, callback);
 							}
 						}
@@ -97,4 +97,3 @@ module.exports.start = function(url) {
 		},
 	}
 };
-

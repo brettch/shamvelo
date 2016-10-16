@@ -351,7 +351,7 @@ function calculateFastestRide(leaderboard, activities, athletesById) {
 		var fastestRides = leaderboard.yearById[year].fastestRide;
 
 		var updateFastestRides = function() {
-			console.log('adding to list');
+			//console.log('adding to list');
 			// Add this activity to the list, sort, and keep the top 3.
 			fastestRides.push({
 				activity: activity,
@@ -417,7 +417,7 @@ function buildLeaderboard(athletes, activities) {
 	// Strip index objects out of the leaderboard.
 	stripIndexes(leaderboard);
 
-	console.log("leaderboard: " + util.stringify(leaderboard));
+	//console.log("leaderboard: " + util.stringify(leaderboard));
 
 	return leaderboard;
 }
