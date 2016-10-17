@@ -20,7 +20,7 @@ function getOAuthToken(code, callback) {
 			console.log("Received error from getToken service:\n" + util.stringify(err));
 			callback(err);
 		} else {
-			console.log("Received oauth payload:\n" + util.stringify(payload));
+			//console.log("Received oauth payload:\n" + util.stringify(payload));
 			callback(null, payload);
 		}
 	});
