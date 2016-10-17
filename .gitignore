@@ -1,3 +1,4 @@
 env.sh
 data/strava_config
 node_modules
+npm-debug.log
