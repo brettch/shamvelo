@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('underscore');
+const _ = require('underscore');
+const dateUtil = require('./date-util');
 
 function buildDateSet(activities, dateMapper) {
   var reduceFunction = function(resultSet, activity) {
@@ -17,57 +18,19 @@ function buildDateSet(activities, dateMapper) {
   return activities.reduce(reduceFunction, []);
 }
 
-// Get the year portion of the date as an integer.
-function yearFromDate(date) {
-  return date.getFullYear();
-}
-
 // Get the unique list of years present in the list of activities.
 function buildYearsSet(activities) {
-  return buildDateSet(activities, yearFromDate);
-}
-
-// Get the month of the date as an integer in format yyyymm.
-function monthFromDate(date) {
-  return date.getFullYear() * 100 + (date.getMonth() + 1);
-}
-
-// Get the year portion of an integer date in format yyyymm.
-function yearFromMonth(month) {
-  return Math.floor(month / 100);
+  return buildDateSet(activities, dateUtil.yearFromDate);
 }
 
 // Get the unique list of months present in the list of activities.
 function buildMonthsSet(activities) {
-  return buildDateSet(activities, monthFromDate);
-}
-
-// Get the week of the date as an integer in format yyyyww.
-function weekFromDate(date) {
-  // Clone the date so that we don't affect the provided date
-  var tmpDate = new Date(+date);
-  // Zero out time portion of the date.
-  tmpDate.setHours(0, 0, 0);
-  // Set the date to the nearest Thursday: current date + 4 - current day number
-  // Make Sunday day 7 instead of 0.
-  tmpDate.setDate(tmpDate.getDate() + 4 - (tmpDate.getDay() || 7));
-  // Get the first day of the same year.
-  var yearStart = new Date(tmpDate.getFullYear(),0,1);
-  // Calculate the number of weeks between the start of the year and the nearest Thursday.
-  var week = Math.ceil(( ( (tmpDate - yearStart) / 86400000) + 1) / 7);
-  // Return array of year and week number
-  // Return integer in format yyyyww.
-  return tmpDate.getFullYear() * 100 + week;
-}
-
-// Get the year portion of an integer date in format yyyyww.
-function yearFromWeek(week) {
-  return Math.floor(week / 100);
+  return buildDateSet(activities, dateUtil.monthFromDate);
 }
 
 // Get the unique list of weeks present in the list of activities.
 function buildWeeksSet(activities) {
-  return buildDateSet(activities, weekFromDate);
+  return buildDateSet(activities, dateUtil.weekFromDate);
 }
 
 // Create a map of athletes keyed by their id.
@@ -177,7 +140,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
       activityCount: summaries.slice(),
       summaryByAthleteId: summariesByAthleteId
     };
-    yearById[yearFromMonth(currentMonth)].month.push(monthObj);
+    yearById[dateUtil.yearFromMonth(currentMonth)].month.push(monthObj);
   });
   // Sort the month records by reverse chronological time, and create indexes of month objects by month id within each year.
   yearObj.forEach(function(yearRecord) {
@@ -205,7 +168,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
       activityCount: summaries.slice(),
       summaryByAthleteId: summariesByAthleteId
     };
-    yearById[yearFromWeek(currentWeek)].week.push(weekObj);
+    yearById[dateUtil.yearFromWeek(currentWeek)].week.push(weekObj);
   });
   // Sort the week records by reverse chronological time, and create indexes of week objects by week id within each year.
   yearObj.forEach(function(yearRecord) {
@@ -225,11 +188,11 @@ function calculateSummary(leaderboard, activities) {
   activities.forEach(function(activity) {
     // Get the year and month portions of the activity date.
     var date = new Date(activity.start_date);
-    var year = yearFromDate(date);
-    var month = monthFromDate(date);
-    var monthYear = yearFromMonth(month);
-    var week = weekFromDate(date);
-    var weekYear = yearFromWeek(week);
+    var year = dateUtil.yearFromDate(date);
+    var month = dateUtil.monthFromDate(date);
+    var monthYear = dateUtil.yearFromMonth(month);
+    var week = dateUtil.weekFromDate(date);
+    var weekYear = dateUtil.yearFromWeek(week);
 
     // Get all the distance records that the activity fits into.
     var summaryItems = [
@@ -300,7 +263,7 @@ function calculateWins(leaderboard) {
 function calculateLongestRide(leaderboard, activities, athletesById) {
   activities.forEach(function(activity) {
     var date = new Date(activity.start_date);
-    var year = yearFromDate(date);
+    var year = dateUtil.yearFromDate(date);
     var longestRideObj = leaderboard.yearById[year].longestRide;
 
     var updateLongestRide = function() {
@@ -346,7 +309,7 @@ function calculateFastestRide(leaderboard, activities, athletesById) {
 
   activities.forEach(function(activity) {
     var date = new Date(activity.start_date);
-    var year = yearFromDate(date);
+    var year = dateUtil.yearFromDate(date);
     var fastestRides = leaderboard.yearById[year].fastestRide;
 
     var updateFastestRides = function() {
