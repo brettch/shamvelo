@@ -2,7 +2,6 @@
   "name": "shamvelo",
   "version": "0.0.1",
   "description": "Shambolique Strava Statistics Analysis",
-  "main": "index.js",
   "author": {
     "name": "Brett Henderson",
     "email": "brett@bretth.com",
@@ -14,6 +13,7 @@
     "url": "git@github.com:brettch/shamvelo.git"
   },
   "scripts": {
+    "start": "node index.js",
     "lint": "./node_modules/eslint/bin/eslint.js *.js src/** test/**",
     "test": "./node_modules/mocha/bin/mocha"
   },
