@@ -1,0 +1,25 @@
+{
+  "name": "shamvelo",
+  "version": "0.0.1",
+  "description": "Shambolique Strava Statistics Analysis",
+  "author": {
+    "name": "Brett Henderson",
+    "email": "brett@bretth.com",
+    "url": "http://www.bretth.com"
+  },
+  "repository": {
+    "url": "git@github.com:brettch/shamvelo.git",
+    "type": "git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.15.2",
+    "strava-v3": "^1.12.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.9.0",
+    "mocha": "^3.1.2"
+  }
+}
