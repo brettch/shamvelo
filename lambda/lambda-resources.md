@@ -35,8 +35,8 @@
 # S3 Buckets
 
 * Tokens
-* Athlete Details
-* Athlete Activities
+* Athletes
+* Activities
 * Summary Views Bucket
   * Athlete List
   * Leaderboard
