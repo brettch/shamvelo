@@ -1,5 +1,20 @@
 'use strict';
 
+const register = require('./src/register');
+
+module.exports.getRegister = (event, context, callback) => {
+  const accessUrl = register.getOAuthRequestAccessUrl();
+
+  const response = {
+    statusCode: 302,
+    headers: {
+      location: accessUrl
+    }
+  };
+
+  callback(null, response);
+};
+
 module.exports.hello = (event, context, callback) => {
   const response = {
     statusCode: 200,
