@@ -17,8 +17,10 @@
     "test": "./node_modules/mocha/bin/mocha"
   },
   "dependencies": {
+    "aws-sdk": "^2.6.15",
     "dotenv": "^2.0.0",
     "moment": "^2.15.2",
+    "rx": "^4.1.0",
     "strava-v3": "^1.12.1",
     "underscore": "^1.8.3"
   },

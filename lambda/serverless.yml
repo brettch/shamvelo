@@ -49,11 +49,17 @@ provider:
 #  artifact: my-service-code.zip
 
 functions:
-  register:
+  getRegisterRedirect:
     handler: handler.getRegister
     events:
       - http:
           path: register
+          method: get
+  getRegisterCode:
+    handler: handler.getRegisterCode
+    events:
+      - http:
+          path: registercode
           method: get
   hello:
     handler: handler.hello

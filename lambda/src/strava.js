@@ -1,28 +1,34 @@
 'use strict';
 
+module.exports = {
+  getOAuthRequestAccessUrl,
+  getOAuthToken,
+  getAthlete,
+  getActivities
+};
+
 require('./config');
 
-var strava = require('strava-v3');
+const Rx = require('rx');
+const strava = require('strava-v3');
+const util = require('./util');
 
-var util = require('./util');
+const rxo = Rx.Observable;
 
 function getOAuthRequestAccessUrl() {
-  console.log('Generating OAuth request access URL');
-  var accessUrl = strava.oauth.getRequestAccessURL({});
-  console.log('Access URL: ' + accessUrl);
-  return accessUrl;
+  return strava.oauth.getRequestAccessURL({});
 }
 
-function getOAuthToken(code, callback) {
-  console.log('Getting OAuth token based on temporary code ' + code);
-  strava.oauth.getToken(code, function(err, payload) {
-    if (err) {
-      console.log('Received error from getToken service:\n' + util.stringify(err));
-      callback(err);
-    } else {
-      //console.log("Received oauth payload:\n" + util.stringify(payload));
-      callback(null, payload);
-    }
+function getOAuthToken(code) {
+  return rxo.create(observer => {
+    strava.oauth.getToken(code, function(err, payload) {
+      if (err) {
+        observer.onError(err);
+      } else {
+        observer.onNext(payload);
+        observer.onCompleted();
+      }
+    });
   });
 }
 
@@ -70,10 +76,3 @@ function getActivities(token, pageCallback, callback) {
   // Begin retrieving pages from page 1.
   getActivityPage(1);
 }
-
-module.exports = {
-  getOAuthRequestAccessUrl: getOAuthRequestAccessUrl,
-  getOAuthToken: getOAuthToken,
-  getAthlete: getAthlete,
-  getActivities: getActivities
-};
