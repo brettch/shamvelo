@@ -2,3 +2,7 @@
 
 // Load strava environment variables.
 require('dotenv').config();
+
+module.exports = {
+  environment: 'prod'
+};

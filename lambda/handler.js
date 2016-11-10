@@ -7,13 +7,15 @@ module.exports = {
   hello
 };
 
+const athlete = require('./src/athlete');
+const config = require('./src/config');
 const register = require('./src/register');
 const Rx = require('rx');
 
 const rxo = Rx.Observable;
 
 function getRegister(event, context, callback) {
-  configureStravaApi(event);
+  initConfig(event);
 
   const accessUrl = register.getOAuthRequestAccessUrl();
 
@@ -28,7 +30,7 @@ function getRegister(event, context, callback) {
 }
 
 function getRegisterCode(event, context, callback) {
-  configureStravaApi(event);
+  initConfig(event);
 
   rxo.of(event)
     .map(getCode)
@@ -58,7 +60,7 @@ function getRegisterCode(event, context, callback) {
 }
 
 function getRegisterToken(event, context, callback) {
-  configureStravaApi(event);
+  initConfig(event);
 
   rxo.of(event)
     .map(getToken)
@@ -102,7 +104,7 @@ function hello(event, context, callback) {
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 }
 
-function configureStravaApi(event) {
-  // Dynamically determine the endpoint based on the current request.
+function initConfig(event) {
   process.env.STRAVA_REDIRECT_URI = `https://${event.headers.Host}/registercode`;
+  config.environment = event.requestContext.stage;
 }

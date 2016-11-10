@@ -7,6 +7,7 @@ module.exports = {
 };
 
 const AWS = require('aws-sdk');
+const config = require('./config');
 const Rx = require('rx');
 const strava = require('./strava');
 
@@ -30,8 +31,8 @@ function registerAthleteWithToken(oauthToken) {
 
 function saveAthleteAndTokenToS3(athlete, oauthToken) {
   return rxo.concat(
-    saveObjectToS3('shamvelo-prod-athlete', '' + athlete.id, JSON.stringify(athlete)),
-    saveObjectToS3('shamvelo-prod-token', '' + athlete.id, oauthToken)
+    saveObjectToS3(`shamvelo-${config.environment}-athlete`, '' + athlete.id, JSON.stringify(athlete)),
+    saveObjectToS3(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
   ).last().map(() => {});
 }
 
