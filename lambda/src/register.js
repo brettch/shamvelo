@@ -2,7 +2,8 @@
 
 module.exports = {
   getOAuthRequestAccessUrl,
-  registerAthlete
+  registerAthleteWithCode,
+  registerAthleteWithToken
 };
 
 const AWS = require('aws-sdk');
@@ -15,16 +16,22 @@ function getOAuthRequestAccessUrl() {
   return strava.getOAuthRequestAccessUrl();
 }
 
-function registerAthlete(stravaCode) {
+function registerAthleteWithCode(stravaCode) {
   console.log(`Registering athlete with code ${stravaCode}`);
   return strava.getOAuthToken(stravaCode)
-    .flatMap(saveRegistrationPayloadToS3);
+    .flatMap(payload => registerAthleteWithToken(payload.access_token));
 }
 
-function saveRegistrationPayloadToS3(payload) {
+function registerAthleteWithToken(oauthToken) {
+  console.log(`Registering athlete with token ${oauthToken}`);
+  return strava.getAthlete(oauthToken)
+    .flatMap(athlete => saveAthleteAndTokenToS3(athlete, oauthToken));
+}
+
+function saveAthleteAndTokenToS3(athlete, oauthToken) {
   return rxo.concat(
-    saveObjectToS3('shamvelo-prod-athlete', '' + payload.athlete.id, JSON.stringify(payload.athlete)),
-    saveObjectToS3('shamvelo-prod-token', '' + payload.athlete.id, payload.access_token)
+    saveObjectToS3('shamvelo-prod-athlete', '' + athlete.id, JSON.stringify(athlete)),
+    saveObjectToS3('shamvelo-prod-token', '' + athlete.id, oauthToken)
   ).last().map(() => {});
 }
 

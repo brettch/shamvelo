@@ -3,6 +3,7 @@
 module.exports = {
   getRegister,
   getRegisterCode,
+  getRegisterToken,
   hello
 };
 
@@ -31,7 +32,7 @@ function getRegisterCode(event, context, callback) {
 
   rxo.of(event)
     .map(getCode)
-    .flatMap(register.registerAthlete)
+    .flatMap(register.registerAthleteWithCode)
     .subscribe(
       success,
       callback,
@@ -44,6 +45,36 @@ function getRegisterCode(event, context, callback) {
       throw new Error('Query parameter "code" is missing');
     }
     return code;
+  }
+
+  function success() {
+    callback(null, {
+      statusCode: 302,
+      headers: {
+        location: './'
+      }
+    });
+  }
+}
+
+function getRegisterToken(event, context, callback) {
+  configureStravaApi(event);
+
+  rxo.of(event)
+    .map(getToken)
+    .flatMap(register.registerAthleteWithToken)
+    .subscribe(
+      success,
+      callback,
+      () => {}
+    );
+
+  function getToken(event) {
+    const token = event.queryStringParameters.token;
+    if (token == null) {
+      throw new Error('Query parameter "token" is missing');
+    }
+    return token;
   }
 
   function success() {

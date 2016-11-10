@@ -32,16 +32,16 @@ function getOAuthToken(code) {
   });
 }
 
-function getAthlete(token, callback) {
-  console.log('Getting athlete with token ' + token);
-  strava.athlete.get({ 'access_token': token }, function(err, payload) {
-    if (err) {
-      console.log('Received error from athlete.get service:\n' + util.stringify(err));
-      callback(err);
-    } else {
-      //console.log("Received athlete payload:\n" + util.stringify(payload));
-      callback(null, payload);
-    }
+function getAthlete(token) {
+  return rxo.create(observer => {
+    strava.athlete.get({ 'access_token': token }, function(err, payload) {
+      if (err) {
+        observer.onError(err);
+      } else {
+        observer.onNext(payload);
+        observer.onCompleted();
+      }
+    });
   });
 }
 

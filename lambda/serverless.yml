@@ -73,6 +73,12 @@ functions:
       - http:
           path: registercode
           method: get
+  getRegisterToken:
+    handler: handler.getRegisterToken
+    events:
+      - http:
+          path: registertoken
+          method: get
   hello:
     handler: handler.hello
 
