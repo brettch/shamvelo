@@ -6,9 +6,9 @@ module.exports = {
   registerAthleteWithToken
 };
 
-const AWS = require('aws-sdk');
 const config = require('./config');
 const Rx = require('rx');
+const s3 = require('./s3');
 const strava = require('./strava');
 
 const rxo = Rx.Observable;
@@ -26,24 +26,12 @@ function registerAthleteWithCode(stravaCode) {
 function registerAthleteWithToken(oauthToken) {
   console.log(`Registering athlete with token ${oauthToken}`);
   return strava.getAthlete(oauthToken)
-    .flatMap(athlete => saveAthleteAndTokenToS3(athlete, oauthToken));
+    .flatMap(athlete => saveAthleteAndToken(athlete, oauthToken));
 }
 
-function saveAthleteAndTokenToS3(athlete, oauthToken) {
+function saveAthleteAndToken(athlete, oauthToken) {
   return rxo.concat(
-    saveObjectToS3(`shamvelo-${config.environment}-athlete`, '' + athlete.id, JSON.stringify(athlete)),
-    saveObjectToS3(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
+    s3.upload(`shamvelo-${config.environment}-athlete`, '' + athlete.id, JSON.stringify(athlete)),
+    s3.upload(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
   ).last().map(() => {});
-}
-
-function saveObjectToS3(bucket, key, body) {
-  console.log(`Saving object to S3. ${bucket}:${key}`);
-  const params = {
-    Bucket: bucket,
-    Key: '' + key,
-    Body: body
-  };
-  const s3 = new AWS.S3();
-  const upload = s3.upload(params);
-  return Rx.Observable.fromNodeCallback(upload.send, upload)();
 }
