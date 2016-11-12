@@ -4,12 +4,13 @@ module.exports = {
   getRegister,
   getRegisterCode,
   getRegisterToken,
+  buildHomeView,
   hello
 };
 
-const athlete = require('./src/athlete');
 const config = require('./src/config');
 const register = require('./src/register');
+const home = require('./src/home');
 const Rx = require('rx');
 
 const rxo = Rx.Observable;
@@ -87,6 +88,17 @@ function getRegisterToken(event, context, callback) {
       }
     });
   }
+}
+
+function buildHomeView(event, context, callback) {
+  initConfig(event);
+
+  home.buildView()
+    .subscribe(
+      () => callback(),
+      callback,
+      () => {}
+    );
 }
 
 function hello(event, context, callback) {

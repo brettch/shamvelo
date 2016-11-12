@@ -79,6 +79,10 @@ functions:
       - http:
           path: registertoken
           method: get
+  buildHomeView:
+    handler: handler.buildHomeView
+    events:
+      - s3: ${self:service}-${self:provider.stage}-athlete
   hello:
     handler: handler.hello
 

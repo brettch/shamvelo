@@ -38,5 +38,5 @@
 * Athletes
 * Activities
 * Summary Views Bucket
-  * Athlete List
+  * Home and Athlete List
   * Leaderboard
