@@ -7,6 +7,7 @@ module.exports = {
 const _ = require('lodash');
 const config = require('./config');
 const s3 = require('./s3');
+const template = require('./src/template');
 
 function buildView() {
   return s3.loadObjects(`shamvelo-${config.environment}-athlete`)
@@ -17,5 +18,5 @@ function buildView() {
 }
 
 function renderView(athletes) {
-  return '<html>dummy view</html>';
+  return template.render('home', athletes);
 }
