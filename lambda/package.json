@@ -19,6 +19,8 @@
   "dependencies": {
     "aws-sdk": "^2.6.15",
     "dotenv": "^2.0.0",
+    "handlebars": "^4.0.5",
+    "lodash": "^4.16.6",
     "moment": "^2.15.2",
     "rx": "^4.1.0",
     "strava-v3": "^1.12.1",
