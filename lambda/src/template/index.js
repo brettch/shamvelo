@@ -7,7 +7,9 @@ const Rx = require('rx');
 
 const readFile = Rx.Observable.fromNodeCallback(fs.readFile);
 
-module.exports.create = render;
+module.exports = {
+  render
+};
 
 function render(templateName, content) {
   return readFile(path.join(__dirname, templateName + '.handlebars'), 'utf8')
