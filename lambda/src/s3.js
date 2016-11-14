@@ -3,7 +3,7 @@
 module.exports = {
   loadObjects,
   listObjects,
-  loadObject,
+  getObject,
   upload
 };
 
@@ -14,7 +14,7 @@ const rxo = Rx.Observable;
 
 function loadObjects(bucket) {
   return listObjects(bucket)
-    .flatMap(object => loadObject(object.Key));
+    .flatMap(key => getObject(bucket, key));
 }
 
 function listObjects(bucket, continuationToken) {
@@ -35,17 +35,17 @@ function listObjects(bucket, continuationToken) {
         return currentResult;
       }
     })
-    .map(entry => entry.key);
+    .map(entry => entry.Key);
 }
 
-function loadObject(bucket, key) {
-  console.log(`Retrieving object from S3. ${bucket}:${key}`);
+function getObject(bucket, key) {
+  console.log(`Getting object from S3. ${bucket}:${key}`);
   const params = {
     Bucket: bucket,
     Key: key
   };
   const s3 = new AWS.S3();
-  const loadObject = s3.loadObject(params);
+  const loadObject = s3.getObject(params);
   return rxo.fromNodeCallback(loadObject.send, loadObject)()
     .map(data => data.Body);
 }
