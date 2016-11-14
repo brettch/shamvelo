@@ -83,9 +83,12 @@ functions:
     handler: handler.buildHomeView
     events:
       - s3: ${self:service}-${self:provider.stage}-athlete
+  buildAthleteView:
+    handler: handler.buildAthleteView
+    events:
+      - s3: ${self:service}-${self:provider.stage}-athlete
   hello:
     handler: handler.hello
-
     events:
       - http:
           path: hello

@@ -5,9 +5,11 @@ module.exports = {
   getRegisterCode,
   getRegisterToken,
   buildHomeView,
+  buildAthleteView,
   hello
 };
 
+const athlete = require('./src/athlete');
 const config = require('./src/config');
 const register = require('./src/register');
 const home = require('./src/home');
@@ -94,6 +96,19 @@ function buildHomeView(event, context, callback) {
   initConfig(event);
 
   home.buildView()
+    .subscribe(
+      () => callback(),
+      callback,
+      () => {}
+    );
+}
+
+function buildAthleteView(event, context, callback) {
+  initConfig(event);
+
+  const athleteId = event.s3.object.key;
+
+  athlete.buildView(athleteId)
     .subscribe(
       () => callback(),
       callback,
