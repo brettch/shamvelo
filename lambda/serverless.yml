@@ -31,28 +31,40 @@ provider:
   iamRoleStatements:
     - Effect: "Allow"
       Action:
-        - "s3:ListBucket"
         - "s3:GetObject"
         - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodactivity" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodactivity" } ] ] }
+    - Effect: "Allow"
+      Action:
         - "s3:GetObject"
         - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodathlete" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodathlete" } ] ] }
+    - Effect: "Allow"
+      Action:
         - "s3:GetObject"
         - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodtoken" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodtoken" } ] ] }
+    - Effect: "Allow"
+      Action:
         - "s3:GetObject"
         - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodview" }, "/*" ] ] }
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodview" } ] ] }
 
 # you can add packaging information here
 #package:
