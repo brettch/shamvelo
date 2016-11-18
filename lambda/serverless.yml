@@ -93,6 +93,12 @@ functions:
     handler: handler.buildAthleteView
     events:
       - sns: ${self:service}-${self:provider.stage}-athlete
+  getAthleteView:
+    handler: handler.getAthleteView
+    events:
+      - http:
+          path: athlete/{athleteId}
+          method: get
   hello:
     handler: handler.hello
     events:

@@ -7,6 +7,7 @@ module.exports = {
   buildHomeView,
   getHomeView,
   buildAthleteView,
+  getAthleteView,
   hello
 };
 
@@ -135,6 +136,26 @@ function buildAthleteView(event, context, callback) {
       callback,
       () => {}
     );
+}
+
+function getAthleteView(event, context, callback) {
+  initConfig(event);
+
+  athlete.getView(event.pathParameters.athleteId)
+    .subscribe(
+      success,
+      callback,
+      () => {}
+    );
+
+  function success(content) {
+    callback(null, {
+      headers: {
+        'Content-Type': 'text/html'
+      },
+      body: content
+    });
+  }
 }
 
 function hello(event, context, callback) {

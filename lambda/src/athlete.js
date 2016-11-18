@@ -1,7 +1,8 @@
 'use strict';
 
 module.exports = {
-  buildView
+  buildView,
+  getView
 };
 
 const config = require('./config');
@@ -18,4 +19,9 @@ function buildView(athleteId) {
 
 function renderView(athlete) {
   return template.render('athlete', { athlete });
+}
+
+function getView(athleteId) {
+  return s3.getObject(`shamvelo-${config.environment}-view`, `athlete/${athleteId}`)
+    .map(buffer => buffer.toString());
 }
