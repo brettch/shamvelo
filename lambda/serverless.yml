@@ -34,25 +34,25 @@ provider:
         - "s3:ListBucket"
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ActivityBucket" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodactivity" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "AthleteBucket" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodathlete" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "TokenBucket" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodtoken" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ViewBucket" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodview" }, "/*" ] ] }
 
 # you can add packaging information here
 #package:
@@ -97,19 +97,20 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   Resources:
-    ActivityBucket:
+    S3BucketShamveloprodactivity:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-activity
-    AthleteBucket:
+    S3BucketShamveloprodathlete:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-athlete
-    TokenBucket:
+                Ref: SNSTopicShamveloprodathlete
+    S3BucketShamveloprodtoken:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-token
-    ViewBucket:
+    S3BucketShamveloprodview:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-view
