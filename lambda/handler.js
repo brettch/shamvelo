@@ -11,8 +11,8 @@ module.exports = {
   hello
 };
 
+require('./src/config');
 const athlete = require('./src/athlete');
-const config = require('./src/config');
 const register = require('./src/register');
 const home = require('./src/home');
 const Rx = require('rx');
@@ -128,9 +128,19 @@ function getHomeView(event, context, callback) {
 function buildAthleteView(event, context, callback) {
   initConfig(event);
 
-  const athleteId = event.s3.object.key;
-
-  athlete.buildView(athleteId)
+  // Iterate over all records in the event.
+  rxo.from(event.Records)
+    // The record contains an SNS message as a JSON string
+    .map(record => record.Sns.Message)
+    .map(JSON.parse)
+    // Iterate over all records in the SNS message
+    .flatMap(snsMessage => rxo.from(snsMessage.Records))
+    // Get the S3 event
+    .map(record => record.s3)
+    // The S3 object key is the athlete id
+    .map(s3Message => s3Message.object.key)
+    // Build the view for the newly added/modified athlete
+    .flatMap(athlete.buildView)
     .subscribe(
       () => callback(),
       callback,
@@ -174,6 +184,7 @@ function hello(event, context, callback) {
 }
 
 function initConfig(event) {
-  process.env.STRAVA_REDIRECT_URI = `https://${event.headers.Host}/registercode`;
-  config.environment = event.requestContext.stage;
+  if (event.headers && event.headers.Host) {
+    process.env.STRAVA_REDIRECT_URI = `https://${event.headers.Host}/registercode`;
+  }
 }
