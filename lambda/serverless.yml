@@ -82,11 +82,17 @@ functions:
   buildHomeView:
     handler: handler.buildHomeView
     events:
-      - s3: ${self:service}-${self:provider.stage}-athlete
+      - sns: ${self:service}-${self:provider.stage}-athlete
+  getHomeView:
+    handler: handler.getHomeView
+    events:
+      - http:
+          path: home
+          method: get
   buildAthleteView:
     handler: handler.buildAthleteView
     events:
-      - s3: ${self:service}-${self:provider.stage}-athlete
+      - sns: ${self:service}-${self:provider.stage}-athlete
   hello:
     handler: handler.hello
     events:
@@ -105,6 +111,10 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-athlete
+        NotificationConfiguration:
+          TopicConfigurations:
+            - Event: s3:ObjectCreated:*
+              Topic:
                 Ref: SNSTopicShamveloprodathlete
     S3BucketShamveloprodtoken:
       Type: AWS::S3::Bucket
@@ -114,6 +124,32 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-view
+    SNSTopicShamveloprodathlete:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-${self:provider.stage}-athlete
+
+    IamPolicyAthleteTopic:
+      Type: AWS::SNS::TopicPolicy
+      Properties:
+        PolicyDocument:
+          Id: AthleteBucketNotificationPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: AllowBucketToNotifyAthleteUpload
+              Effect: Allow
+              Principal:
+                Service: s3.amazonaws.com
+              Action:
+                - sns:Publish
+              Resource:
+                Ref: SNSTopicShamveloprodathlete
+              Condition:
+                ArnLike:
+                  aws:SourceArn: arn:aws:s3:*:*:${self:service}-${self:provider.stage}-athlete
+        Topics:
+          - Ref: SNSTopicShamveloprodathlete
+
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

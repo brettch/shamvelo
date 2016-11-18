@@ -5,6 +5,7 @@ module.exports = {
   getRegisterCode,
   getRegisterToken,
   buildHomeView,
+  getHomeView,
   buildAthleteView,
   hello
 };
@@ -101,6 +102,26 @@ function buildHomeView(event, context, callback) {
       callback,
       () => {}
     );
+}
+
+function getHomeView(event, context, callback) {
+  initConfig(event);
+
+  home.getView()
+    .subscribe(
+      success,
+      callback,
+      () => {}
+    );
+
+  function success(content) {
+    callback(null, {
+      headers: {
+        'Content-Type': 'text/html'
+      },
+      body: content
+    });
+  }
 }
 
 function buildAthleteView(event, context, callback) {
