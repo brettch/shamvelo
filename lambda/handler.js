@@ -13,7 +13,7 @@ module.exports = {
 };
 
 require('./src/config');
-const activity = require('./activity');
+const activity = require('./src/activity');
 const athlete = require('./src/athlete');
 const register = require('./src/register');
 const home = require('./src/home');
