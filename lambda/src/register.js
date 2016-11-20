@@ -3,7 +3,8 @@
 module.exports = {
   getOAuthRequestAccessUrl,
   registerAthleteWithCode,
-  registerAthleteWithToken
+  registerAthleteWithToken,
+  getTokenForAthlete,
 };
 
 const config = require('./config');
@@ -34,4 +35,9 @@ function saveAthleteAndToken(athlete, oauthToken) {
     s3.upload(`shamvelo-${config.environment}-athlete`, '' + athlete.id, JSON.stringify(athlete)),
     s3.upload(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
   ).last().map(() => {});
+}
+
+function getTokenForAthlete(athleteId) {
+  return s3.getObject(`shamvelo-${config.environment}-token`, athleteId)
+    .map(buffer => buffer.toString());
 }
