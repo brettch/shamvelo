@@ -11,7 +11,6 @@ require('./config');
 
 const Rx = require('rx');
 const strava = require('strava-v3');
-const util = require('./util');
 
 const rxo = Rx.Observable;
 
@@ -45,34 +44,37 @@ function getAthlete(token) {
   });
 }
 
-function getActivities(token, pageCallback, callback) {
-  console.log('Getting athlete activities with token ' + token);
-  // Create recursive function to retrieve all activity pages.
-  var getActivityPage = function(page) {
-    console.log('Getting athlete activities page ' + page);
-    strava.athlete.listActivities(
-      {
+function getActivities(token) {
+  return getActivitiesFromPage(1);
+
+  function getActivitiesFromPage(page) {
+    return getActivitiesAtPage(page)
+      .flatMap(activities => {
+        const obsArrActivities = [];
+        obsArrActivities.push(rxo.from(activities));
+        //if (activities.length > 0) {
+        //  obsArrActivities.push(getActivitiesFromPage(page + 1));
+        //}
+        return rxo.concat(obsArrActivities);
+      });
+  }
+
+  function getActivitiesAtPage(page) {
+    console.log('Getting athlete activities page', page);
+
+    return rxo.create(observer => {
+      strava.athlete.listActivities({
         'access_token': token,
         'page': page,
         'per_page': 100
-      },
-      function(err, payload) {
+      }, function(err, activities) {
         if (err) {
-          console.log('Received error from athlete.listActivities service:\n' + util.stringify(err));
-          callback(err);
+          observer.onError(err);
         } else {
-          //console.log("Received activities payload:\n" + util.stringify(payload));
-          if (payload.length > 0) {
-            pageCallback(payload, function(err) {
-              if (err) callback(err);
-              else getActivityPage(page + 1);
-            });
-          } else callback(null);
+          observer.onNext(activities);
+          observer.onCompleted();
         }
-      }
-    );
-  };
-
-  // Begin retrieving pages from page 1.
-  getActivityPage(1);
+      });
+    });
+  }
 }
