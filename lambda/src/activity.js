@@ -3,7 +3,8 @@
 module.exports = {
   getActivitiesForAthlete,
   refreshAllActivities,
-  refreshActivitiesForAthlete
+  refreshActivitiesForAthlete,
+  getAll
 };
 
 const athlete = require('./athlete');
@@ -54,4 +55,10 @@ function refreshActivitiesForAthlete(athleteId) {
 function getActivitiesForAthlete(athleteId) {
   return s3.getObject(`shamvelo-${config.environment}-activity`, athleteId)
     .map(object => JSON.parse(object.toString()));
+}
+
+function getAll() {
+  return s3.loadObjects(`shamvelo-${config.environment}-activity`)
+    .map(JSON.parse)
+    .flatMap(activities => rxo.from(activities));
 }

@@ -115,6 +115,16 @@ functions:
     handler: handler.refreshAllActivities
     events:
       - schedule: rate(1 hour)
+  buildLeaderboardView:
+    handler: handler.buildLeaderboardView
+    events:
+      - s3: ${self:service}-${self:provider.stage}-activity
+  getLeaderboardView:
+    handler: handler.getLeaderboardView
+    events:
+      - http:
+          path: leaderboard
+          method: get
   hello:
     handler: handler.hello
     events:

@@ -9,6 +9,8 @@ module.exports = {
   buildAthleteView,
   getAthleteView,
   refreshAllActivities,
+  buildLeaderboardView,
+  getLeaderboardView,
   hello
 };
 
@@ -17,6 +19,7 @@ const activity = require('./src/activity');
 const athlete = require('./src/athlete');
 const register = require('./src/register');
 const home = require('./src/home');
+const leaderboard = require('./src/leaderboard');
 const Rx = require('rx');
 
 const rxo = Rx.Observable;
@@ -132,6 +135,22 @@ function refreshAllActivities(event, context, callback) {
   activity
     .refreshAllActivities()
     .subscribe(createBasicSubscriber(callback));
+}
+
+function buildLeaderboardView(event, context, callback) {
+  initConfig(event);
+
+  leaderboard
+    .buildView()
+    .subscribe(createBasicSubscriber(callback));
+}
+
+function getLeaderboardView(event, context, callback) {
+  initConfig(event);
+
+  leaderboard
+    .getView()
+    .subscribe(createHtmlSubscriber(callback));
 }
 
 function hello(event, context, callback) {
