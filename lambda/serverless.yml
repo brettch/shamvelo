@@ -115,6 +115,10 @@ functions:
     handler: handler.refreshAllActivities
     events:
       - schedule: rate(1 hour)
+  refreshAthleteActivitiesOnAthleteChange:
+    handler: handler.refreshAthleteActivitiesOnAthleteChange
+    events:
+      - sns: ${self:service}-${self:provider.stage}-athlete
   buildLeaderboardView:
     handler: handler.buildLeaderboardView
     events:

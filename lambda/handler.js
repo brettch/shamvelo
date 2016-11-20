@@ -9,6 +9,7 @@ module.exports = {
   buildAthleteView,
   getAthleteView,
   refreshAllActivities,
+  refreshAthleteActivitiesOnAthleteChange,
   buildLeaderboardView,
   getLeaderboardView,
   hello
@@ -134,6 +135,25 @@ function refreshAllActivities(event, context, callback) {
 
   activity
     .refreshAllActivities()
+    .subscribe(createBasicSubscriber(callback));
+}
+
+function refreshAthleteActivitiesOnAthleteChange(event, context, callback) {
+  initConfig(event);
+
+  // Iterate over all records in the event.
+  rxo.from(event.Records)
+    // The record contains an SNS message as a JSON string
+    .map(record => record.Sns.Message)
+    .map(JSON.parse)
+    // Iterate over all records in the SNS message
+    .flatMap(snsMessage => rxo.from(snsMessage.Records))
+    // Get the S3 event
+    .map(record => record.s3)
+    // The S3 object key is the athlete id
+    .map(s3Message => s3Message.object.key)
+    // Refresh the activities for the athlete
+    .flatMap(activity.refreshActivitiesForAthlete)
     .subscribe(createBasicSubscriber(callback));
 }
 
