@@ -111,6 +111,10 @@ functions:
       - http:
           path: athlete/{athleteId}
           method: get
+  refreshAllActivities:
+    handler: handler.refreshAllActivities
+    events:
+      - schedule: rate(1 hours)
   hello:
     handler: handler.hello
     events:

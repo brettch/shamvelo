@@ -8,10 +8,12 @@ module.exports = {
   getHomeView,
   buildAthleteView,
   getAthleteView,
+  refreshAllActivities,
   hello
 };
 
 require('./src/config');
+const activity = require('./activity');
 const athlete = require('./src/athlete');
 const register = require('./src/register');
 const home = require('./src/home');
@@ -122,7 +124,14 @@ function getAthleteView(event, context, callback) {
   athlete
     .getView(event.pathParameters.athleteId)
     .subscribe(createHtmlSubscriber(callback));
+}
 
+function refreshAllActivities(event, context, callback) {
+  initConfig(event);
+
+  activity
+    .refreshAllActivities()
+    .subscribe(createBasicSubscriber(callback));
 }
 
 function hello(event, context, callback) {

@@ -2,13 +2,20 @@
 
 module.exports = {
   getActivitiesForAthlete,
+  refreshAllActivities,
   refreshActivitiesForAthlete
 };
 
+const athlete = require('./athlete');
 const config = require('./config');
 const register = require('./register');
 const s3 = require('./s3');
 const strava = require('./strava');
+
+function refreshAllActivities() {
+  return athlete.getIds()
+    .flatMap(refreshActivitiesForAthlete);
+}
 
 function refreshActivitiesForAthlete(athleteId) {
   console.log('Refreshing athlete activities ' + athleteId);
