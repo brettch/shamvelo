@@ -52,9 +52,9 @@ function getActivities(token) {
       .flatMap(activities => {
         const obsArrActivities = [];
         obsArrActivities.push(rxo.from(activities));
-        //if (activities.length > 0) {
-        //  obsArrActivities.push(getActivitiesFromPage(page + 1));
-        //}
+        if (activities.length > 0) {
+          obsArrActivities.push(getActivitiesFromPage(page + 1));
+        }
         return rxo.concat(obsArrActivities);
       });
   }
