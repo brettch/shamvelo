@@ -2,7 +2,8 @@
 
 module.exports = {
   buildView,
-  getView
+  getView,
+  getIds
 };
 
 const config = require('./config');
@@ -24,4 +25,8 @@ function renderView(athlete) {
 function getView(athleteId) {
   return s3.getObject(`shamvelo-${config.environment}-view`, `athlete/${athleteId}`)
     .map(buffer => buffer.toString());
+}
+
+function getIds() {
+  return s3.listObjects(`shamvelo-${config.environment}-athlete`);
 }
