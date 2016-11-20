@@ -70,11 +70,7 @@ function getRegisterToken(event, context, callback) {
   rxo.of(event)
     .map(getToken)
     .flatMap(register.registerAthleteWithToken)
-    .subscribe(
-      success,
-      callback,
-      () => {}
-    );
+    .subscribe(createHttpRedirectSubscriber(callback, './'));
 
   function getToken(event) {
     const token = event.queryStringParameters.token;
@@ -83,46 +79,22 @@ function getRegisterToken(event, context, callback) {
     }
     return token;
   }
-
-  function success() {
-    callback(null, {
-      statusCode: 302,
-      headers: {
-        location: './'
-      }
-    });
-  }
 }
 
 function buildHomeView(event, context, callback) {
   initConfig(event);
 
-  home.buildView()
-    .subscribe(
-      () => callback(),
-      callback,
-      () => {}
-    );
+  home
+    .buildView()
+    .subscribe(createBasicSubscriber(callback));
 }
 
 function getHomeView(event, context, callback) {
   initConfig(event);
 
-  home.getView()
-    .subscribe(
-      success,
-      callback,
-      () => {}
-    );
-
-  function success(content) {
-    callback(null, {
-      headers: {
-        'Content-Type': 'text/html'
-      },
-      body: content
-    });
-  }
+  home
+    .getView()
+    .subscribe(createHtmlSubscriber(callback));
 }
 
 function buildAthleteView(event, context, callback) {
@@ -141,31 +113,16 @@ function buildAthleteView(event, context, callback) {
     .map(s3Message => s3Message.object.key)
     // Build the view for the newly added/modified athlete
     .flatMap(athlete.buildView)
-    .subscribe(
-      () => callback(),
-      callback,
-      () => {}
-    );
+    .subscribe(createBasicSubscriber(callback));
 }
 
 function getAthleteView(event, context, callback) {
   initConfig(event);
 
-  athlete.getView(event.pathParameters.athleteId)
-    .subscribe(
-      success,
-      callback,
-      () => {}
-    );
+  athlete
+    .getView(event.pathParameters.athleteId)
+    .subscribe(createHtmlSubscriber(callback));
 
-  function success(content) {
-    callback(null, {
-      headers: {
-        'Content-Type': 'text/html'
-      },
-      body: content
-    });
-  }
 }
 
 function hello(event, context, callback) {
@@ -181,6 +138,40 @@ function hello(event, context, callback) {
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
+}
+
+function createBasicSubscriber(callback) {
+  return Rx.Observer.create(
+    () => callback(),
+    callback,
+    () => {}
+  );
+}
+
+function createHtmlSubscriber(callback) {
+  return Rx.Observer.create(
+    content => callback(null, {
+      headers: {
+        'Content-Type': 'text/html'
+      },
+      body: content
+    }),
+    callback,
+    () => {}
+  );
+}
+
+function createHttpRedirectSubscriber(callback, location) {
+  return Rx.Observer.create(
+    () => callback(null, {
+      statusCode: 302,
+      headers: {
+        location: location
+      }
+    }),
+    callback,
+    () => {}
+  );
 }
 
 function initConfig(event) {
