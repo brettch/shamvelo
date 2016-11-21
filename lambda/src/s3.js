@@ -13,30 +13,36 @@ const Rx = require('rx');
 
 const rxo = Rx.Observable;
 
-function loadObjects(bucket) {
-  return listObjects(bucket)
+function loadObjects(bucket, prefix) {
+  return listObjects(bucket, prefix)
     .flatMap(key => getObject(bucket, key));
 }
 
-function listObjects(bucket, continuationToken) {
-  console.log(`Listing objects in S3. ${bucket} from ${continuationToken}`);
-  const params = {
-    Bucket: bucket,
-    ContinuationToken: continuationToken
-  };
-  const s3 = new AWS.S3();
-  const listObjects = s3.listObjectsV2(params);
-  return rxo.fromNodeCallback(listObjects.send, listObjects)()
-    .flatMap(data => {
-      const currentResult = rxo.from(data.Contents);
-      if (data.IsTruncated) {
-        return rxo.merge(currentResult, listObjects(bucket, data.NextContinuationToken)
-        );
-      } else {
-        return currentResult;
-      }
-    })
-    .map(entry => entry.Key);
+function listObjects(bucket, prefix) {
+  console.log(`Listing objects in S3. ${bucket} prefix ${prefix}`);
+  return listObjectsImpl();
+
+  function listObjectsImpl(continuationToken) {
+    console.log(`Listing objects in S3. ${bucket} from ${continuationToken}`);
+    const params = {
+      Bucket: bucket,
+      ContinuationToken: continuationToken,
+      Prefix: prefix
+    };
+    const s3 = new AWS.S3();
+    const listObjects = s3.listObjectsV2(params);
+    return rxo.fromNodeCallback(listObjects.send, listObjects)()
+      .flatMap(data => {
+        const currentResult = rxo.from(data.Contents);
+        if (data.IsTruncated) {
+          return rxo.merge(currentResult, listObjectsImpl(data.NextContinuationToken)
+          );
+        } else {
+          return currentResult;
+        }
+      })
+      .map(entry => entry.Key);
+  }
 }
 
 function getObject(bucket, key) {
