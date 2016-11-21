@@ -99,6 +99,5 @@ function deleteObject(bucket, key) {
   };
   const s3 = new AWS.S3();
   const loadObject = s3.deleteObject(params);
-  return rxo.fromNodeCallback(loadObject.send, loadObject)()
-    .map(data => data.Body.toString());
+  return rxo.fromNodeCallback(loadObject.send, loadObject)();
 }
