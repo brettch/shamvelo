@@ -4,6 +4,7 @@ module.exports = {
   getRegister,
   getRegisterCode,
   getRegisterToken,
+  refreshAthleteOnTokenChange,
   buildHomeView,
   getHomeView,
   buildAthleteView,
@@ -85,6 +86,15 @@ function getRegisterToken(event, context, callback) {
     }
     return token;
   }
+}
+
+function refreshAthleteOnTokenChange(event, context, callback) {
+  initConfig(event);
+
+  rxo.from(event.Records)
+    .map(record => record.s3.object.key)
+    .flatMap(athlete.refresh)
+    .subscribe(createBasicSubscriber(callback));
 }
 
 function buildHomeView(event, context, callback) {
@@ -190,9 +200,9 @@ function hello(event, context, callback) {
 
 function createBasicSubscriber(callback) {
   return Rx.Observer.create(
-    () => callback(),
+    () => {},
     callback,
-    () => {}
+    () => callback()
   );
 }
 

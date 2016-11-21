@@ -27,14 +27,12 @@ function registerAthleteWithCode(stravaCode) {
 function registerAthleteWithToken(oauthToken) {
   console.log(`Registering athlete with token ${oauthToken}`);
   return strava.getAthlete(oauthToken)
-    .flatMap(athlete => saveAthleteAndToken(athlete, oauthToken));
+    .flatMap(athlete => saveToken(athlete, oauthToken));
 }
 
-function saveAthleteAndToken(athlete, oauthToken) {
-  return rxo.concat(
-    s3.upload(`shamvelo-${config.environment}-athlete`, '' + athlete.id, JSON.stringify(athlete)),
-    s3.upload(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
-  ).last().map(() => {});
+function saveToken(athlete, oauthToken) {
+  return s3.upload(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
+    .map(() => {});
 }
 
 function getTokenForAthlete(athleteId) {

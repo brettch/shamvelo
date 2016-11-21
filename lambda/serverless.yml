@@ -91,6 +91,10 @@ functions:
       - http:
           path: registertoken
           method: get
+  refreshAthleteOnTokenChange:
+    handler: handler.refreshAthleteOnTokenChange
+    events:
+      - s3: ${self:service}-${self:provider.stage}-token
   buildHomeView:
     handler: handler.buildHomeView
     events:
