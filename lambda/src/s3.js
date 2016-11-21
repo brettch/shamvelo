@@ -5,7 +5,9 @@ module.exports = {
   listObjects,
   getObject,
   upload,
-  uploadIfChanged
+  uploadIfChanged,
+  deleteAll,
+  deleteObject
 };
 
 const AWS = require('aws-sdk');
@@ -79,4 +81,22 @@ function uploadIfChanged(bucket, key, body) {
         return rxo.return();
       }
     });
+}
+
+function deleteAll(bucket) {
+  console.log(`Deleting objects from S3. ${bucket}`);
+  return listObjects(bucket)
+    .flatMap(key => deleteObject(bucket, key));
+}
+
+function deleteObject(bucket, key) {
+  console.log(`Deleting object from S3. ${bucket}:${key}`);
+  const params = {
+    Bucket: bucket,
+    Key: key
+  };
+  const s3 = new AWS.S3();
+  const loadObject = s3.deleteObject(params);
+  return rxo.fromNodeCallback(loadObject.send, loadObject)()
+    .map(data => data.Body.toString());
 }
