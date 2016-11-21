@@ -116,10 +116,12 @@ functions:
           path: athlete/{athleteId}
           method: get
   refreshAllActivities:
+    timeout: 300
     handler: handler.refreshAllActivities
     events:
       - schedule: rate(1 hour)
   refreshAthleteActivitiesOnAthleteChange:
+    timeout: 60
     handler: handler.refreshAthleteActivitiesOnAthleteChange
     events:
       - sns: ${self:service}-${self:provider.stage}-athlete
