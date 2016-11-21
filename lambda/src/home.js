@@ -12,11 +12,13 @@ const template = require('./template');
 
 function buildView() {
   return s3.loadObjects(`shamvelo-${config.environment}-athlete`)
-    .map(object => JSON.parse(object.toString()))
+    .map(JSON.parse)
     .toArray()
     .map(athletes => _.sortBy(athletes, 'name'))
     .flatMap(renderView)
-    .flatMap(content => s3.upload(`shamvelo-${config.environment}-view`, 'home', content))
+    .flatMap(content =>
+      s3.uploadIfChanged(`shamvelo-${config.environment}-view`, 'home', content)
+    )
     .map(() => {});
 }
 
@@ -25,6 +27,5 @@ function renderView(athletes) {
 }
 
 function getView() {
-  return s3.getObject(`shamvelo-${config.environment}-view`, 'home')
-    .map(buffer => buffer.toString());
+  return s3.getObject(`shamvelo-${config.environment}-view`, 'home');
 }

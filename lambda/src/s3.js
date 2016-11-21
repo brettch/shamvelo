@@ -4,7 +4,8 @@ module.exports = {
   loadObjects,
   listObjects,
   getObject,
-  upload
+  upload,
+  uploadIfChanged
 };
 
 const AWS = require('aws-sdk');
@@ -47,7 +48,7 @@ function getObject(bucket, key) {
   const s3 = new AWS.S3();
   const loadObject = s3.getObject(params);
   return rxo.fromNodeCallback(loadObject.send, loadObject)()
-    .map(data => data.Body);
+    .map(data => data.Body.toString());
 }
 
 function upload(bucket, key, body) {
@@ -60,4 +61,16 @@ function upload(bucket, key, body) {
   const s3 = new AWS.S3();
   const upload = s3.upload(params);
   return rxo.fromNodeCallback(upload.send, upload)();
+}
+
+function uploadIfChanged(bucket, key, body) {
+  console.log(`Uploading object to S3 if changed. ${bucket}:${key}`);
+  return getObject(bucket, key)
+    .flatMap(s3Body => {
+      if (body != s3Body) {
+        return upload(bucket, key, body);
+      } else {
+        return rxo.return();
+      }
+    });
 }

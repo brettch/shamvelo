@@ -403,10 +403,11 @@ function buildView() {
     activity.getAll().toArray()
   )
   .map(athletesAndActivities => buildLeaderboard(athletesAndActivities[0], athletesAndActivities[1]))
-  .doOnNext(console.log)
   .flatMap(renderView)
   //.doOnNext(console.log)
-  .flatMap(content => s3.upload(`shamvelo-${config.environment}-view`, 'leaderboard', content))
+  .flatMap(content =>
+    s3.uploadIfChanged(`shamvelo-${config.environment}-view`, 'leaderboard', content)
+  )
   .map(() => {});
 }
 
@@ -415,6 +416,5 @@ function renderView(leaderboard) {
 }
 
 function getView() {
-  return s3.getObject(`shamvelo-${config.environment}-view`, 'leaderboard')
-    .map(buffer => buffer.toString());
+  return s3.getObject(`shamvelo-${config.environment}-view`, 'leaderboard');
 }

@@ -27,34 +27,15 @@ function refreshActivitiesForAthlete(athleteId) {
     .flatMap(strava.getActivities)
     .toArray()
     .map(JSON.stringify)
-    // Load existing activities from S3 and check if they've changed
     .flatMap(activitiesJson =>
-      s3
-        .getObject(`shamvelo-${config.environment}-activity`, athleteId)
-        .map(buffer => buffer.toString())
-        .map(s3ActivitiesJson => ({
-          activitiesJson: activitiesJson,
-          changed: activitiesJson != s3ActivitiesJson
-        }))
+      s3.uploadIfChanged(`shamvelo-${config.environment}-activity`, athleteId, activitiesJson)
     )
-    // Only upload activities to S3 if they've changed
-    .flatMap(activitiesObj => {
-      if (activitiesObj.changed) {
-        return s3.upload(
-          `shamvelo-${config.environment}-activity`,
-          athleteId,
-          activitiesObj.activitiesJson
-        );
-      } else {
-        return rxo.return();
-      }
-    })
     .map(() => {});
 }
 
 function getActivitiesForAthlete(athleteId) {
   return s3.getObject(`shamvelo-${config.environment}-activity`, athleteId)
-    .map(object => JSON.parse(object.toString()));
+    .map(JSON.parse);
 }
 
 function getAll() {

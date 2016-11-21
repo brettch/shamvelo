@@ -8,11 +8,8 @@ module.exports = {
 };
 
 const config = require('./config');
-const Rx = require('rx');
 const s3 = require('./s3');
 const strava = require('./strava');
-
-const rxo = Rx.Observable;
 
 function getOAuthRequestAccessUrl() {
   return strava.getOAuthRequestAccessUrl();
@@ -31,11 +28,10 @@ function registerAthleteWithToken(oauthToken) {
 }
 
 function saveToken(athlete, oauthToken) {
-  return s3.upload(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
+  return s3.uploadIfChanged(`shamvelo-${config.environment}-token`, '' + athlete.id, oauthToken)
     .map(() => {});
 }
 
 function getTokenForAthlete(athleteId) {
-  return s3.getObject(`shamvelo-${config.environment}-token`, athleteId)
-    .map(buffer => buffer.toString());
+  return s3.getObject(`shamvelo-${config.environment}-token`, athleteId);
 }
