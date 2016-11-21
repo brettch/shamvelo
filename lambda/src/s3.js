@@ -73,7 +73,9 @@ function upload(bucket, key, body) {
 
 function uploadIfChanged(bucket, key, body) {
   console.log(`Uploading object to S3 if changed. ${bucket}:${key}`);
-  return getObject(bucket, key)
+  return loadObjects(bucket, key)
+    // Default current value to null if object doesn't already exist
+    .concat(rxo.return()).first()
     .flatMap(s3Body => {
       if (body != s3Body) {
         return upload(bucket, key, body);
