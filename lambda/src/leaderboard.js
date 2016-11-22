@@ -404,7 +404,6 @@ function buildView() {
   )
   .map(athletesAndActivities => buildLeaderboard(athletesAndActivities[0], athletesAndActivities[1]))
   .flatMap(renderView)
-  //.doOnNext(console.log)
   .flatMap(content =>
     s3.uploadIfChanged(`shamvelo-${config.environment}-view`, 'leaderboard', content)
   )
@@ -412,7 +411,8 @@ function buildView() {
 }
 
 function renderView(leaderboard) {
-  return template.render('leaderboard', { leaderboard });
+  const leaderboardjson = JSON.stringify(leaderboard, null, 2);
+  return template.render('leaderboard', { leaderboard, leaderboardjson });
 }
 
 function getView() {
