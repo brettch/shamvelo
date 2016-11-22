@@ -65,7 +65,7 @@ function getRegisterCode(event, context, callback) {
     callback(null, {
       statusCode: 302,
       headers: {
-        location: './'
+        location: './home'
       }
     });
   }
