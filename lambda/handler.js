@@ -77,7 +77,7 @@ function getRegisterToken(event, context, callback) {
   rxo.of(event)
     .map(getToken)
     .flatMap(register.registerAthleteWithToken)
-    .subscribe(createHttpRedirectSubscriber(callback, './'));
+    .subscribe(createHttpRedirectSubscriber(callback, './home'));
 
   function getToken(event) {
     const token = event.queryStringParameters.token;
