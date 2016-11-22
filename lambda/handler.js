@@ -16,7 +16,7 @@ module.exports = {
   hello
 };
 
-require('./src/config');
+const config = require('./src/config');
 const activity = require('./src/activity');
 const athlete = require('./src/athlete');
 const register = require('./src/register');
@@ -234,6 +234,6 @@ function createHttpRedirectSubscriber(callback, location) {
 
 function initConfig(event) {
   if (event.headers && event.headers.Host) {
-    process.env.STRAVA_REDIRECT_URI = `https://${event.headers.Host}/registercode`;
+    process.env.STRAVA_REDIRECT_URI = `https://${event.headers.Host}/${config.environment}/registercode`;
   }
 }
