@@ -126,6 +126,7 @@ functions:
     events:
       - sns: ${self:service}-${self:provider.stage}-athlete
   buildLeaderboardView:
+    timeout: 30
     handler: handler.buildLeaderboardView
     events:
       - s3: ${self:service}-${self:provider.stage}-activity
