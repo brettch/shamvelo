@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: shamvelo # NOTE: update this with your service name
+service: shamvelo
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -33,38 +33,38 @@ provider:
       Action:
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodactivity" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ActivityBucket" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodactivity" } ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ActivityBucket" } ] ] }
     - Effect: "Allow"
       Action:
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodathlete" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "AthleteBucket" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodathlete" } ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "AthleteBucket" } ] ] }
     - Effect: "Allow"
       Action:
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodtoken" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "TokenBucket" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodtoken" } ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "TokenBucket" } ] ] }
     - Effect: "Allow"
       Action:
         - "s3:GetObject"
         - "s3:PutObject"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodview" }, "/*" ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ViewBucket" }, "/*" ] ] }
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
-      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "S3BucketShamveloprodview" } ] ] }
+      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ViewBucket" } ] ] }
 
 # you can add packaging information here
 #package:
@@ -93,8 +93,6 @@ functions:
           method: get
   refreshAthleteOnTokenChange:
     handler: handler.refreshAthleteOnTokenChange
-    events:
-      - s3: ${self:service}-${self:provider.stage}-token
   buildHomeView:
     handler: handler.buildHomeView
     events:
@@ -128,8 +126,6 @@ functions:
   buildLeaderboardView:
     timeout: 30
     handler: handler.buildLeaderboardView
-    events:
-      - s3: ${self:service}-${self:provider.stage}-activity
   getLeaderboardView:
     handler: handler.getLeaderboardView
     events:
@@ -146,11 +142,28 @@ functions:
 # you can add CloudFormation resource templates here
 resources:
   Resources:
-    S3BucketShamveloprodactivity:
+    ActivityBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-activity
-    S3BucketShamveloprodathlete:
+        NotificationConfiguration:
+          LambdaConfigurations:
+            - Event: s3:ObjectCreated:*
+              Function:
+                "Fn::GetAtt":
+                  - BuildLeaderboardViewLambdaFunction
+                  - Arn
+    BuildLeaderboardViewLambdaPermissionS3:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt":
+            - BuildLeaderboardViewLambdaFunction
+            - Arn
+        Action: lambda:InvokeFunction
+        Principal: s3.amazonaws.com
+        SourceArn: arn:aws:s3:::${self:service}-${self:provider.stage}-activity
+    AthleteBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-athlete
@@ -159,11 +172,28 @@ resources:
             - Event: s3:ObjectCreated:*
               Topic:
                 Ref: SNSTopicShamveloprodathlete
-    S3BucketShamveloprodtoken:
+    TokenBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-token
-    S3BucketShamveloprodview:
+        NotificationConfiguration:
+          LambdaConfigurations:
+            - Event: s3:ObjectCreated:*
+              Function:
+                "Fn::GetAtt":
+                  - RefreshAthleteOnTokenChangeLambdaFunction
+                  - Arn
+    RefreshAthleteOnTokenChangeLambdaPermissionS3:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt":
+            - RefreshAthleteOnTokenChangeLambdaFunction
+            - Arn
+        Action: lambda:InvokeFunction
+        Principal: s3.amazonaws.com
+        SourceArn: arn:aws:s3:::${self:service}-${self:provider.stage}-token
+    ViewBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-view
