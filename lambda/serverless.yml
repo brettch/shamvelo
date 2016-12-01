@@ -95,8 +95,6 @@ functions:
     handler: handler.refreshAthleteOnTokenChange
   buildHomeView:
     handler: handler.buildHomeView
-    events:
-      - sns: ${self:service}-${self:provider.stage}-athlete
   getHomeView:
     handler: handler.getHomeView
     events:
@@ -105,8 +103,6 @@ functions:
           method: get
   buildAthleteView:
     handler: handler.buildAthleteView
-    events:
-      - sns: ${self:service}-${self:provider.stage}-athlete
   getAthleteView:
     handler: handler.getAthleteView
     events:
@@ -121,8 +117,6 @@ functions:
   refreshAthleteActivitiesOnAthleteChange:
     timeout: 60
     handler: handler.refreshAthleteActivitiesOnAthleteChange
-    events:
-      - sns: ${self:service}-${self:provider.stage}-athlete
   buildLeaderboardView:
     timeout: 30
     handler: handler.buildLeaderboardView
@@ -171,7 +165,7 @@ resources:
           TopicConfigurations:
             - Event: s3:ObjectCreated:*
               Topic:
-                Ref: SNSTopicShamveloprodathlete
+                Ref: AthleteUpdateTopic
     TokenBucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -197,10 +191,80 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:service}-${self:provider.stage}-view
-    SNSTopicShamveloprodathlete:
+    AthleteUpdateTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: ${self:service}-${self:provider.stage}-athlete
+        TopicName: ${self:service}-${self:provider.stage}-athlete2
+        Subscription:
+          - Endpoint:
+              "Fn::GetAtt":
+                - BuildAthleteViewLambdaFunction
+                - Arn
+            Protocol: lambda
+          - Endpoint:
+              "Fn::GetAtt":
+                - BuildHomeViewLambdaFunction
+                - Arn
+            Protocol: lambda
+          - Endpoint:
+              "Fn::GetAtt":
+                - RefreshAthleteActivitiesOnAthleteChangeLambdaFunction
+                - Arn
+            Protocol: lambda
+    BuildAthleteViewLambdaPermissionSNS:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt":
+            - BuildAthleteViewLambdaFunction
+            - Arn
+        Action: lambda:InvokeFunction
+        Principal: sns.amazonaws.com
+        SourceArn:
+          "Fn::Join" :
+            - ""
+            - - "arn:aws:sns:"
+              - Ref: AWS::Region
+              - ":"
+              - Ref: AWS::AccountId
+              - ":"
+              - Ref: AthleteBucket
+    BuildHomeViewLambdaPermissionSNS:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt":
+            - BuildHomeViewLambdaFunction
+            - Arn
+        Action: lambda:InvokeFunction
+        Principal: sns.amazonaws.com
+        SourceArn:
+          "Fn::Join" :
+            - ""
+            - - "arn:aws:sns:"
+              - Ref: AWS::Region
+              - ":"
+              - Ref: AWS::AccountId
+              - ":"
+              - Ref: AthleteBucket
+    RefreshAthleteActivitiesOnAthleteChangeLambdaPermissionSNS:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName:
+          "Fn::GetAtt":
+            - RefreshAthleteActivitiesOnAthleteChangeLambdaFunction
+            - Arn
+        Action: lambda:InvokeFunction
+        Principal: sns.amazonaws.com
+        SourceArn:
+          "Fn::Join" :
+            - ""
+            - - "arn:aws:sns:"
+              - Ref: AWS::Region
+              - ":"
+              - Ref: AWS::AccountId
+              - ":"
+              - Ref: AthleteBucket
 
     IamPolicyAthleteTopic:
       Type: AWS::SNS::TopicPolicy
@@ -216,14 +280,9 @@ resources:
               Action:
                 - sns:Publish
               Resource:
-                Ref: SNSTopicShamveloprodathlete
+                Ref: AthleteUpdateTopic
               Condition:
                 ArnLike:
                   aws:SourceArn: arn:aws:s3:*:*:${self:service}-${self:provider.stage}-athlete
         Topics:
-          - Ref: SNSTopicShamveloprodathlete
-
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+          - Ref: AthleteUpdateTopic
