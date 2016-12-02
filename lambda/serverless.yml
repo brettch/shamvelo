@@ -194,7 +194,7 @@ resources:
     AthleteUpdateTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: ${self:service}-${self:provider.stage}-athlete2
+        TopicName: ${self:service}-${self:provider.stage}-athlete
         Subscription:
           - Endpoint:
               "Fn::GetAtt":
