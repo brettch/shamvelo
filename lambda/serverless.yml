@@ -143,10 +143,10 @@ functions:
           path: athlete/{athleteId}/refreshactivities
           method: post
   refreshAthleteActivitiesOnAthleteChange:
-    timeout: 60
+    timeout: 120
     handler: handler.refreshAthleteActivitiesOnAthleteChange
   refreshAthleteActivitiesImpl:
-    timeout: 60
+    timeout: 120
     handler: handler.refreshAthleteActivitiesImpl
   buildLeaderboardView:
     timeout: 30
