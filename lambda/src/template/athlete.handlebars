@@ -18,6 +18,12 @@
 <body>
 
 <h1>{{athlete.firstname}} {{athlete.lastname}} ({{athlete.id}})</h1>
+<form action="./{{athlete.id}}/refresh" method="POST">
+	<input type="submit" name="btnRefresh" value="Refresh Athlete"/>
+</form>
+<form action="./{{athlete.id}}/refreshactivities" method="POST">
+	<input type="submit" name="btnRefresh" value="Refresh Activities"/>
+</form>
 <a href="./{{athlete.id}}/activitiescsv">Download Activities</a>
 
 </body>

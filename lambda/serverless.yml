@@ -31,6 +31,13 @@ provider:
   iamRoleStatements:
     - Effect: "Allow"
       Action:
+        - "lambda:InvokeFunction"
+      Resource:
+        "Fn::GetAtt":
+          - RefreshAthleteImplLambdaFunction
+          - Arn
+    - Effect: "Allow"
+      Action:
         - "s3:GetObject"
         - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ActivityBucket" }, "/*" ] ] }
@@ -91,8 +98,16 @@ functions:
       - http:
           path: registertoken
           method: get
+  refreshAthleteOnRequest:
+    handler: handler.refreshAthleteOnRequest
+    events:
+      - http:
+          path: athlete/{athleteId}/refresh
+          method: post
   refreshAthleteOnTokenChange:
     handler: handler.refreshAthleteOnTokenChange
+  refreshAthleteImpl:
+    handler: handler.refreshAthleteImpl
   buildHomeView:
     handler: handler.buildHomeView
   getHomeView:

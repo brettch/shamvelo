@@ -4,7 +4,9 @@ module.exports = {
   getRegister,
   getRegisterCode,
   getRegisterToken,
+  refreshAthleteOnRequest,
   refreshAthleteOnTokenChange,
+  refreshAthleteImpl,
   buildHomeView,
   getHomeView,
   buildAthleteView,
@@ -21,6 +23,7 @@ const activity = require('./src/activity');
 const athlete = require('./src/athlete');
 const register = require('./src/register');
 const home = require('./src/home');
+const lambda = require('./src/lambda');
 const leaderboard = require('./src/leaderboard');
 const Rx = require('rx');
 
@@ -88,12 +91,30 @@ function getRegisterToken(event, context, callback) {
   }
 }
 
+function refreshAthleteOnRequest(event, context, callback) {
+  initConfig(event);
+
+  const athleteId = event.pathParameters.athleteId;
+  const payload = JSON.stringify({ athleteId });
+
+  rxo.just(payload)
+    .flatMap(payload => lambda.invoke('shamvelo-dev-refreshAthleteImpl', payload))
+    .subscribe(createHttpRedirectSubscriber(callback, `../${athleteId}`));
+}
+
 function refreshAthleteOnTokenChange(event, context, callback) {
   initConfig(event);
 
   rxo.from(event.Records)
     .map(record => record.s3.object.key)
     .flatMap(athlete.refresh)
+    .subscribe(createBasicSubscriber(callback));
+}
+
+function refreshAthleteImpl(event, context, callback) {
+  initConfig(event);
+
+  athlete.refresh(event.athleteId)
     .subscribe(createBasicSubscriber(callback));
 }
 
