@@ -100,7 +100,7 @@ function refreshAthleteOnRequest(event, context, callback) {
   const payload = JSON.stringify({ athleteId });
 
   rxo.just(payload)
-    .flatMap(payload => lambda.invoke('shamvelo-dev-refreshAthleteImpl', payload))
+    .flatMap(payload => lambda.invoke(`shamvelo-${config.environment}-refreshAthleteImpl`, payload))
     .subscribe(createHttpRedirectSubscriber(callback, `../${athleteId}`));
 }
 
@@ -178,7 +178,7 @@ function refreshAthleteActivitiesOnRequest(event, context, callback) {
   const payload = JSON.stringify({ athleteId });
 
   rxo.just(payload)
-    .flatMap(payload => lambda.invoke('shamvelo-dev-refreshAthleteActivitiesImpl', payload))
+    .flatMap(payload => lambda.invoke(`shamvelo-${config.environment}-refreshAthleteActivitiesImpl`, payload))
     .subscribe(createHttpRedirectSubscriber(callback, `../${athleteId}`));
 }
 
