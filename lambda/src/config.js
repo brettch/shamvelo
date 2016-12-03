@@ -4,5 +4,5 @@
 require('dotenv').config();
 
 module.exports = {
-  environment: 'prod'
+  environment: 'dev'
 };
