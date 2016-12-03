@@ -12,7 +12,9 @@ module.exports = {
   buildAthleteView,
   getAthleteView,
   refreshAllActivities,
+  refreshAthleteActivitiesOnRequest,
   refreshAthleteActivitiesOnAthleteChange,
+  refreshAthleteActivitiesImpl,
   buildLeaderboardView,
   getLeaderboardView,
   hello
@@ -169,6 +171,17 @@ function refreshAllActivities(event, context, callback) {
     .subscribe(createBasicSubscriber(callback));
 }
 
+function refreshAthleteActivitiesOnRequest(event, context, callback) {
+  initConfig(event);
+
+  const athleteId = event.pathParameters.athleteId;
+  const payload = JSON.stringify({ athleteId });
+
+  rxo.just(payload)
+    .flatMap(payload => lambda.invoke('shamvelo-dev-refreshAthleteActivitiesImpl', payload))
+    .subscribe(createHttpRedirectSubscriber(callback, `../${athleteId}`));
+}
+
 function refreshAthleteActivitiesOnAthleteChange(event, context, callback) {
   initConfig(event);
 
@@ -185,6 +198,13 @@ function refreshAthleteActivitiesOnAthleteChange(event, context, callback) {
     .map(s3Message => s3Message.object.key)
     // Refresh the activities for the athlete
     .flatMap(activity.refreshActivitiesForAthlete)
+    .subscribe(createBasicSubscriber(callback));
+}
+
+function refreshAthleteActivitiesImpl(event, context, callback) {
+  initConfig(event);
+
+  activity.refreshActivitiesForAthlete(event.athleteId)
     .subscribe(createBasicSubscriber(callback));
 }
 

@@ -38,6 +38,13 @@ provider:
           - Arn
     - Effect: "Allow"
       Action:
+        - "lambda:InvokeFunction"
+      Resource:
+        "Fn::GetAtt":
+          - RefreshAthleteActivitiesImplLambdaFunction
+          - Arn
+    - Effect: "Allow"
+      Action:
         - "s3:GetObject"
         - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ActivityBucket" }, "/*" ] ] }
@@ -129,9 +136,18 @@ functions:
     handler: handler.refreshAllActivities
     events:
       - schedule: rate(1 hour)
+  refreshAthleteActivitiesOnRequest:
+    handler: handler.refreshAthleteActivitiesOnRequest
+    events:
+      - http:
+          path: athlete/{athleteId}/refreshactivities
+          method: post
   refreshAthleteActivitiesOnAthleteChange:
     timeout: 60
     handler: handler.refreshAthleteActivitiesOnAthleteChange
+  refreshAthleteActivitiesImpl:
+    timeout: 60
+    handler: handler.refreshAthleteActivitiesImpl
   buildLeaderboardView:
     timeout: 30
     handler: handler.buildLeaderboardView
