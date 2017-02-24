@@ -232,7 +232,20 @@ function calculateSummary(leaderboard, activities) {
 
   function descendingComparator(fieldReader) {
     return function(a, b) {
-      return fieldReader(b) - fieldReader(a);
+      const fieldA = fieldReader(a);
+      const fieldB = fieldReader(b);
+
+      // Fields may be null.  We will leave the order unchanged if both are null,
+      // otherwise the one with a value will be placed higher.
+      if (!fieldA && !fieldB) {
+        return 0;
+      } else if (!fieldA) {
+        return 1;
+      } else if (!fieldB) {
+        return -1;
+      } else {
+        return fieldB - fieldA;
+      }
     };
   }
 
