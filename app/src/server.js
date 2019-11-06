@@ -1,6 +1,7 @@
 'use strict';
 
-var fs = require('fs');
+// Source environment from file if it's not already supplied, required for app engine
+require('./config');
 
 // Base express framework.
 var express = require('express');
@@ -14,16 +15,6 @@ var cookies = require('cookies');
 var bodyParser = require('body-parser');
 // Handlebars templating engine
 var exphbs  = require('express-handlebars');
-
-// Config module.
-var config = require('./config');
-// Write strava config out to file in time for loading by the Strava module.
-try {
-  fs.mkdirSync(__dirname + '/data');
-} catch (err) {
-  if (err.code != 'EEXIST') throw err;
-}
-fs.writeFileSync(__dirname + '/data/strava_config', JSON.stringify(config.strava));
 
 // Database module.
 var dbEngine = require('./db');
