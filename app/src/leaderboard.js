@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('underscore');
+const _ = require('lodash');
 const dateUtil = require('./date-util');
 
 function buildDateSet(activities, dateMapper) {
@@ -8,7 +8,7 @@ function buildDateSet(activities, dateMapper) {
     // Reduce the date to an integer of reduced granularity.
     var item = dateMapper(new Date(activity.start_date));
 
-    if (!_.contains(resultSet, item)) {
+    if (!_.includes(resultSet, item)) {
       resultSet.push(item);
     }
 
@@ -219,7 +219,20 @@ function calculateSummary(leaderboard, activities) {
 
   function descendingComparator(fieldReader) {
     return function(a, b) {
-      return fieldReader(b) - fieldReader(a);
+      const fieldA = fieldReader(a);
+      const fieldB = fieldReader(b);
+
+      // Fields may be null.  We will leave the order unchanged if both are null,
+      // otherwise the one with a value will be placed higher.
+      if (!fieldA && !fieldB) {
+        return 0;
+      } else if (!fieldA) {
+        return 1;
+      } else if (!fieldB) {
+        return -1;
+      } else {
+        return fieldB - fieldA;
+      }
     };
   }
 
