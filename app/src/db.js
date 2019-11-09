@@ -1,99 +1,89 @@
 'use strict';
 
-var assert = require('assert');
+const { Datastore } = require('@google-cloud/datastore');
+const { from } = require('rxjs');
+const { map, toArray, mergeMap, bufferCount } = require('rxjs/operators');
+const util = require('./util');
 
-// MongoDB database driver.
-var mongoClient = require('mongodb').MongoClient;
-
-// Util module.
-var util = require('./util');
-
-
-module.exports.start = function(url) {
-  // Connect to Mongo DB.
-  var mongodb;
-  mongoClient.connect(url, function(err, db) {
-    assert.equal(null, err);
-    console.log('Connected to MongoDB');
-    mongodb = db;
-  });
+module.exports.start = function() {
+  const ds = new Datastore();
 
   // Return accessor methods.
   return {
 
+    // Get specific items by key.
+    getItemsByKey: async function(collection, keys) {
+      console.log('Retrieving ' + collection + ' with keys ' + util.stringify(keys));
+
+      const dsKeys = Array.isArray(keys) ?
+        keys.map(key => ds.key([collection, key])) :
+        ds.key([collection, keys]);
+
+      const items = await ds.get(dsKeys);
+
+      return items;
+    },
+
     // Search for items in the specified collection.
-    getItems: function(collection, criteria, callback) {
+    getItems: async function(collection, criteria) {
       console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
-      mongodb.collection(collection).find(criteria, {}).toArray(function(err, items) {
-        if (err) console.log('Unable to retrieve items\n' + util.stringify(err));
-        //else console.log('Successfully retrieved items\n' + util.stringify(items));
-        callback(err, items);
-      });
+
+      const allItemsQuery = ds.createQuery(collection);
+      const filteringQuery = Object.keys(criteria)
+        .reduce(
+          (currentQuery, key) => currentQuery.filter(key, criteria[key]),
+          allItemsQuery
+        );
+
+      const items = await filteringQuery.run();
+
+      // Result is a two part array, first element is the results, second is query info.
+      return items[0];
     },
 
     // Save or refresh an athlete.
-    saveAthlete: function(athlete, callback) {
-      // Get the documents collection
-      var collection = mongodb.collection('athletes');
-      // Add or update the athlete
-      collection.update(
-        { id : athlete.id },
-        athlete,
-        { upsert : true },
-        function(err) {
-          if (err) console.log('Unable to insert athlete\n' + util.stringify(err));
-          //else console.log('Successfully inserted athlete ' + athlete.id);
-          callback(err);
-        }
-      );
+    saveAthlete: async function(athlete) {
+      console.log(`Saving athlete ${athlete.id}`);
+      await ds.upsert({
+        key: ds.key(['athletes', athlete.id]),
+        data: athlete
+      });
     },
 
     // Save or refresh an athlete's token.
-    saveAthleteToken: function(id, token, callback) {
-      var collection = mongodb.collection('tokens');
-      collection.update(
-        { id: id },
-        { id: id, token: token },
-        { upsert: true },
-        function (err) {
-          if (err) console.log('Unable to insert token\n' + util.stringify(err));
-          //else console.log('Successfully inserted token ' + id);
-          callback(err);
-        }
-      );
+    saveAthleteToken: async function(id, token) {
+      console.log(`Saving token for athlete ${id}`);
+      await ds.upsert({
+        key: ds.key(['tokens', id]),
+        data: {token: token}
+      });
     },
 
-    deleteActivities: function(athleteId, callback) {
-      mongodb.collection('activities').remove({ 'athlete.id': athleteId }, {}, callback);
+    deleteActivities: async function(athleteId) {
+      console.log(`Deleting activities for athlete ${athleteId}`);
+      const activities = await this.getItems('activities', { 'athlete.id': athleteId });
+      await from(activities)
+        .pipe(
+          map(activity => ds.key(['activities', activity.id])),
+          bufferCount(100),
+          mergeMap(keys => from(ds.delete(keys)))
+        )
+        .toPromise();
     },
 
     // Save or refresh a list of activities.
-    saveActivities: function(activities, callback) {
-      var collection = mongodb.collection('activities');
-
-      // Create recursive function to insert all activities.
-      var insertActivity = function(activities, i, callback) {
-        if (i < activities.length) {
-          var activity = activities[i];
-          collection.update(
-            { id: activity.id },
-            activity,
-            { upsert: true },
-            function (err) {
-              if (err) {
-                console.log('Unable to insert activity\n' + util.stringify(err));
-                callback(err);
-              } else {
-                //console.log('Successfully inserted activity ' + activity.id);
-                insertActivity(activities, i + 1, callback);
-              }
-            }
-          );
-        } else callback(null);
-      };
-
-      // Initiate recursive insert.
-      insertActivity(activities, 0, callback);
+    saveActivities: async function(activities) {
+      console.log(`Saving ${activities.length} activities`);
+      await from(activities)
+        .pipe(
+          map(activity => ({
+            key: ds.key(['activities', activity.id]),
+            data: activity
+          })),
+          toArray(),
+          mergeMap(entities => ds.upsert(entities))
+        )
+        .toPromise();
     },
   };
 };

@@ -1,74 +1,56 @@
 'use strict';
 
-// Strava API.
-var strava = require('strava-v3');
-
-// Util module.
-var util = require('./util');
+const { of, from, empty, merge } = require('rxjs');
+const { map, mergeMap, tap } = require('rxjs/operators');
+const strava = require('strava-v3');
 
 function getOAuthRequestAccessUrl() {
   console.log('Generating OAuth request access URL');
-  var accessUrl = strava.oauth.getRequestAccessURL({});
+  var accessUrl = strava.oauth.getRequestAccessURL({
+    scope : ['read', 'activity:read']
+  });
   console.log('Access URL: ' + accessUrl);
   return accessUrl;
 }
 
-function getOAuthToken(code, callback) {
+async function getOAuthToken(code) {
   console.log('Getting OAuth token based on temporary code ' + code);
-  strava.oauth.getToken(code, function(err, payload) {
-    if (err) {
-      console.log('Received error from getToken service:\n' + util.stringify(err));
-      callback(err);
-    } else {
-      //console.log("Received oauth payload:\n" + util.stringify(payload));
-      callback(null, payload);
-    }
-  });
+  return strava.oauth.getToken(code);
 }
 
-function getAthlete(token, callback) {
+async function getAthlete(token) {
   console.log('Getting athlete with token ' + token);
-  strava.athlete.get({ 'access_token': token }, function(err, payload) {
-    if (err) {
-      console.log('Received error from athlete.get service:\n' + util.stringify(err));
-      callback(err);
-    } else {
-      //console.log("Received athlete payload:\n" + util.stringify(payload));
-      callback(null, payload);
-    }
-  });
+  return strava.athlete.get({ 'access_token': token });
 }
 
-function getActivities(token, pageCallback, callback) {
+function getActivities(token) {
   console.log('Getting athlete activities with token ' + token);
+
   // Create recursive function to retrieve all activity pages.
-  var getActivityPage = function(page) {
-    console.log('Getting athlete activities page ' + page);
-    strava.athlete.listActivities(
-      {
+  function getActivityPage(page) {
+    return of(page).pipe(
+      tap(page => console.log(`Getting athlete activities page ${page}`)),
+      map(page => ({
         'access_token': token,
         'page': page,
         'per_page': 100
-      },
-      function(err, payload) {
-        if (err) {
-          console.log('Received error from athlete.listActivities service:\n' + util.stringify(err));
-          callback(err);
+      })),
+      mergeMap(parameters => from(strava.athlete.listActivities(parameters))),
+      mergeMap(activities => {
+        if (activities.length > 0) {
+          return merge(
+            activities,
+            getActivityPage(page + 1)
+          );
         } else {
-          //console.log("Received activities payload:\n" + util.stringify(payload));
-          if (payload.length > 0) {
-            pageCallback(payload, function(err) {
-              if (err) callback(err);
-              else getActivityPage(page + 1);
-            });
-          } else callback(null);
+          return empty();
         }
-      }
+      })
     );
-  };
+  }
 
   // Begin retrieving pages from page 1.
-  getActivityPage(1);
+  return getActivityPage(1);
 }
 
 module.exports = {
