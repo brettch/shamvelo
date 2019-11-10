@@ -20,32 +20,43 @@ const dbEngine = require('./db');
 const leaderboardEngine = require('./leaderboard');
 const { from } = require('rxjs');
 const { bufferCount, mergeMap } = require('rxjs/operators');
-const strava = require('./strava');
+const stravaEngine = require('./strava');
 const util = require('./util');
 
 // Start the database.
 const db = dbEngine.start();
+
+// Start the Strava client.
+const strava = stravaEngine.start(
+  getAthleteToken,
+  db.saveAthleteToken
+);
 
 async function registerAthlete(stravaCode) {
   console.log('Registering athlete with code ' + stravaCode);
   // Exchange the temporary code for an access token.
   const payload = await strava.getOAuthToken(stravaCode);
   const athlete = payload.athlete;
-  const token = payload.access_token;
+  const token = {
+    id: athlete.id,
+    expires_at: payload.expires_at,
+    expires_in: payload.expires_in,
+    refresh_token: payload.refresh_token,
+    access_token: payload.access_token
+  };
   await db.saveAthlete(athlete);
   await db.saveAthleteToken(athlete.id, token);
 }
 
 async function getAthleteToken(athleteId) {
   const tokens = await db.getItemsByKey('tokens', athleteId);
-  return tokens[0].token;
+  return tokens[0];
 }
 
 // Refresh athlete details in our database.
 async function refreshAthlete(athleteId) {
   console.log('Refreshing athlete ' + athleteId);
-  const token = await getAthleteToken(athleteId);
-  const athlete = await strava.getAthlete(token);
+  const athlete = await strava.getAthlete(athleteId);
   await db.saveAthlete(athlete);
 }
 
@@ -53,9 +64,8 @@ async function refreshAthlete(athleteId) {
 async function refreshAthleteActivities(athleteId) {
   console.log('Refreshing athlete activities ' + athleteId);
   
-  const token = await getAthleteToken(athleteId);
   await db.deleteActivities(athleteId);
-  await strava.getActivities(token)
+  await strava.getActivities(athleteId)
     .pipe(
       bufferCount(100),
       mergeMap(activities => from(db.saveActivities(activities)))

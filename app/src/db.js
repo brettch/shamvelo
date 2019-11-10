@@ -55,7 +55,7 @@ module.exports.start = function() {
       console.log(`Saving token for athlete ${id}`);
       await ds.upsert({
         key: ds.key(['tokens', id]),
-        data: {token: token}
+        data: token
       });
     },
 
