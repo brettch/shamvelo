@@ -1,0 +1,4 @@
+cron:
+- description: "refresh all activities"
+  url: /refreshallactivities
+  schedule: every 1 hours
