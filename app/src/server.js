@@ -262,6 +262,12 @@ app.post('/refreshallactivities', function(req, res) {
     .catch(err => sendError(res, err));
 });
 
+app.get('/refreshallactivities', function(req, res) {
+  refreshAllAthleteActivities()
+    .then(() => res.redirect('..'))
+    .catch(err => sendError(res, err));
+});
+
 // Display the leaderboard.
 app.get('/leaderboard', function(req, res) {
   getAthletesAndActivities()
