@@ -256,15 +256,17 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
     .catch(err => sendError(res, err));
 });
 
+// Refresh all activities.  Intended for use by a web browser.
 app.post('/refreshallactivities', function(req, res) {
   refreshAllAthleteActivities()
     .then(() => res.redirect('..'))
     .catch(err => sendError(res, err));
 });
 
+// Refresh all activities.  Intended for use by a cron trigger.
 app.get('/refreshallactivities', function(req, res) {
   refreshAllAthleteActivities()
-    .then(() => res.redirect('..'))
+    .then(() => res.send(''))
     .catch(err => sendError(res, err));
 });
 
