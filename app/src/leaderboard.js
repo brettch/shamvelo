@@ -4,9 +4,9 @@ const _ = require('lodash');
 const dateUtil = require('./date-util');
 
 function buildDateSet(activities, dateMapper) {
-  var reduceFunction = function(resultSet, activity) {
+  const reduceFunction = function(resultSet, activity) {
     // Reduce the date to an integer of reduced granularity.
-    var item = dateMapper(new Date(activity.start_date));
+    const item = dateMapper(new Date(activity.start_date));
 
     if (!_.includes(resultSet, item)) {
       resultSet.push(item);
@@ -48,13 +48,13 @@ function buildAthleteName(athlete) {
 // For each athlete create a summary object with athlete details and distance.
 // Return a tuple containing a list of these objects, and a map keyed by athlete id.
 function buildAthleteSummaries(athletes) {
-  var reduceSummaryById = function(summaryByAthleteId, summaryRecord) {
+  const reduceSummaryById = function(summaryByAthleteId, summaryRecord) {
     summaryByAthleteId[summaryRecord.athleteId] = summaryRecord;
     return summaryByAthleteId;
   };
 
   // Build an array of athlete summary objects.
-  var summary = athletes.map(function(athlete) {
+  const summary = athletes.map(function(athlete) {
     return {
       athleteId: athlete.id,
       athleteName: buildAthleteName(athlete),
@@ -64,19 +64,19 @@ function buildAthleteSummaries(athletes) {
     };
   });
   // Create an index of athlete distance objects by athlete id.
-  var summaryByAthleteId = summary.reduce(reduceSummaryById, {});
+  const summaryByAthleteId = summary.reduce(reduceSummaryById, {});
 
   return [summary, summaryByAthleteId];
 }
 
 function buildAthletesWins(athletes) {
-  var reduceById = function(winsByAthleteId, winsRecord) {
+  const reduceById = function(winsByAthleteId, winsRecord) {
     winsByAthleteId[winsRecord.athleteId] = winsRecord;
     return winsByAthleteId;
   };
 
   // Build an array of athlete win objects.
-  var wins = athletes.map(function(athlete) {
+  const wins = athletes.map(function(athlete) {
     return {
       athleteId: athlete.id,
       athleteName: athlete.firstname + ' ' + athlete.lastname,
@@ -84,22 +84,22 @@ function buildAthletesWins(athletes) {
     };
   });
   // Create an index of athlete wins objects by athlete id.
-  var winsByAthleteId = wins.reduce(reduceById, {});
+  const winsByAthleteId = wins.reduce(reduceById, {});
 
   return [wins, winsByAthleteId];
 }
 
 function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
   // Build an array of year objects sorted by reverse chronological time.
-  var yearObj = yearsSet.map(function(currentYear) {
+  const yearObj = yearsSet.map(function(currentYear) {
     // Build athlete summary objects.
-    var summariesTuple = buildAthleteSummaries(athletes);
-    var summaries = summariesTuple[0];
-    var summariesByAthleteId = summariesTuple[1];
+    const summariesTuple = buildAthleteSummaries(athletes);
+    const summaries = summariesTuple[0];
+    const summariesByAthleteId = summariesTuple[1];
 
     // Build monthly and weekly win totals objects.
-    var monthlyWinsTuple = buildAthletesWins(athletes);
-    var weeklyWinsTuple = buildAthletesWins(athletes);
+    const monthlyWinsTuple = buildAthletesWins(athletes);
+    const weeklyWinsTuple = buildAthletesWins(athletes);
 
     return {
       year: currentYear,
@@ -120,7 +120,7 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
     return b.year - a.year;
   });
   // Create an index of year objects by year id.
-  var yearById = yearObj.reduce(function(yearById, yearRecord) {
+  const yearById = yearObj.reduce(function(yearById, yearRecord) {
     yearById[yearRecord.year] = yearRecord;
     return yearById;
   }, {});
@@ -128,12 +128,12 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
   // Build arrays of month objects grouped by year and sorted by reverse chronological time.
   monthsSet.forEach(function(currentMonth) {
     // Build athlete summary objects.
-    var summariesTuple = buildAthleteSummaries(athletes);
-    var summaries = summariesTuple[0];
-    var summariesByAthleteId = summariesTuple[1];
+    const summariesTuple = buildAthleteSummaries(athletes);
+    const summaries = summariesTuple[0];
+    const summariesByAthleteId = summariesTuple[1];
 
     // Add the month to the relevant year.
-    var monthObj = {
+    const monthObj = {
       month: currentMonth,
       distance: summaries,
       averageSpeed: summaries.slice(),
@@ -156,12 +156,12 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
   // Build arrays of week objects grouped by year and sorted by reverse chronological time.
   weeksSet.forEach(function(currentWeek) {
     // Build athlete summary objects.
-    var summariesTuple = buildAthleteSummaries(athletes);
-    var summaries = summariesTuple[0];
-    var summariesByAthleteId = summariesTuple[1];
+    const summariesTuple = buildAthleteSummaries(athletes);
+    const summaries = summariesTuple[0];
+    const summariesByAthleteId = summariesTuple[1];
 
     // Add the week to the relevant year.
-    var weekObj = {
+    const weekObj = {
       week: currentWeek,
       distance: summaries,
       averageSpeed: summaries.slice(),
@@ -187,15 +187,15 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
 function calculateSummary(leaderboard, activities) {
   activities.forEach(function(activity) {
     // Get the year and month portions of the activity date.
-    var date = new Date(activity.start_date);
-    var year = dateUtil.yearFromDate(date);
-    var month = dateUtil.monthFromDate(date);
-    var monthYear = dateUtil.yearFromMonth(month);
-    var week = dateUtil.weekFromDate(date);
-    var weekYear = dateUtil.yearFromWeek(week);
+    const date = new Date(activity.start_date);
+    const year = dateUtil.yearFromDate(date);
+    const month = dateUtil.monthFromDate(date);
+    const monthYear = dateUtil.yearFromMonth(month);
+    const week = dateUtil.weekFromDate(date);
+    const weekYear = dateUtil.yearFromWeek(week);
 
     // Get all the distance records that the activity fits into.
-    var summaryItems = [
+    const summaryItems = [
       // yearly record
       leaderboard.yearById[year].summaryByAthleteId[activity.athlete.id],
       // monthly record
@@ -257,14 +257,14 @@ function calculateSummary(leaderboard, activities) {
 function calculateWins(leaderboard) {
   leaderboard.year.forEach(function(yearObj) {
     yearObj.month.forEach(function(monthObj) {
-      var athleteId = monthObj.distance[0].athleteId;
+      const athleteId = monthObj.distance[0].athleteId;
       yearObj.monthlyWinsByAthleteId[athleteId].wins += 1;
     });
     yearObj.monthlyWins.sort(function(a, b) {
       return b.wins - a.wins;
     });
     yearObj.week.forEach(function(weekObj) {
-      var athleteId = weekObj.distance[0].athleteId;
+      const athleteId = weekObj.distance[0].athleteId;
       yearObj.weeklyWinsByAthleteId[athleteId].wins += 1;
     });
     yearObj.weeklyWins.sort(function(a, b) {
@@ -275,11 +275,11 @@ function calculateWins(leaderboard) {
 
 function calculateLongestRide(leaderboard, activities, athletesById) {
   activities.forEach(function(activity) {
-    var date = new Date(activity.start_date);
-    var year = dateUtil.yearFromDate(date);
-    var longestRideObj = leaderboard.yearById[year].longestRide;
+    const date = new Date(activity.start_date);
+    const year = dateUtil.yearFromDate(date);
+    const longestRideObj = leaderboard.yearById[year].longestRide;
 
-    var updateLongestRide = function() {
+    const updateLongestRide = function() {
       longestRideObj.activity = activity;
       longestRideObj.athleteId = activity.athlete.id;
       longestRideObj.athleteName = buildAthleteName(athletesById[activity.athlete.id]);
@@ -297,8 +297,8 @@ function calculateLongestRide(leaderboard, activities, athletesById) {
 }
 
 function calculateFastestRide(leaderboard, activities, athletesById) {
-  var MIN_DISTANCE = 10000;
-  var MAX_TRACKED = 3;
+  const MIN_DISTANCE = 10000;
+  const MAX_TRACKED = 3;
   function calculateActivitySpeed(activity) {
     if (activity.distance > 0)
       return Math.round(activity.distance / activity.moving_time * 3.600 * 10) / 10;
@@ -321,11 +321,11 @@ function calculateFastestRide(leaderboard, activities, athletesById) {
   }
 
   activities.forEach(function(activity) {
-    var date = new Date(activity.start_date);
-    var year = dateUtil.yearFromDate(date);
-    var fastestRides = leaderboard.yearById[year].fastestRide;
+    const date = new Date(activity.start_date);
+    const year = dateUtil.yearFromDate(date);
+    const fastestRides = leaderboard.yearById[year].fastestRide;
 
-    var updateFastestRides = function() {
+    const updateFastestRides = function() {
       //console.log('adding to list');
       // Add this activity to the list, sort, and keep the top 3.
       fastestRides.push({
@@ -366,22 +366,22 @@ function stripIndexes(leaderboard) {
 }
 
 function buildLeaderboard(athletes, activities) {
-  var blockedRideList = [356959035, 356959045, 356959046];
+  const blockedRideList = [356959035, 356959045, 356959046];
   // Only include bike rides.
   activities = activities.filter(function(activity) { return activity.type == 'Ride'; } );
   // Block Frankenstein rides.
   activities = activities.filter(function(activity) { return blockedRideList.indexOf(activity.id) < 0; } );
   // Build the complete set of years.
-  var yearsSet = buildYearsSet(activities);
+  const yearsSet = buildYearsSet(activities);
   // Build the complete set of months.
-  var monthsSet = buildMonthsSet(activities);
+  const monthsSet = buildMonthsSet(activities);
   // Build the complete set of weeks.
-  var weeksSet = buildWeeksSet(activities);
+  const weeksSet = buildWeeksSet(activities);
   // Create an index of athletes by id.
-  var athletesById = buildAthletesById(athletes);
+  const athletesById = buildAthletesById(athletes);
 
   // Build the skeleton leaderboard.
-  var leaderboard = buildSkeleton(yearsSet, monthsSet, weeksSet, athletes);
+  const leaderboard = buildSkeleton(yearsSet, monthsSet, weeksSet, athletes);
 
   // Calculate leaderboard statistics.
   calculateSummary(leaderboard, activities);
