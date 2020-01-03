@@ -297,6 +297,23 @@ app.get('/leaderboardjson', function(req, res) {
     .catch(err => sendError(res, err));
 });
 
+// Callback URL used by strava to validate subscriptions.
+app.get('/strava-webhook', function(req, res) {
+  console.log('req.query:', req.query);
+  const hubMode = req.query['hub.mode'];
+  const hubChallenge = req.query['hub.challenge'];
+  // We will ignore the `hub.verify_token` parameter because we're doing anything sensitive with the request.
+
+  if (hubMode !== 'subscribe') {
+    res.status(400).send({error: `invalid hub.mode: ${hubMode}`});
+    return;
+  }
+
+  res.send({
+    'hub.challenge': hubChallenge
+  });
+});
+
 // Create a HTTP listener.
 console.log('Creating HTTP listener');
 var server = app.listen(process.env.PORT, function() {
