@@ -59,6 +59,12 @@ module.exports.start = function() {
       });
     },
 
+    deleteActivity: async function(activityId) {
+      console.log(`Deleting activity ${activityId}`);
+      const key = ds.key(['activities', activityId]);
+      await ds.delete(key);
+    },
+
     deleteActivities: async function(athleteId) {
       console.log(`Deleting activities for athlete ${athleteId}`);
       const activities = await this.getItems('activities', { 'athlete.id': athleteId });

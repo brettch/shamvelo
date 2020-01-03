@@ -86,6 +86,18 @@ async function refreshAllAthleteActivities() {
   console.log('Completed refreshing all athlete activities');
 }
 
+async function refreshActivity(activityId, athleteId) {
+  console.log(`refreshing activity ${activityId} for athlete ${athleteId}`);
+  const activity = await strava.getActivity(activityId, athleteId);
+  console.log('activity:', activity);
+  await db.saveActivities([activity]);
+}
+
+async function deleteActivity(activityId) {
+  console.log(`deleting activity ${activityId}`);
+  await db.deleteActivity(activityId);
+}
+
 async function getAthleteAndActivities(athleteId) {
   const athletesPromise = db.getItemsByKey('athletes', athleteId);
   const activitiesPromise = db.getItems('activities', {athleteId : athleteId});
@@ -317,7 +329,31 @@ app.get('/strava-webhook', function(req, res) {
 });
 
 app.post('/strava-webhook', function(req, res) {
-  console.log('req.body:', req.body);
+  console.log('received strava notification:', req.body);
+  const objectType = req.body.object_type;
+  const aspectType = req.body.aspect_type;
+  const objectId = req.body.object_id;
+  const updates = req.body.updates;
+  const ownerId = req.body.owner_id;
+  // Update events may include an authorised=false parameter indicating that this data can no longer
+  // be accessed.  In all other cases it should be assumed to be authorised.
+  const authorised = !(aspectType === 'update' && updates.authorized === false);
+  console.log('authorized:', authorised);
+
+  // We can about activities that are added and removed.
+  if (objectType === 'activity') {
+
+    if ((aspectType === 'create' || aspectType === 'update') && authorised) {
+      refreshActivity(objectId, ownerId)
+        .then(() => console.log('activity refreshed successfully'))
+        .catch(err => console.log(err));
+    } else if (aspectType === 'delete' || authorised === false) {
+      deleteActivity(objectId)
+        .then(() => console.log('activity deleted successfully'))
+        .catch(err => console.log(err));
+    }
+  }
+
   res.send({});
 });
 

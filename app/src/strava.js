@@ -1,7 +1,7 @@
 'use strict';
 
 const { of, from, empty, merge } = require('rxjs');
-const { map, mergeMap, tap } = require('rxjs/operators');
+const { mergeMap, tap } = require('rxjs/operators');
 const strava = require('strava-v3');
 
 module.exports.start = start;
@@ -11,6 +11,7 @@ function start(getTokenById, saveTokenById) {
     getOAuthRequestAccessUrl,
     getOAuthToken,
     getAthlete,
+    getActivity,
     getActivities
   };
 
@@ -62,6 +63,22 @@ function start(getTokenById, saveTokenById) {
       const token = await getTokenById(athleteId);
       const athlete = await strava.athlete.get({ 'access_token': token.access_token });
       return athlete;
+    }
+  }
+
+  async function getActivity(activityId, athleteId) {
+    console.log(`Getting activity ${activityId} for athlete ${athleteId}`);
+    return invokeActionWithTokenRefresh(
+      getActivityImpl,
+      athleteId
+    );
+    async function getActivityImpl() {
+      const token = await getTokenById(athleteId);
+      const parameters = {
+        'access_token': token.access_token,
+        'id': activityId
+      };
+      return await strava.activities.get(parameters);
     }
   }
   
