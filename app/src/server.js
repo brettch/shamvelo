@@ -141,6 +141,8 @@ app.use(morgan('combined', {}));
 app.use(cookies.express());
 // Parse request bodies with encoding application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+// Parse request bodies with encoding application/json
+app.use(bodyParser.json());
 
 // Register the handlebars page templating engine.
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
