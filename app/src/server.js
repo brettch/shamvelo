@@ -314,6 +314,11 @@ app.get('/strava-webhook', function(req, res) {
   });
 });
 
+app.post('/strava-webhook', function(req, res) {
+  console.log('req.body:', req.body);
+  res.send({});
+});
+
 // Create a HTTP listener.
 console.log('Creating HTTP listener');
 var server = app.listen(process.env.PORT, function() {
