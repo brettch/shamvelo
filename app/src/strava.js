@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const { of, from, empty, merge } = require('rxjs');
 const { mergeMap, tap } = require('rxjs/operators');
 const strava = require('strava-v3');
@@ -78,7 +79,9 @@ function start(getTokenById, saveTokenById) {
         'access_token': token.access_token,
         'id': activityId
       };
-      return await strava.activities.get(parameters);
+      const activity = await strava.activities.get(parameters);
+      const slimActivity = pickActivityFields(activity);
+      return slimActivity;
     }
   }
   
@@ -112,11 +115,26 @@ function start(getTokenById, saveTokenById) {
           'page': page,
           'per_page': 100
         };
-        return await strava.athlete.listActivities(parameters);
+        const activities = await strava.athlete.listActivities(parameters);
+        const slimActivities = activities.map(pickActivityFields);
+        return slimActivities;
       }
     }
   
     // Begin retrieving pages from page 1.
     return getActivityPage(1);
+  }
+
+  function pickActivityFields(activity) {
+    return _.pick(activity, [
+      'id',
+      'athlete.id',
+      'distance',
+      'moving_time',
+      'name',
+      'start_date',
+      'total_elevation_gain',
+      'type'
+    ]);
   }
 }
