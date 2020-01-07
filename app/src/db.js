@@ -91,5 +91,14 @@ module.exports.start = function() {
         )
         .toPromise();
     },
+
+    // Save or refresh an athlete summary.
+    saveAthleteSummary: async function(athleteSummary) {
+      console.log(`Saving summary for athlete ${athleteSummary.athleteId}`);
+      await ds.upsert({
+        key: ds.key(['athleteSummaries', athleteSummary.athleteId]),
+        data: athleteSummary
+      });
+    }
   };
 };

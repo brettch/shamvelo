@@ -18,6 +18,7 @@ const exphbs  = require('express-handlebars');
 
 const dbEngine = require('./db');
 const leaderboardEngine = require('./leaderboard');
+const leaderboard2 = require('./leaderboard2');
 const { from } = require('rxjs');
 const { bufferCount, mergeMap } = require('rxjs/operators');
 const stravaEngine = require('./strava');
@@ -71,6 +72,8 @@ async function refreshAthleteActivities(athleteId) {
       mergeMap(activities => from(db.saveActivities(activities)))
     )
     .toPromise();
+
+  await leaderboard2.refreshAthleteSummary(athleteId);
 }
 
 async function refreshAllAthleteActivities() {
@@ -91,11 +94,18 @@ async function refreshActivity(activityId, athleteId) {
   const activity = await strava.getActivity(activityId, athleteId);
   console.log('activity:', activity);
   await db.saveActivities([activity]);
+
+  await leaderboard2.refreshAthleteSummary(athleteId);
 }
 
 async function deleteActivity(activityId) {
   console.log(`deleting activity ${activityId}`);
+  const activity = await db.getItems('activities', {'id' : activityId})[0];
   await db.deleteActivity(activityId);
+
+  if (activity) {
+    await leaderboard2.refreshAthleteSummary(activity.athlete.id);
+  }
 }
 
 async function getAthleteAndActivities(athleteId) {
