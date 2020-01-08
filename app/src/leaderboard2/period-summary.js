@@ -10,6 +10,7 @@ const emptySummary = {
   activityCount: 0,
   averageSpeed: 0,
   activeDays: [],
+  activeDayCount: 0,
   longestRide: [],
   fastestRide: []
 };
@@ -29,6 +30,7 @@ module.exports = function(_summary, activity) {
   if (!summary.activeDays.includes(dayCode)) {
     summary.activeDays.push(dayCode);
   }
+  summary.activeDayCount = summary.activeDays.length;
 
   // Create a sorted list of the longest rides.
   updatePodium(

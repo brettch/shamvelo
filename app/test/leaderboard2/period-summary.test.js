@@ -65,6 +65,7 @@ test('unique days are identified', () => {
     .reduce(summarize, null);
 
   expect(summary.activeDays.length).toEqual(2);
+  expect(summary.activeDayCount).toEqual(2);
 });
 
 test('longest rides are identified', () => {
