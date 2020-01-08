@@ -24,5 +24,5 @@ async function refreshAthleteSummary(athleteId) {
 }
 
 async function getAthleteSummary(athleteId) {
-  return db.getItems('athleteSummaries', {athleteId});
+  return db.getItems('athlete-summaries', {athleteId});
 }

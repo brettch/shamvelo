@@ -96,7 +96,7 @@ module.exports.start = function() {
     saveAthleteSummary: async function(athleteSummary) {
       console.log(`Saving summary for athlete ${athleteSummary.athleteId}`);
       await ds.upsert({
-        key: ds.key(['athleteSummaries', athleteSummary.athleteId]),
+        key: ds.key(['athlete-summaries', athleteSummary.athleteId]),
         data: athleteSummary
       });
     }
