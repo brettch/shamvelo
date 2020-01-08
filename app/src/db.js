@@ -99,6 +99,16 @@ module.exports.start = function() {
         key: ds.key(['athlete-summaries', athleteSummary.athleteId]),
         data: athleteSummary
       });
+    },
+
+    // Save or fresh a leaderboard.
+    saveLeaderboard: async function(leaderboard) {
+      console.log(`Saving leaderboard ${leaderboard.id}`);
+      console.log('leaderboard:', JSON.stringify(leaderboard));
+      await ds.upsert({
+        key: ds.key(['leaderboards', leaderboard.id]),
+        data: leaderboard
+      });
     }
   };
 };

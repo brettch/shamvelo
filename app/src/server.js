@@ -276,6 +276,7 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
   }
   
   refreshAthleteActivities(athleteId)
+    .then(() => leaderboard2.refreshLeaderboard())
     .then(() => res.redirect('../' + athleteId))
     .catch(err => sendError(res, err));
 });
@@ -283,6 +284,7 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
 // Refresh all activities.  Intended for use by a web browser.
 app.post('/refreshallactivities', function(req, res) {
   refreshAllAthleteActivities()
+    .then(() => leaderboard2.refreshLeaderboard())
     .then(() => res.redirect('..'))
     .catch(err => sendError(res, err));
 });
@@ -290,6 +292,7 @@ app.post('/refreshallactivities', function(req, res) {
 // Refresh all activities.  Intended for use by a cron trigger.
 app.get('/refreshallactivities', function(req, res) {
   refreshAllAthleteActivities()
+    .then(() => leaderboard2.refreshLeaderboard())
     .then(() => res.send(''))
     .catch(err => sendError(res, err));
 });
@@ -355,10 +358,12 @@ app.post('/strava-webhook', function(req, res) {
 
     if ((aspectType === 'create' || aspectType === 'update') && authorised) {
       refreshActivity(objectId, ownerId)
+        .then(() => leaderboard2.refreshLeaderboard())
         .then(() => console.log('activity refreshed successfully'))
         .catch(err => console.log(err));
     } else if (aspectType === 'delete' || authorised === false) {
       deleteActivity(objectId)
+        .then(() => leaderboard2.refreshLeaderboard())
         .then(() => console.log('activity deleted successfully'))
         .catch(err => console.log(err));
     }
