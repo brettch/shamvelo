@@ -97,6 +97,7 @@ module.exports.start = function() {
       console.log(`Saving summary for athlete ${athleteSummary.athleteId}`);
       await ds.upsert({
         key: ds.key(['athlete-summaries', athleteSummary.athleteId]),
+        excludeFromIndexes: ['year'],
         data: athleteSummary
       });
     },
@@ -104,9 +105,9 @@ module.exports.start = function() {
     // Save or fresh a leaderboard.
     saveLeaderboard: async function(leaderboard) {
       console.log(`Saving leaderboard ${leaderboard.id}`);
-      console.log('leaderboard:', JSON.stringify(leaderboard));
       await ds.upsert({
         key: ds.key(['leaderboards', leaderboard.id]),
+        excludeFromIndexes: ['year'],
         data: leaderboard
       });
     }
