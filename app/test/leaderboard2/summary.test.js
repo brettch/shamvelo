@@ -109,7 +109,9 @@ test('merge of single athlete', () => {
     movingTime: expectedAllYearFieldPoints,
     activityCount: expectedAllYearFieldPoints,
     activeDayCount: expectedAllYearFieldPoints,
-    averageSpeed: expectedAllYearFieldPoints
+    averageSpeed: expectedAllYearFieldPoints,
+    fastestRide: expectedAllYearFieldPoints,
+    longestRide: expectedAllYearFieldPoints
   };
   const expectedAllYear = {
     summary: expectedAllPeriodSummary,

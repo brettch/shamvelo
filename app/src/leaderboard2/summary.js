@@ -125,8 +125,8 @@ function calculatePoints(periodKey, allYear) {
     'activityCount',
     'activeDayCount',
     'averageSpeed',
-    // 'longestRide',
-    // 'fastestRide'
+    'longestRide',
+    'fastestRide'
   ].forEach(fieldName => {
     calculatePointsForField(periodPoints, allPeriodSummaries, fieldName);
   });
