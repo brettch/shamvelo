@@ -60,14 +60,14 @@ function applyPeriod(allPeriod, athletePeriod, athlete) {
   mergeNumericField('activeDayCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeNumericField('averageSpeed', sortAscending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeRideField('longestRide', 'distance', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeRideField('fastestRide', 'averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
+  mergeRideField('fastestRide', 'averageSpeed', sortAscending, allPeriodSummary, athletePeriodSummary, athlete);
 }
 
 function sortAscending(a, b) {
   return a - b;
 }
 
-function sortDescending(b, a) {
+function sortDescending(a, b) {
   return b - a;
 }
 
@@ -96,10 +96,9 @@ function mergeRideField(fieldName, rideFieldName, compareFn, allPeriodSummary, a
       athleteName: buildAthleteName(athlete)
     }));
 
-  const allRideRecords = _.get(allPeriodSummary, fieldName, []);
-  _.set(allPeriodSummary, fieldName, allRideRecords);
+  const allExistingRideRecords = _.get(allPeriodSummary, fieldName, []);
 
-  const combinedRideRecords = _.concat(allRideRecords, athleteRideRecords);
+  const combinedRideRecords = _.concat(allExistingRideRecords, athleteRideRecords);
   combinedRideRecords.sort((a, b) => compareFn(a.value, b.value));
 
   _.set(allPeriodSummary, fieldName, combinedRideRecords.slice(0, 5));
