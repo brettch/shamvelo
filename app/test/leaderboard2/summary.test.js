@@ -87,6 +87,18 @@ test('merge of single athlete', () => {
       value: athletePeriod.summary.averageSpeed
     }]
   };
+  const expectedAllYearFieldPoints = [{
+    ...allAthleteRecord,
+    value: 2
+  }];
+  const expectedAllYearPoints = {
+    distance: expectedAllYearFieldPoints,
+    elevation: expectedAllYearFieldPoints,
+    movingTime: expectedAllYearFieldPoints,
+    activityCount: expectedAllYearFieldPoints,
+    activeDayCount: expectedAllYearFieldPoints,
+    averageSpeed: expectedAllYearFieldPoints
+  };
   const expectedAllYear = {
     summary: expectedAllPeriodSummary,
     month: {
@@ -104,6 +116,10 @@ test('merge of single athlete', () => {
       '2': {
         summary: expectedAllPeriodSummary
       }
+    },
+    points: {
+      month: expectedAllYearPoints,
+      week: expectedAllYearPoints
     }
   };
   const expectedSummary = {
