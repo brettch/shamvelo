@@ -85,7 +85,7 @@ test('longest rides are identified', () => {
     }))
     .reduce(summarize, null);
   expect(summary.longestRide.length).toEqual(5);
-  expect(summary.longestRide.map(activity => activity.id)).toEqual([1, 2, 3, 4, 5]);
+  expect(summary.longestRide.map(activity => activity.id)).toEqual([8, 7, 6, 5, 4]);
 });
 
 test('fastest rides are identified', () => {

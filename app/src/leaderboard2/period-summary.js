@@ -41,7 +41,7 @@ module.exports = function(_summary, activity) {
       name: activity.name,
       distance: activity.distance
     },
-    (a, b) => a.distance - b.distance
+    (a, b) => b.distance - a.distance
   );
 
   // Create a sorted list of the fastest rides.
