@@ -59,6 +59,8 @@ function applyPeriod(allPeriod, athletePeriod, athlete) {
   mergeNumericField('activityCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeNumericField('activeDayCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeNumericField('averageSpeed', sortAscending, allPeriodSummary, athletePeriodSummary, athlete);
+  mergeRideField('longestRide', 'distance', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
+  mergeRideField('fastestRide', 'averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
 }
 
 function sortAscending(a, b) {
@@ -72,7 +74,7 @@ function sortDescending(b, a) {
 function mergeNumericField(fieldName, compareFn, allPeriod, athletePeriod, athlete) {
   const athleteField = {
     athleteId: athlete.id,
-    athleteName: `${athlete.firstname} ${athlete.lastname}`,
+    athleteName: buildAthleteName(athlete),
     value: _.get(athletePeriod, fieldName)
   };
 
@@ -81,6 +83,30 @@ function mergeNumericField(fieldName, compareFn, allPeriod, athletePeriod, athle
 
   allField.push(athleteField);
   allField.sort((a, b) => compareFn(a.value, b.value));
+}
+
+function mergeRideField(fieldName, rideFieldName, compareFn, allPeriodSummary, athletePeriodSummary, athlete) {
+  const athleteRideRecords = _
+    .get(athletePeriodSummary, fieldName)
+    .map(rideRecord => ({
+      id: rideRecord.id,
+      name: rideRecord.name,
+      value: _.get(rideRecord, rideFieldName),
+      athleteId: athlete.id,
+      athleteName: buildAthleteName(athlete)
+    }));
+
+  const allRideRecords = _.get(allPeriodSummary, fieldName, []);
+  _.set(allPeriodSummary, fieldName, allRideRecords);
+
+  const combinedRideRecords = _.concat(allRideRecords, athleteRideRecords);
+  combinedRideRecords.sort((a, b) => compareFn(a.value, b.value));
+
+  _.set(allPeriodSummary, fieldName, combinedRideRecords.slice(0, 5));
+}
+
+function buildAthleteName(athlete) {
+  return `${athlete.firstname} ${athlete.lastname}`;
 }
 
 function calculatePoints(periodKey, allYear) {

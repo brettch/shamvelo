@@ -85,6 +85,18 @@ test('merge of single athlete', () => {
     averageSpeed: [{
       ...allAthleteRecord,
       value: athletePeriod.summary.averageSpeed
+    }],
+    fastestRide: [{
+      ...allAthleteRecord,
+      id: athletePeriod.summary.fastestRide[0].id,
+      name: athletePeriod.summary.fastestRide[0].name,
+      value: athletePeriod.summary.fastestRide[0].averageSpeed
+    }],
+    longestRide: [{
+      ...allAthleteRecord,
+      id: athletePeriod.summary.longestRide[0].id,
+      name: athletePeriod.summary.longestRide[0].name,
+      value: athletePeriod.summary.longestRide[0].distance
     }]
   };
   const expectedAllYearFieldPoints = [{
