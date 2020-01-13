@@ -50,7 +50,7 @@ function applySubYear(periodKey, allPeriods, athletePeriods, athlete) {
 }
 
 function applyPeriod(allPeriod, athletePeriod, athlete) {
-  const allPeriodSummary = _.get(allPeriod, allPeriod, {});
+  const allPeriodSummary = _.get(allPeriod, 'summary', {});
   _.set(allPeriod, 'summary', allPeriodSummary);
   const athletePeriodSummary = _.get(athletePeriod, 'summary', {});
   mergeNumericField('distance', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
