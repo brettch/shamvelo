@@ -58,13 +58,9 @@ function applyPeriod(allPeriod, athletePeriod, athlete) {
   mergeNumericField('movingTime', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeNumericField('activityCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeNumericField('activeDayCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeNumericField('averageSpeed', sortAscending, allPeriodSummary, athletePeriodSummary, athlete);
+  mergeNumericField('averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
   mergeRideField('longestRide', 'distance', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeRideField('fastestRide', 'averageSpeed', sortAscending, allPeriodSummary, athletePeriodSummary, athlete);
-}
-
-function sortAscending(a, b) {
-  return a - b;
+  mergeRideField('fastestRide', 'averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
 }
 
 function sortDescending(a, b) {
