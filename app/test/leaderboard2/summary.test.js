@@ -145,3 +145,185 @@ test('merge of single athlete', () => {
 
   expect(summary).toEqual(expectedSummary);
 });
+
+test('merge two year summaries', () => {
+  const athlete1Data = {
+    athlete: {
+      id: 1,
+      firstname: 'A',
+      lastname: 'AA'
+    },
+    summary: {
+      year: {
+        '2020': {
+          summary: {
+            distance: 1000,
+            elevation: 100,
+            movingTime: 300,
+            activityCount: 1,
+            activeDayCount: 1,
+            averageSpeed: 25,
+            fastestRide: [{
+              id: 11,
+              name: 'a1ride1',
+              averageSpeed: 24
+            }],
+            longestRide: [{
+              id: 12,
+              name:'a1ride2',
+              distance: 100
+            }]
+          }
+        }
+      }
+    }
+  };
+  const athlete2Data = {
+    athlete: {
+      id: 2,
+      firstname: 'B',
+      lastname: 'BB'
+    },
+    summary: {
+      year: {
+        '2020': {
+          summary: {
+            distance: 2000,
+            elevation: 50,
+            movingTime: 600,
+            activityCount: 2,
+            activeDayCount: 2,
+            averageSpeed: 24,
+            fastestRide: [{
+              id: 21,
+              name: 'a2ride1',
+              averageSpeed: 23
+            }],
+            longestRide: [{
+              id: 22,
+              name:'a2ride2',
+              distance: 200
+            }]
+          }
+        }
+      }
+    }
+  };
+
+  const expectedSummary = {
+    distance: [
+      {
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 2000
+      },
+      {
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 1000
+      }
+    ],
+    elevation: [
+      {
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 100
+      },
+      {
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 50
+      }
+    ],
+    movingTime: [
+      {
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 600
+      },
+      {
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 300
+      }
+    ],
+    activityCount: [
+      {
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 2
+      },
+      {
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 1
+      }
+    ],
+    activeDayCount: [
+      {
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 2
+      },
+      {
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 1
+      }
+    ],
+    averageSpeed: [
+      {
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 25
+      },
+      {
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 24
+      }
+    ],
+    fastestRide: [
+      {
+        id: 11,
+        name: 'a1ride1',
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 24
+      },
+      {
+        id: 21,
+        name: 'a2ride1',
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 23
+      }
+    ],
+    longestRide: [
+      {
+        id: 22,
+        name: 'a2ride2',
+        athleteId: 2,
+        athleteName: 'B BB',
+        value: 200
+      },
+      {
+        id: 12,
+        name: 'a1ride2',
+        athleteId: 1,
+        athleteName: 'A AA',
+        value: 100
+      }
+    ]
+  };
+
+  const actualSummary = [
+    athlete1Data,
+    athlete2Data
+  ].reduce(
+    (previousSummary, athleteData) => summarize(previousSummary, athleteData.summary, athleteData.athlete),
+    {}
+  );
+
+  expect(actualSummary.year['2020'].summary).toEqual(expectedSummary);
+});
