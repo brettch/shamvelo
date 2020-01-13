@@ -21,7 +21,7 @@ function applyYears(allSummary, athleteSummary, athlete) {
 }
 
 function applyYear(year, allYears, athleteYears, athlete) {
-  const allYear = _.get(allYears, year, {});
+  const allYear = _.get(allYears, year, {year: parseInt(year)});
   _.set(allYears, year, allYear);
   const athleteYear = _.get(athleteYears, year, {});
   applyPeriod(allYear, athleteYear, athlete);

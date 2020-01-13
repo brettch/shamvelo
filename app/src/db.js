@@ -110,6 +110,21 @@ module.exports.start = function() {
         excludeFromIndexes: ['year'],
         data: leaderboard
       });
+    },
+
+    // Save or refresh a list of yearly leaderboards.
+    saveLeaderboards: async function(leaderboards) {
+      console.log('saving leaderboards');
+      await from(leaderboards)
+        .pipe(
+          map(leaderboard => ({
+            key: ds.key(['leaderboards', leaderboard.year]),
+            data: leaderboard
+          })),
+          toArray(),
+          mergeMap(entities => ds.upsert(entities))
+        )
+        .toPromise();
     }
   };
 };

@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const athleteSummarize = require('./athlete-summary');
 const leaderboardSummarize = require('./summary');
 const db = require('../db').start();
@@ -38,10 +39,9 @@ async function refreshLeaderboard() {
     const athlete = athletesById[athleteSummary.athleteId];
     return leaderboardSummarize(previousSummary, athleteSummary, athlete);
   }, {});
-  await db.saveLeaderboard({
-    id: 2,
-    ...summary
-  });
+  const yearlySummaries = _.values(summary.year);
+  await db.saveLeaderboards(yearlySummaries);
+
   console.log('leaderboard 2 refreshed');
 }
 

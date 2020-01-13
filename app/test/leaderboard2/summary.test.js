@@ -138,8 +138,14 @@ test('merge of single athlete', () => {
   };
   const expectedSummary = {
     year: {
-      '2019': expectedAllYear,
-      '2020': expectedAllYear
+      '2019': {
+        ...expectedAllYear,
+        year: 2019
+      },
+      '2020': {
+        ...expectedAllYear,
+        year: 2020
+      }
     }
   };
 
