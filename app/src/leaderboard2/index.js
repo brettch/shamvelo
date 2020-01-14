@@ -10,6 +10,7 @@ const mapById = require('./map-by-id');
 module.exports = {
   refreshAthleteSummary,
   refreshLeaderboard,
+  getLatestLeaderboardIds,
   getLeaderboard
 };
 
@@ -43,6 +44,27 @@ async function refreshLeaderboard() {
   await db.saveLeaderboards(yearlySummaries);
 
   console.log('leaderboard 2 refreshed');
+}
+
+async function getLatestLeaderboardIds() {
+  const latestLeaderboardYear = await db.getFirstItem('leaderboards', 'year', true);
+  console.log('latestLeaderboardYear:', latestLeaderboardYear);
+
+  const year = parseInt(latestLeaderboardYear.year);
+  const months = Object
+    .keys(latestLeaderboardYear.month)
+    .map(monthString => parseInt(monthString));
+  months.sort((a, b) => b - a);
+  const month = months[0];
+  const weeks = Object
+    .keys(latestLeaderboardYear.week)
+    .map(weekString => parseInt(weekString));
+  weeks.sort((a, b) => b - a);
+  const week = weeks[0];
+  console.log('months:', months);
+  console.log('weeks:', weeks);
+
+  return { year, month, week };
 }
 
 async function getLeaderboard(year, month, week) {

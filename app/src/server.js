@@ -324,6 +324,17 @@ app.get('/leaderboardjson', function(req, res) {
     .catch(err => sendError(res, err));
 });
 
+// Determine the latest leaderboard 2 year/month/week combination and redirect to it.
+app.get('/leaderboard2', function(req, res) {
+  leaderboard2
+    .getLatestLeaderboardIds()
+    .then(leaderboardIds => res.redirect(
+      307,
+      `./leaderboard2/${leaderboardIds.year}/${leaderboardIds.month}/${leaderboardIds.week}`
+    ))
+    .catch(err => sendError(res, err));
+});
+
 // Display leaderboard 2 for a specific year/month/week combination.
 app.get('/leaderboard2/:year/:month/:week', function(req, res) {
   const year = parseInt(req.params.year);

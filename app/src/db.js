@@ -41,6 +41,19 @@ module.exports.start = function() {
       return items[0];
     },
 
+    getFirstItem: async function(collection, sortField, descending = false) {
+      console.log(`Searching for first record in ${collection} based on field ${sortField}`);
+      const items = await ds
+        .createQuery(collection)
+        .order(sortField, {descending})
+        .limit(1)
+        .run();
+
+      // Result is a two part array, first element is the results, second is query info.
+      // In this case we're only interested in the first record of the results.
+      return items[0][0];
+    },
+
     // Save or refresh an athlete.
     saveAthlete: async function(athlete) {
       console.log(`Saving athlete ${athlete.id}`);
