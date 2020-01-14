@@ -324,6 +324,22 @@ app.get('/leaderboardjson', function(req, res) {
     .catch(err => sendError(res, err));
 });
 
+// Display leaderboard 2 for a specific year/month/week combination.
+app.get('/leaderboard2/:year/:month/:week', function(req, res) {
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month);
+  const week = parseInt(req.params.week);
+  console.log(`Displaying leaderboard for year ${year}, month ${month}, week ${week}`);
+
+  leaderboard2
+    .getLeaderboard(year, month, week)
+    .then(leaderboard => res.render('leaderboard2.handlebars', {
+      leaderboard,
+      leaderboardjson: JSON.stringify(leaderboard, null, 2)
+    }))
+    .catch(err => sendError(res, err));
+});
+
 // Callback URL used by strava to validate subscriptions.
 app.get('/strava-webhook', function(req, res) {
   console.log('req.query:', req.query);

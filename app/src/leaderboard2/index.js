@@ -45,6 +45,19 @@ async function refreshLeaderboard() {
   console.log('leaderboard 2 refreshed');
 }
 
-async function getLeaderboard() {
-  return db.getItems('leaderboards', {id: 2})[0];
+async function getLeaderboard(year, month, week) {
+  const records = await db.getItems('leaderboards', {year});
+  const yearRecord = records.length > 0 ? records[0] : {};
+
+  const points = yearRecord.points;
+  const yearSummary = yearRecord.summary;
+  const monthSummary = _.get(yearRecord, `month.${month}.summary`);
+  const weekSummary = _.get(yearRecord, `week.${week}.summary`);
+
+  return {
+    points,
+    year: yearSummary,
+    month: monthSummary,
+    week: weekSummary
+  };
 }
