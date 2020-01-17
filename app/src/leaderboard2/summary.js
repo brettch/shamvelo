@@ -125,6 +125,15 @@ function calculatePoints(periodKey, allYear) {
   ].forEach(fieldName => {
     calculatePointsForField(periodPoints, allPeriodSummaries, fieldName);
   });
+
+  tallyPointsForTotalField(periodPoints, [
+    'distance',
+    'elevation',
+    'activeDayCount',
+    'averageSpeed',
+    'longestRide',
+    'fastestRide'
+  ]);
 }
 
 function calculatePointsForField(periodPoints, allPeriodSummaries, fieldName) {
@@ -142,6 +151,19 @@ function calculatePointsForField(periodPoints, allPeriodSummaries, fieldName) {
       athleteId: athleteWins[0].athleteId,
       athleteName: athleteWins[0].athleteName,
       value: athleteWins.length
-    })).sort((a, b) => b.points - a.points);
+    })).sort((a, b) => b.value - a.value);
   _.set(periodPoints, fieldName, athletePoints);
+}
+
+function tallyPointsForTotalField(periodPoints, fieldNames) {
+  const allFieldPoints = _.flatMap(fieldNames, fieldName => _.get(periodPoints, fieldName));
+  const allPointsGroupedByAthlete = _.values(_.groupBy(allFieldPoints, record => record.athleteId));
+  const totalPoints = allPointsGroupedByAthlete
+    .map(athletePointsRecords => athletePointsRecords.reduce((totalRecord, fieldRecord) => ({
+      athleteId: totalRecord.athleteId,
+      athleteName: totalRecord.athleteName,
+      value: totalRecord.value + fieldRecord.value
+    })))
+    .sort((a, b) => b.value - a.value);
+  _.set(periodPoints, 'total', totalPoints);
 }
