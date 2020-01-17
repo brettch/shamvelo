@@ -361,7 +361,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Distance</th></tr>
           {{#each distance}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -376,7 +376,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Elevation</th></tr>
           {{#each elevation}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsMetres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -391,7 +391,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Duration</th></tr>
           {{#each movingTime}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{secondsAsHours this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -455,7 +455,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Ride</th></tr>
           {{#each longestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -491,7 +491,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Distance</th></tr>
           {{#each distance}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -506,7 +506,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Elevation</th></tr>
           {{#each elevation}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsMetres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -521,7 +521,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Duration</th></tr>
           {{#each movingTime}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{secondsAsHours this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -585,7 +585,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Ride</th></tr>
           {{#each longestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -621,7 +621,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Distance</th></tr>
           {{#each distance}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -636,7 +636,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Elevation</th></tr>
           {{#each elevation}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsMetres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -651,7 +651,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Duration</th></tr>
           {{#each movingTime}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}}</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{secondsAsHours this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -715,7 +715,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Ride</th></tr>
           {{#each longestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -740,23 +740,6 @@
 {{/with}}
 
 {{/with}}
-
-<!--
-  year
-  fields
-  distance elevation movingTime
-  activityCount activeDayCount
-  averageSpeed longestRide fastestRide
-  points
-  total
-  distance elevation movingTime
-  activityCount activeDayCount
-  averageSpeed longestRide fastestRide
-
-  week
-
-  month
--->
 
     <pre>{{leaderboardjson}}</pre>
 

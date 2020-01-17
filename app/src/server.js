@@ -167,7 +167,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Register the handlebars page templating engine.
-app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+var hbs = exphbs.create({
+  defaultLayout: 'main',
+  helpers: {
+    metresAsKilometres: metres => (metres / 1000).toFixed(1),
+    metresAsMetres: metres => metres.toFixed(0),
+    secondsAsHours: seconds => (seconds / 3600).toFixed(1)
+  }
+});
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 // Configure the home page to be the default.
