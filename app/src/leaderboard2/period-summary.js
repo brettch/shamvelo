@@ -70,7 +70,7 @@ function toDayCode(activity) {
 }
 
 function toAverageSpeed(distance, movingTime) {
-  return Math.round(distance * 36 / movingTime) / 10;
+  return distance / movingTime;
 }
 
 function updatePodium(podium, maxPodiumSize, item, sortBy) {

@@ -172,7 +172,8 @@ var hbs = exphbs.create({
   helpers: {
     metresAsKilometres: metres => (metres / 1000).toFixed(1),
     metresAsMetres: metres => metres.toFixed(0),
-    secondsAsHours: seconds => (seconds / 3600).toFixed(1)
+    secondsAsHours: seconds => (seconds / 3600).toFixed(1),
+    metresPerSecondAsKmh: mps => (mps * 3.6).toFixed(1)
   }
 });
 app.engine('handlebars', hbs.engine);

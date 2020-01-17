@@ -19,7 +19,7 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.elevation).toEqual(activity.total_elevation_gain);
   expect(singleSummary.movingTime).toEqual(activity.moving_time);
   expect(singleSummary.activityCount).toEqual(1);
-  expect(singleSummary.averageSpeed).toEqual(1.8);
+  expect(singleSummary.averageSpeed).toEqual(0.5);
   expect(singleSummary.activeDays.length).toEqual(1);
   expect(singleSummary.longestRide.length).toEqual(1);
   expect(singleSummary.longestRide[0].id).toEqual(activity.id);
@@ -28,7 +28,7 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.fastestRide.length).toEqual(1);
   expect(singleSummary.fastestRide[0].id).toEqual(activity.id);
   expect(singleSummary.fastestRide[0].name).toEqual(activity.name);
-  expect(singleSummary.fastestRide[0].averageSpeed).toEqual(1.8);
+  expect(singleSummary.fastestRide[0].averageSpeed).toEqual(0.5);
 });
 
 test('distance is added', () => {
@@ -48,7 +48,7 @@ test('activity count is tallied', () => {
 });
 
 test('average speed is averaged', () => {
-  expect(doubleSummary.averageSpeed).toEqual(1.8);
+  expect(doubleSummary.averageSpeed).toEqual(0.5);
 });
 
 test('unique days are identified', () => {
