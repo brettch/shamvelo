@@ -43,7 +43,7 @@
       <tr><td>Polka Dot</td><td>{{year.elevation.[0].athleteName}} ({{metresAsMetres year.elevation.[0].value}} m)</td></tr>
       <tr>
         <td>Ironman (Longest Ride)</td>
-        <td>{{year.longestRide.[0].athleteName}} (<a href="https://www.strava.com/activities/{{year.longestRide.[0].id}}">{{year.longestRide.[0].name}} - {{year.longestRide.[0].value}} m</a>)</td>
+        <td>{{year.longestRide.[0].athleteName}} (<a href="https://www.strava.com/activities/{{year.longestRide.[0].id}}">{{year.longestRide.[0].name}} - {{metresAsKilometres year.longestRide.[0].value}} km</a>)</td>
       </tr>
       <tr><td>Alley Cat (Fastest Average)</td><td>{{year.averageSpeed.[0].athleteName}} ({{metresPerSecondAsKmh year.averageSpeed.[0].value}} km/h)</td></tr>
       <tr>
