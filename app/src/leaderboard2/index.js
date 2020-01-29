@@ -48,7 +48,6 @@ async function refreshLeaderboard() {
 
 async function getLatestLeaderboardIds() {
   const latestLeaderboardYear = await db.getFirstItem('leaderboards', 'year', true);
-  console.log('latestLeaderboardYear:', latestLeaderboardYear);
 
   const year = parseInt(latestLeaderboardYear.year);
   const months = Object
