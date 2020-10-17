@@ -1,13 +1,10 @@
-# What is it?
+# Shamvelo
+
+## What is it?
 
 Shamvelo is a simple application for allowing a small group of friends to share and compare Strava statistics.  It is a Google App Engine/Datastore application that uses OAuth authorisation to register and retrieve athlete details from the Strava API and then stores the data in a database for analysis and summary.  All interaction is via a web interface.
 
-# Requirements
-
-Docker - The application is packaged into Docker containers, so requires a Linux server with the Docker daemon running.  For Windows and OSX, try Boot2Docker.
-Docker Compose - Multiple docker containers are linked together using Docker Compose (a.k.a. Fig).
-
-# Local setup and development
+## Local setup and development
 
 All commands should be run from the `app` folder.
 
@@ -44,7 +41,7 @@ Access the application from a browser.
 open http://localhost:8080
 ```
 
-# Deployment
+## Deployment
 
 All commands should be run from the `app` folder.
 
@@ -61,3 +58,7 @@ Deploy the application and cron jobs.
 gcloud app deploy app.yaml
 gcloud app deploy cron.yaml
 ```
+
+## Usage
+
+See [Leaderboard 2](./doc/leaderboard2.md) for details of the information displayed on the leaderboard.
