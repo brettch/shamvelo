@@ -1,57 +1,63 @@
 # What is it?
 
-Shamvelo is a simple application for allowing a small group of friends to share and compare Strava statistics.  It is a Node.js/MongoDB application that uses OAuth authorisation to register and retrieve athlete details from the Strava API, and then stores the data in a local database for analysis and summary.  All interaction is via a web interface.
+Shamvelo is a simple application for allowing a small group of friends to share and compare Strava statistics.  It is a Google App Engine/Datastore application that uses OAuth authorisation to register and retrieve athlete details from the Strava API and then stores the data in a database for analysis and summary.  All interaction is via a web interface.
 
 # Requirements
 
 Docker - The application is packaged into Docker containers, so requires a Linux server with the Docker daemon running.  For Windows and OSX, try Boot2Docker.
 Docker Compose - Multiple docker containers are linked together using Docker Compose (a.k.a. Fig).
 
-# Installation
+# Local setup and development
 
-## Required Steps
+All commands should be run from the `app` folder.
 
-Clone the repository locally.
+Setup application credentials to access the Google Cloud Platform.
 
-  git clone git@github.com:brettch/shamvelo.git
+```bash
+gcloud auth application-default login
+```
 
-Build the docker images.
+Install and activate the correct node version.  This requires [NVM](https://github.com/nvm-sh/nvm) to be installed and configured in your shell.
 
-  fig build
+```bash
+nvm install
+nvm use
+```
 
-Copy env.sh.tplt to env.sh.
+Install application dependencies.  This requires [Yarn](https://yarnpkg.com/) to be installed locally.
 
-  cp env.sh.tplt env.sh
+```bash
+yarn install
+```
 
-Edit env.sh and modify the variables to suit your environment.
+Configure the application settings.  Copy `.env.tplt` to `.env` and update all settings as appropriate.
 
 Start the application.
 
-  fig up
+```bash
+npm start
+```
 
-## Optional Steps
+Access the application from a browser.
 
-### Expose via Apache Web Server
+```bash
+open http://localhost:8080
+```
 
-To expose the application via an existing Apache Web Server, use the following configuration snippet.
+# Deployment
 
-    ProxyPass /shamvelo http://localhost:8080
-    ProxyPassReverse /shamvelo http://localhost:8080
-  
-    <Location /shamvelo>
-            SSLRequireSSL
-  
-            AuthType Basic
-            AuthName "Shamvelo Realm"
-            AuthUserFile /etc/httpd/conf.d/passwd
-  
-            Require valid-user
-    </Location>
+All commands should be run from the `app` folder.
 
-This snippet should be placed in its own file.  For example, on Fedora an appropriate location is /etc/httpd/conf.d/shamvelo.conf.
+Setup gcloud user credentials to access the Google Cloud Platform.
 
-The config limits access to users defined in the /etc/httpd/conf.d/passwd file.
+```bash
+gcloud init
+gcloud auth login
+```
 
-If port 8080 is already in use, the port number must be changed in the Apache config, and in the application fig.yml.
+Deploy the application and cron jobs.
 
-# Licencing
+```
+gcloud app deploy app.yaml
+gcloud app deploy cron.yaml
+```
