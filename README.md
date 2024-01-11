@@ -6,13 +6,15 @@ Shamvelo is a simple application for allowing a small group of friends to share 
 
 ## Local setup and development
 
-All commands should be run from the `app` folder.
-
-Setup application credentials to access the Google Cloud Platform.
+Setup gcloud user and application credentials to access the Google Cloud Platform.
 
 ```bash
+gcloud init
+gcloud auth login
 gcloud auth application-default login
 ```
+
+All commands should be run from the `app` folder.
 
 Install and activate the correct node version.  This requires [NVM](https://github.com/nvm-sh/nvm) to be installed and configured in your shell.
 
@@ -21,10 +23,10 @@ nvm install
 nvm use
 ```
 
-Install application dependencies.  This requires [Yarn](https://yarnpkg.com/) to be installed locally.
+Install application dependencies.
 
 ```bash
-yarn install
+npm install
 ```
 
 Configure the application settings.  Copy `.env.tplt` to `.env` and update all settings as appropriate.
@@ -44,13 +46,6 @@ open http://localhost:8080
 ## Deployment
 
 All commands should be run from the `app` folder.
-
-Setup gcloud user credentials to access the Google Cloud Platform.
-
-```bash
-gcloud init
-gcloud auth login
-```
 
 Deploy the application and cron jobs.
 
