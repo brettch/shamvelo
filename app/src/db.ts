@@ -10,7 +10,7 @@ module.exports.start = function() {
   return {
 
     // Get specific items by key.
-    getItemsByKey: async function(collection, keys) {
+    getItemsByKey: async function(collection: any, keys: any) {
       console.log('Retrieving ' + collection + ' with keys ' + util.stringify(keys));
 
       const dsKeys = Array.isArray(keys) ?
@@ -23,7 +23,7 @@ module.exports.start = function() {
     },
 
     // Search for items in the specified collection.
-    getItems: async function(collection, criteria) {
+    getItems: async function(collection: any, criteria: any) {
       console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
 
       const allItemsQuery = ds.createQuery(collection);
@@ -39,7 +39,7 @@ module.exports.start = function() {
       return items[0];
     },
 
-    getFirstItem: async function(collection, sortField, descending = false) {
+    getFirstItem: async function(collection: any, sortField: any, descending = false) {
       console.log(`Searching for first record in ${collection} based on field ${sortField}`);
       const items = await ds
         .createQuery(collection)
@@ -53,7 +53,7 @@ module.exports.start = function() {
     },
 
     // Save or refresh an athlete.
-    saveAthlete: async function(athlete) {
+    saveAthlete: async function(athlete: any) {
       console.log(`Saving athlete ${athlete.id}`);
       await ds.upsert({
         key: ds.key(['athletes', athlete.id]),
@@ -62,7 +62,7 @@ module.exports.start = function() {
     },
 
     // Save or refresh an athlete's token.
-    saveAthleteToken: async function(id, token) {
+    saveAthleteToken: async function(id: any, token: any) {
       console.log(`Saving token for athlete ${id}`);
       await ds.upsert({
         key: ds.key(['tokens', id]),
@@ -70,41 +70,41 @@ module.exports.start = function() {
       });
     },
 
-    deleteActivity: async function(activityId) {
+    deleteActivity: async function(activityId: any) {
       console.log(`Deleting activity ${activityId}`);
       const key = ds.key(['activities', activityId]);
       await ds.delete(key);
     },
 
-    deleteActivities: async function(athleteId) {
+    deleteActivities: async function(athleteId: any) {
       console.log(`Deleting activities for athlete ${athleteId}`);
       const activities = await this.getItems('activities', { 'athlete.id': athleteId });
       await from(activities)
         .pipe(
-          map(activity => ds.key(['activities', activity.id])),
+          map((activity: any) => ds.key(['activities', activity.id])),
           bufferCount(100),
-          mergeMap(keys => from(ds.delete(keys)))
+          mergeMap((keys: any) => from(ds.delete(keys)))
         )
         .toPromise();
     },
 
     // Save or refresh a list of activities.
-    saveActivities: async function(activities) {
+    saveActivities: async function(activities: any) {
       console.log(`Saving ${activities.length} activities`);
       await from(activities)
         .pipe(
-          map(activity => ({
+          map((activity: any) => ({
             key: ds.key(['activities', activity.id]),
             data: activity
           })),
           toArray(),
-          mergeMap(entities => ds.upsert(entities))
+          mergeMap((entities: any) => ds.upsert(entities))
         )
         .toPromise();
     },
 
     // Save or refresh an athlete summary.
-    saveAthleteSummary: async function(athleteSummary) {
+    saveAthleteSummary: async function(athleteSummary: any) {
       console.log(`Saving summary for athlete ${athleteSummary.athleteId}`);
       await ds.upsert({
         key: ds.key(['athlete-summaries', athleteSummary.athleteId]),
@@ -114,7 +114,7 @@ module.exports.start = function() {
     },
 
     // Save or fresh a leaderboard.
-    saveLeaderboard: async function(leaderboard) {
+    saveLeaderboard: async function(leaderboard: any) {
       console.log(`Saving leaderboard ${leaderboard.id}`);
       await ds.upsert({
         key: ds.key(['leaderboards', leaderboard.id]),
@@ -124,16 +124,16 @@ module.exports.start = function() {
     },
 
     // Save or refresh a list of yearly leaderboards.
-    saveLeaderboards: async function(leaderboards) {
+    saveLeaderboards: async function(leaderboards: any) {
       console.log('saving leaderboards');
       await from(leaderboards)
         .pipe(
-          map(leaderboard => ({
+          map((leaderboard: any) => ({
             key: ds.key(['leaderboards', leaderboard.year]),
             data: leaderboard
           })),
           toArray(),
-          mergeMap(entities => ds.upsert(entities))
+          mergeMap((entities: any) => ds.upsert(entities))
         )
         .toPromise();
     }

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-module.exports = function(_allSummary, athleteSummary, athlete) {
+module.exports = function(_allSummary: any, athleteSummary: any, athlete: any) {
   const allSummary = _allSummary ? _allSummary : {};
 
   applyYears(allSummary, athleteSummary, athlete);
@@ -8,7 +8,7 @@ module.exports = function(_allSummary, athleteSummary, athlete) {
   return allSummary;
 };
 
-function applyYears(allSummary, athleteSummary, athlete) {
+function applyYears(allSummary: any, athleteSummary: any, athlete: any) {
   const allYears = _.get(allSummary, 'year', {});
   _.set(allSummary, 'year', allYears);
   const athleteYears = _.get(athleteSummary, 'year', {});
@@ -18,7 +18,7 @@ function applyYears(allSummary, athleteSummary, athlete) {
   });
 }
 
-function applyYear(year, allYears, athleteYears, athlete) {
+function applyYear(year: any, allYears: any, athleteYears: any, athlete: any) {
   const allYear = _.get(allYears, year, {year: parseInt(year)});
   _.set(allYears, year, allYear);
   const athleteYear = _.get(athleteYears, year, {});
@@ -29,7 +29,7 @@ function applyYear(year, allYears, athleteYears, athlete) {
   calculatePoints('week', allYear);
 }
 
-function applySubYears(periodType, allYear, athleteYear, athlete) {
+function applySubYears(periodType: any, allYear: any, athleteYear: any, athlete: any) {
   const allPeriods = _.get(allYear, periodType, {});
   _.set(allYear, periodType, allPeriods);
   const athletePeriods = _.get(athleteYear, periodType, {});
@@ -39,7 +39,7 @@ function applySubYears(periodType, allYear, athleteYear, athlete) {
   });
 }
 
-function applySubYear(periodKey, allPeriods, athletePeriods, athlete) {
+function applySubYear(periodKey: any, allPeriods: any, athletePeriods: any, athlete: any) {
   const allPeriod = _.get(allPeriods, periodKey, {});
   _.set(allPeriods, periodKey, allPeriod);
   const athletePeriod = _.get(athletePeriods, periodKey, {});
@@ -47,7 +47,7 @@ function applySubYear(periodKey, allPeriods, athletePeriods, athlete) {
   applyPeriod(allPeriod, athletePeriod, athlete);
 }
 
-function applyPeriod(allPeriod, athletePeriod, athlete) {
+function applyPeriod(allPeriod: any, athletePeriod: any, athlete: any) {
   const allPeriodSummary = _.get(allPeriod, 'summary', {});
   _.set(allPeriod, 'summary', allPeriodSummary);
   const athletePeriodSummary = _.get(athletePeriod, 'summary', {});
@@ -61,11 +61,11 @@ function applyPeriod(allPeriod, athletePeriod, athlete) {
   mergeRideField('fastestRide', 'averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
 }
 
-function sortDescending(a, b) {
+function sortDescending(a: any, b: any) {
   return b - a;
 }
 
-function mergeNumericField(fieldName, compareFn, allPeriod, athletePeriod, athlete) {
+function mergeNumericField(fieldName: any, compareFn: any, allPeriod: any, athletePeriod: any, athlete: any) {
   const athleteField = {
     athleteId: athlete.id,
     athleteName: buildAthleteName(athlete),
@@ -76,13 +76,13 @@ function mergeNumericField(fieldName, compareFn, allPeriod, athletePeriod, athle
   _.set(allPeriod, fieldName, allField);
 
   allField.push(athleteField);
-  allField.sort((a, b) => compareFn(a.value, b.value));
+  allField.sort((a: any, b: any) => compareFn(a.value, b.value));
 }
 
-function mergeRideField(fieldName, rideFieldName, compareFn, allPeriodSummary, athletePeriodSummary, athlete) {
+function mergeRideField(fieldName: any, rideFieldName: any, compareFn: any, allPeriodSummary: any, athletePeriodSummary: any, athlete: any) {
   const athleteRideRecords = _
     .get(athletePeriodSummary, fieldName)
-    .map(rideRecord => ({
+    .map((rideRecord: any) => ({
       id: rideRecord.id,
       name: rideRecord.name,
       value: _.get(rideRecord, rideFieldName),
@@ -93,23 +93,23 @@ function mergeRideField(fieldName, rideFieldName, compareFn, allPeriodSummary, a
   const allExistingRideRecords = _.get(allPeriodSummary, fieldName, []);
 
   const combinedRideRecords = _.concat(allExistingRideRecords, athleteRideRecords);
-  combinedRideRecords.sort((a, b) => compareFn(a.value, b.value));
+  combinedRideRecords.sort((a: any, b: any) => compareFn(a.value, b.value));
 
   _.set(allPeriodSummary, fieldName, combinedRideRecords.slice(0, 5));
 }
 
-function buildAthleteName(athlete) {
+function buildAthleteName(athlete: any) {
   return `${athlete.firstname} ${athlete.lastname}`;
 }
 
-function calculatePoints(periodKey, allYear) {
+function calculatePoints(periodKey: any, allYear: any) {
   const allPeriods = _.get(allYear, periodKey, {});
   const periodPoints = {};
   _.set(allYear, `points.${periodKey}`, periodPoints);
 
   const allPeriodSummaries = _
     .values(allPeriods)
-    .map(allPeriod => allPeriod.summary);
+    .map((allPeriod: any) => allPeriod.summary);
 
   [
     'distance',
@@ -134,34 +134,34 @@ function calculatePoints(periodKey, allYear) {
   ]);
 }
 
-function calculatePointsForField(periodPoints, allPeriodSummaries, fieldName) {
+function calculatePointsForField(periodPoints: any, allPeriodSummaries: any, fieldName: any) {
   const athleteWins = allPeriodSummaries
-    .map(allPeriodSummary => _.get(allPeriodSummary, `${fieldName}[0]`))
-    .filter(value => value !== null);
+    .map((allPeriodSummary: any) => _.get(allPeriodSummary, `${fieldName}[0]`))
+    .filter((value: any) => value !== null);
   const athleteWinsGroupedByAthlete = _.values(
     _.groupBy(
       athleteWins,
-      record => record.athleteId
+      (record: any) => record.athleteId
     )
   );
   const athletePoints = athleteWinsGroupedByAthlete
-    .map(athleteWins => ({
+    .map((athleteWins: any) => ({
       athleteId: athleteWins[0].athleteId,
       athleteName: athleteWins[0].athleteName,
       value: athleteWins.length
-    })).sort((a, b) => b.value - a.value);
+    })).sort((a: any, b: any) => b.value - a.value);
   _.set(periodPoints, fieldName, athletePoints);
 }
 
-function tallyPointsForTotalField(periodPoints, fieldNames) {
-  const allFieldPoints = _.flatMap(fieldNames, fieldName => _.get(periodPoints, fieldName));
-  const allPointsGroupedByAthlete = _.values(_.groupBy(allFieldPoints, record => record.athleteId));
+function tallyPointsForTotalField(periodPoints: any, fieldNames: any) {
+  const allFieldPoints = _.flatMap(fieldNames, (fieldName: any) => _.get(periodPoints, fieldName));
+  const allPointsGroupedByAthlete = _.values(_.groupBy(allFieldPoints, (record: any) => record.athleteId));
   const totalPoints = allPointsGroupedByAthlete
-    .map(athletePointsRecords => athletePointsRecords.reduce((totalRecord, fieldRecord) => ({
+    .map((athletePointsRecords: any) => athletePointsRecords.reduce((totalRecord: any, fieldRecord: any) => ({
       athleteId: totalRecord.athleteId,
       athleteName: totalRecord.athleteName,
       value: totalRecord.value + fieldRecord.value
     })))
-    .sort((a, b) => b.value - a.value);
+    .sort((a: any, b: any) => b.value - a.value);
   _.set(periodPoints, 'total', totalPoints);
 }

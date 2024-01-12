@@ -5,7 +5,7 @@ const strava = require('strava-v3');
 
 module.exports.start = start;
 
-function start(getTokenById, saveTokenById) {
+function start(getTokenById: any, saveTokenById: any) {
   return {
     getOAuthRequestAccessUrl,
     getOAuthToken,
@@ -23,12 +23,12 @@ function start(getTokenById, saveTokenById) {
     return accessUrl;
   }
   
-  async function getOAuthToken(code) {
+  async function getOAuthToken(code: any) {
     console.log('Getting OAuth token based on temporary code ' + code);
     return strava.oauth.getToken(code);
   }
 
-  async function refreshToken(athleteId) {
+  async function refreshToken(athleteId: any) {
     const existingToken = await getTokenById(athleteId);
     const updatedToken = await strava.oauth.refreshToken(existingToken.refresh_token);
     const updatedTokenWithId = {
@@ -38,7 +38,7 @@ function start(getTokenById, saveTokenById) {
     await saveTokenById(athleteId, updatedTokenWithId);
   }
 
-  async function invokeActionWithTokenRefresh(action, athleteId) {
+  async function invokeActionWithTokenRefresh(action: any, athleteId: any) {
     try {
       return await action();
 
@@ -51,7 +51,7 @@ function start(getTokenById, saveTokenById) {
     return await action();
   }
 
-  async function getAthlete(athleteId) {
+  async function getAthlete(athleteId: any) {
     console.log(`Getting athlete ${athleteId}`);
     return invokeActionWithTokenRefresh(
       getAthleteImpl,
@@ -65,7 +65,7 @@ function start(getTokenById, saveTokenById) {
     }
   }
 
-  async function getActivity(activityId, athleteId) {
+  async function getActivity(activityId: any, athleteId: any) {
     console.log(`Getting activity ${activityId} for athlete ${athleteId}`);
     return invokeActionWithTokenRefresh(
       getActivityImpl,
@@ -83,18 +83,18 @@ function start(getTokenById, saveTokenById) {
     }
   }
   
-  function getActivities(athleteId) {
+  function getActivities(athleteId: any) {
     console.log(`Getting athlete ${athleteId} activities`);
 
     // Create recursive function to retrieve all activity pages.
-    function getActivityPage(page) {
+    function getActivityPage(page: any) {
       return of({}).pipe(
         tap(() => console.log(`Getting athlete activities page ${page}`)),
         mergeMap(() => from(invokeActionWithTokenRefresh(
           getActivitiesPageImpl,
           athleteId
         ))),
-        mergeMap(activities => {
+        mergeMap((activities: any) => {
           if (activities.length > 0) {
             return merge(
               activities,
@@ -123,7 +123,7 @@ function start(getTokenById, saveTokenById) {
     return getActivityPage(1);
   }
 
-  function pickActivityFields(activity) {
+  function pickActivityFields(activity: any) {
     return _.pick(activity, [
       'id',
       'athlete.id',

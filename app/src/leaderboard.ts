@@ -1,8 +1,8 @@
 const _ = require('lodash');
 const dateUtil = require('./date-util');
 
-function buildDateSet(activities, dateMapper) {
-  const reduceFunction = function(resultSet, activity) {
+function buildDateSet(activities: any, dateMapper: any) {
+  const reduceFunction = function(resultSet: any, activity: any) {
     // Reduce the date to an integer of reduced granularity.
     const item = dateMapper(new Date(activity.start_date));
 
@@ -17,42 +17,42 @@ function buildDateSet(activities, dateMapper) {
 }
 
 // Get the unique list of years present in the list of activities.
-function buildYearsSet(activities) {
+function buildYearsSet(activities: any) {
   return buildDateSet(activities, dateUtil.yearFromDate);
 }
 
 // Get the unique list of months present in the list of activities.
-function buildMonthsSet(activities) {
+function buildMonthsSet(activities: any) {
   return buildDateSet(activities, dateUtil.monthFromDate);
 }
 
 // Get the unique list of weeks present in the list of activities.
-function buildWeeksSet(activities) {
+function buildWeeksSet(activities: any) {
   return buildDateSet(activities, dateUtil.weekFromDate);
 }
 
 // Create a map of athletes keyed by their id.
-function buildAthletesById(athletes) {
-  return athletes.reduce(function(athletesById, athlete) {
+function buildAthletesById(athletes: any) {
+  return athletes.reduce(function(athletesById: any, athlete: any) {
     athletesById[athlete.id] = athlete;
     return athletesById;
   }, {});
 }
 
-function buildAthleteName(athlete) {
+function buildAthleteName(athlete: any) {
   return athlete.firstname + ' ' + athlete.lastname;
 }
 
 // For each athlete create a summary object with athlete details and distance.
 // Return a tuple containing a list of these objects, and a map keyed by athlete id.
-function buildAthleteSummaries(athletes) {
-  const reduceSummaryById = function(summaryByAthleteId, summaryRecord) {
+function buildAthleteSummaries(athletes: any) {
+  const reduceSummaryById = function(summaryByAthleteId: any, summaryRecord: any) {
     summaryByAthleteId[summaryRecord.athleteId] = summaryRecord;
     return summaryByAthleteId;
   };
 
   // Build an array of athlete summary objects.
-  const summary = athletes.map(function(athlete) {
+  const summary = athletes.map(function(athlete: any) {
     return {
       athleteId: athlete.id,
       athleteName: buildAthleteName(athlete),
@@ -67,14 +67,14 @@ function buildAthleteSummaries(athletes) {
   return [summary, summaryByAthleteId];
 }
 
-function buildAthletesWins(athletes) {
-  const reduceById = function(winsByAthleteId, winsRecord) {
+function buildAthletesWins(athletes: any) {
+  const reduceById = function(winsByAthleteId: any, winsRecord: any) {
     winsByAthleteId[winsRecord.athleteId] = winsRecord;
     return winsByAthleteId;
   };
 
   // Build an array of athlete win objects.
-  const wins = athletes.map(function(athlete) {
+  const wins = athletes.map(function(athlete: any) {
     return {
       athleteId: athlete.id,
       athleteName: athlete.firstname + ' ' + athlete.lastname,
@@ -87,9 +87,9 @@ function buildAthletesWins(athletes) {
   return [wins, winsByAthleteId];
 }
 
-function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
+function buildSkeleton(yearsSet: any, monthsSet: any, weeksSet: any, athletes: any) {
   // Build an array of year objects sorted by reverse chronological time.
-  const yearObj = yearsSet.map(function(currentYear) {
+  const yearObj = yearsSet.map(function(currentYear: any) {
     // Build athlete summary objects.
     const summariesTuple = buildAthleteSummaries(athletes);
     const summaries = summariesTuple[0];
@@ -114,17 +114,17 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
       longestRide: {},
       fastestRide: []
     };
-  }).sort(function(a, b) {
+  }).sort(function(a: any, b: any) {
     return b.year - a.year;
   });
   // Create an index of year objects by year id.
-  const yearById = yearObj.reduce(function(yearById, yearRecord) {
+  const yearById = yearObj.reduce(function(yearById: any, yearRecord: any) {
     yearById[yearRecord.year] = yearRecord;
     return yearById;
   }, {});
 
   // Build arrays of month objects grouped by year and sorted by reverse chronological time.
-  monthsSet.forEach(function(currentMonth) {
+  monthsSet.forEach(function(currentMonth: any) {
     // Build athlete summary objects.
     const summariesTuple = buildAthleteSummaries(athletes);
     const summaries = summariesTuple[0];
@@ -141,18 +141,18 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
     yearById[dateUtil.yearFromMonth(currentMonth)].month.push(monthObj);
   });
   // Sort the month records by reverse chronological time, and create indexes of month objects by month id within each year.
-  yearObj.forEach(function(yearRecord) {
-    yearRecord.month.sort(function(a, b) {
+  yearObj.forEach(function(yearRecord: any) {
+    yearRecord.month.sort(function(a: any, b: any) {
       return b.month - a.month;
     });
-    yearRecord.monthById = yearRecord.month.reduce(function(monthById, monthRecord) {
+    yearRecord.monthById = yearRecord.month.reduce(function(monthById: any, monthRecord: any) {
       monthById[monthRecord.month] = monthRecord;
       return monthById;
     }, {});
   });
 
   // Build arrays of week objects grouped by year and sorted by reverse chronological time.
-  weeksSet.forEach(function(currentWeek) {
+  weeksSet.forEach(function(currentWeek: any) {
     // Build athlete summary objects.
     const summariesTuple = buildAthleteSummaries(athletes);
     const summaries = summariesTuple[0];
@@ -169,11 +169,11 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
     yearById[dateUtil.yearFromWeek(currentWeek)].week.push(weekObj);
   });
   // Sort the week records by reverse chronological time, and create indexes of week objects by week id within each year.
-  yearObj.forEach(function(yearRecord) {
-    yearRecord.week.sort(function(a, b) {
+  yearObj.forEach(function(yearRecord: any) {
+    yearRecord.week.sort(function(a: any, b: any) {
       return b.week - a.week;
     });
-    yearRecord.weekById = yearRecord.week.reduce(function(weekById, weekRecord) {
+    yearRecord.weekById = yearRecord.week.reduce(function(weekById: any, weekRecord: any) {
       weekById[weekRecord.week] = weekRecord;
       return weekById;
     }, {});
@@ -182,8 +182,8 @@ function buildSkeleton(yearsSet, monthsSet, weeksSet, athletes) {
   return { year: yearObj, yearById: yearById };
 }
 
-function calculateSummary(leaderboard, activities) {
-  activities.forEach(function(activity) {
+function calculateSummary(leaderboard: any, activities: any) {
+  activities.forEach(function(activity: any) {
     // Get the year and month portions of the activity date.
     const date = new Date(activity.start_date);
     const year = dateUtil.yearFromDate(date);
@@ -215,8 +215,8 @@ function calculateSummary(leaderboard, activities) {
     });
   });
 
-  function descendingComparator(fieldReader) {
-    return function(a, b) {
+  function descendingComparator(fieldReader: any) {
+    return function(a: any, b: any) {
       const fieldA = fieldReader(a);
       const fieldB = fieldReader(b);
 
@@ -234,45 +234,45 @@ function calculateSummary(leaderboard, activities) {
     };
   }
 
-  function timeIntervalSorter(interval) {
-    interval.distance.sort(descendingComparator(function(item) { return item.distance; }));
-    interval.averageSpeed.sort(descendingComparator(function(item) { return item.averageSpeed; }));
-    interval.activityCount.sort(descendingComparator(function(item) { return item.activityCount; }));
+  function timeIntervalSorter(interval: any) {
+    interval.distance.sort(descendingComparator(function(item: any) { return item.distance; }));
+    interval.averageSpeed.sort(descendingComparator(function(item: any) { return item.averageSpeed; }));
+    interval.activityCount.sort(descendingComparator(function(item: any) { return item.activityCount; }));
   }
 
   // Sort distances, average speeds, and rides in descending order.
-  leaderboard.year.forEach(function(year) {
+  leaderboard.year.forEach(function(year: any) {
     timeIntervalSorter(year);
-    year.month.forEach(function(month) {
+    year.month.forEach(function(month: any) {
       timeIntervalSorter(month);
     });
-    year.week.forEach(function(week) {
+    year.week.forEach(function(week: any) {
       timeIntervalSorter(week);
     });
   });
 }
 
-function calculateWins(leaderboard) {
-  leaderboard.year.forEach(function(yearObj) {
-    yearObj.month.forEach(function(monthObj) {
+function calculateWins(leaderboard: any) {
+  leaderboard.year.forEach(function(yearObj: any) {
+    yearObj.month.forEach(function(monthObj: any) {
       const athleteId = monthObj.distance[0].athleteId;
       yearObj.monthlyWinsByAthleteId[athleteId].wins += 1;
     });
-    yearObj.monthlyWins.sort(function(a, b) {
+    yearObj.monthlyWins.sort(function(a: any, b: any) {
       return b.wins - a.wins;
     });
-    yearObj.week.forEach(function(weekObj) {
+    yearObj.week.forEach(function(weekObj: any) {
       const athleteId = weekObj.distance[0].athleteId;
       yearObj.weeklyWinsByAthleteId[athleteId].wins += 1;
     });
-    yearObj.weeklyWins.sort(function(a, b) {
+    yearObj.weeklyWins.sort(function(a: any, b: any) {
       return b.wins - a.wins;
     });
   });
 }
 
-function calculateLongestRide(leaderboard, activities, athletesById) {
-  activities.forEach(function(activity) {
+function calculateLongestRide(leaderboard: any, activities: any, athletesById: any) {
+  activities.forEach(function(activity: any) {
     const date = new Date(activity.start_date);
     const year = dateUtil.yearFromDate(date);
     const longestRideObj = leaderboard.yearById[year].longestRide;
@@ -294,17 +294,17 @@ function calculateLongestRide(leaderboard, activities, athletesById) {
   });
 }
 
-function calculateFastestRide(leaderboard, activities, athletesById) {
+function calculateFastestRide(leaderboard: any, activities: any, athletesById: any) {
   const MIN_DISTANCE = 10000;
   const MAX_TRACKED = 3;
-  function calculateActivitySpeed(activity) {
+  function calculateActivitySpeed(activity: any) {
     if (activity.distance > 0)
       return Math.round(activity.distance / activity.moving_time * 3.600 * 10) / 10;
     else
       return 0;
   }
 
-  function compareBySpeed(a, b) {
+  function compareBySpeed(a: any, b: any) {
     if (a.distance < MIN_DISTANCE && b.distance < MIN_DISTANCE)
       return calculateActivitySpeed(b) - calculateActivitySpeed(a);
     else if (a.distance < MIN_DISTANCE)
@@ -314,11 +314,11 @@ function calculateFastestRide(leaderboard, activities, athletesById) {
     else
       return calculateActivitySpeed(b) - calculateActivitySpeed(a);
   }
-  function compareRidesBySpeed(a, b) {
+  function compareRidesBySpeed(a: any, b: any) {
     return compareBySpeed(a.activity, b.activity);
   }
 
-  activities.forEach(function(activity) {
+  activities.forEach(function(activity: any) {
     const date = new Date(activity.start_date);
     const year = dateUtil.yearFromDate(date);
     const fastestRides = leaderboard.yearById[year].fastestRide;
@@ -346,29 +346,29 @@ function calculateFastestRide(leaderboard, activities, athletesById) {
   });
 }
 
-function stripIndexes(leaderboard) {
+function stripIndexes(leaderboard: any) {
   delete leaderboard.yearById;
-  leaderboard.year.forEach(function(year) {
+  leaderboard.year.forEach(function(year: any) {
     delete year.summaryByAthleteId;
     delete year.monthById;
     delete year.weekById;
     delete year.monthlyWinsByAthleteId;
     delete year.weeklyWinsByAthleteId;
-    year.month.forEach(function(month) {
+    year.month.forEach(function(month: any) {
       delete month.summaryByAthleteId;
     });
-    year.week.forEach(function(week) {
+    year.week.forEach(function(week: any) {
       delete week.summaryByAthleteId;
     });
   });
 }
 
-function buildLeaderboard(athletes, activities) {
+function buildLeaderboard(athletes: any, activities: any) {
   const blockedRideList = [356959035, 356959045, 356959046];
   // Only include bike rides.
-  activities = activities.filter(function(activity) { return activity.type == 'Ride'; } );
+  activities = activities.filter(function(activity: any) { return activity.type == 'Ride'; } );
   // Block Frankenstein rides.
-  activities = activities.filter(function(activity) { return blockedRideList.indexOf(activity.id) < 0; } );
+  activities = activities.filter(function(activity: any) { return blockedRideList.indexOf(activity.id) < 0; } );
   // Build the complete set of years.
   const yearsSet = buildYearsSet(activities);
   // Build the complete set of months.

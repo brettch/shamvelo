@@ -12,7 +12,7 @@ module.exports = {
   getLeaderboard
 };
 
-async function refreshAthleteSummary(athleteId) {
+async function refreshAthleteSummary(athleteId: any) {
   console.log(`refreshing summary for athlete ${athleteId}`);
   const activities = filterActivities(
     await db.getItems('activities', {'athlete.id' : athleteId})
@@ -34,7 +34,7 @@ async function refreshLeaderboard() {
   const athletes = await athletesPromise;
   const athletesById = mapById(athletes);
 
-  const summary = athleteSummaries.reduce((previousSummary, athleteSummary) => {
+  const summary = athleteSummaries.reduce((previousSummary: any, athleteSummary: any) => {
     const athlete = athletesById[athleteSummary.athleteId];
     return leaderboardSummarize(previousSummary, athleteSummary, athlete);
   }, {});
@@ -64,7 +64,7 @@ async function getLatestLeaderboardIds() {
   return { year, month, week };
 }
 
-async function getLeaderboard(year, month, week) {
+async function getLeaderboard(year: any, month: any, week: any) {
   const records = await db.getItems('leaderboards', {year});
   const yearRecord = records.length > 0 ? records[0] : {};
 

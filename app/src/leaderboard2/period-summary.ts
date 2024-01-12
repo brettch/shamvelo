@@ -13,7 +13,7 @@ const emptySummary = {
   fastestRide: []
 };
 
-module.exports = function(_summary, activity) {
+module.exports = function(_summary: any, activity: any) {
   const summary = defaultIfNull(_summary);
 
   // Update top level counters.
@@ -39,7 +39,7 @@ module.exports = function(_summary, activity) {
       name: activity.name,
       distance: activity.distance
     },
-    (a, b) => b.distance - a.distance
+    (a: any, b: any) => b.distance - a.distance
   );
 
   // Create a sorted list of the fastest rides.
@@ -51,27 +51,27 @@ module.exports = function(_summary, activity) {
       name: activity.name,
       averageSpeed: toAverageSpeed(activity.distance, activity.moving_time)
     },
-    (a, b) => b.averageSpeed - a.averageSpeed
+    (a: any, b: any) => b.averageSpeed - a.averageSpeed
   );
 
   return summary;
 };
 
-function defaultIfNull(summary) {
+function defaultIfNull(summary: any) {
   return summary ? summary : _.cloneDeep(emptySummary);
 }
 
-function toDayCode(activity) {
+function toDayCode(activity: any) {
   const date = new Date(activity.start_date);
   const momentDate = moment(date);
   return momentDate.format('YYYYMMDD');
 }
 
-function toAverageSpeed(distance, movingTime) {
+function toAverageSpeed(distance: any, movingTime: any) {
   return distance / movingTime;
 }
 
-function updatePodium(podium, maxPodiumSize, item, sortBy) {
+function updatePodium(podium: any, maxPodiumSize: any, item: any, sortBy: any) {
   podium.push(item);
   podium.sort(sortBy);
   while(podium.length > maxPodiumSize) {
