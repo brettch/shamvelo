@@ -1,5 +1,3 @@
-'use strict';
-
 const { Datastore } = require('@google-cloud/datastore');
 const { from } = require('rxjs');
 const { map, toArray, mergeMap, bufferCount } = require('rxjs/operators');

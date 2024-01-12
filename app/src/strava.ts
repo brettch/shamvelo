@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('lodash');
 const { of, from, empty, merge } = require('rxjs');
 const { mergeMap, tap } = require('rxjs/operators');

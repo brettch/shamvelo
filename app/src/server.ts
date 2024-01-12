@@ -1,5 +1,3 @@
-'use strict';
-
 // Source environment from file if it's not already supplied, required for app engine
 require('./config');
 

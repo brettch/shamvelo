@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function(allActivities) {
   const blockedRideList = [];
   // Only include bike rides.

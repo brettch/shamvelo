@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('lodash');
 const getSummaryPaths = require('./athlete-summary-paths');
 const summarize = require('./period-summary');

@@ -1,5 +1,3 @@
-'use strict';
-
 const _ = require('lodash');
 const athleteSummarize = require('./athlete-summary');
 const leaderboardSummarize = require('./summary');
