@@ -1,8 +1,8 @@
-const _ = require('lodash');
-const getSummaryPaths = require('./athlete-summary-paths');
-const summarize = require('./period-summary');
+import _ from 'lodash';
+import getSummaryPaths from './athlete-summary-paths.js';
+import summarize from './period-summary.js';
 
-module.exports = function(_summary: any, activity: any) {
+export default function(_summary: any, activity: any) {
   const summary = _summary ? _summary : {};
   const summaryPaths = getSummaryPaths(activity);
   return summaryPaths.reduce(applyActivity, summary);

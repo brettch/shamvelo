@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const moment = require('moment');
+import _ from 'lodash';
+import moment from 'moment';
 
 const emptySummary = {
   distance: 0,
@@ -13,7 +13,7 @@ const emptySummary = {
   fastestRide: []
 };
 
-module.exports = function(_summary: any, activity: any) {
+export default function(_summary: any, activity: any) {
   const summary = defaultIfNull(_summary);
 
   // Update top level counters.

@@ -1,11 +1,11 @@
-const _ = require('lodash');
-const { of, from, empty, merge } = require('rxjs');
-const { mergeMap, tap } = require('rxjs/operators');
-const strava = require('strava-v3');
+import _ from 'lodash';
+import { of, from, empty, merge } from 'rxjs';
+import { mergeMap, tap } from 'rxjs/operators';
+import stravaLib from 'strava-v3';
 
-module.exports.start = start;
+const { default: strava } = stravaLib;
 
-function start(getTokenById: any, saveTokenById: any) {
+export function start(getTokenById: any, saveTokenById: any) {
   return {
     getOAuthRequestAccessUrl,
     getOAuthToken,
@@ -87,7 +87,7 @@ function start(getTokenById: any, saveTokenById: any) {
     console.log(`Getting athlete ${athleteId} activities`);
 
     // Create recursive function to retrieve all activity pages.
-    function getActivityPage(page: any) {
+    function getActivityPage(page: any): any {
       return of({}).pipe(
         tap(() => console.log(`Getting athlete activities page ${page}`)),
         mergeMap(() => from(invokeActionWithTokenRefresh(

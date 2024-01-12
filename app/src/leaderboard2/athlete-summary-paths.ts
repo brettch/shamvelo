@@ -1,6 +1,6 @@
-const moment = require('moment');
+import moment from 'moment';
 
-module.exports = function(activity: any) {
+export default function(activity: any) {
   const date = new Date(activity.start_date);
   const year = date.getFullYear();
   const month = date.getMonth();

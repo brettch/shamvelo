@@ -1,9 +1,9 @@
-const { Datastore } = require('@google-cloud/datastore');
-const { from } = require('rxjs');
-const { map, toArray, mergeMap, bufferCount } = require('rxjs/operators');
-const util = require('./util');
+import { Datastore } from '@google-cloud/datastore';
+import { from } from 'rxjs';
+import { map, toArray, mergeMap, bufferCount } from 'rxjs/operators';
+import { stringify } from './util.js';
 
-module.exports.start = function() {
+export function start() {
   const ds = new Datastore();
 
   // Return accessor methods.
@@ -11,7 +11,7 @@ module.exports.start = function() {
 
     // Get specific items by key.
     getItemsByKey: async function(collection: any, keys: any) {
-      console.log('Retrieving ' + collection + ' with keys ' + util.stringify(keys));
+      console.log('Retrieving ' + collection + ' with keys ' + stringify(keys));
 
       const dsKeys = Array.isArray(keys) ?
         keys.map(key => ds.key([collection, key])) :
@@ -24,7 +24,7 @@ module.exports.start = function() {
 
     // Search for items in the specified collection.
     getItems: async function(collection: any, criteria: any) {
-      console.log('Searching ' + collection + ' with criteria ' + util.stringify(criteria));
+      console.log('Searching ' + collection + ' with criteria ' + stringify(criteria));
 
       const allItemsQuery = ds.createQuery(collection);
       const filteringQuery = Object.keys(criteria)

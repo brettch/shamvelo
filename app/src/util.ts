@@ -1,11 +1,9 @@
-module.exports = {
-  stringify: function (obj: any) {
-    return JSON.stringify(obj, null, 2);
-  },
+export function stringify(obj: unknown) {
+  return JSON.stringify(obj, null, 2);
+}
 
-  csvString: function (string: any) {
-    var escapedString = string.replace(/\"/g, '""');
-    var quotedString = '"' + escapedString + '"';
-    return quotedString;
-  }
-};
+export function csvString(s: string) {
+  const escapedString = s.replace(/"/g, '""');
+  const quotedString = '"' + escapedString + '"';
+  return quotedString;
+}

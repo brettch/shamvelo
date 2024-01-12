@@ -1,32 +1,30 @@
 // Source environment from file if it's not already supplied, required for app engine
-require('./config');
+import './config.js';
 
 // Base express framework.
-const express = require('express');
+import express from 'express';
 
 // Add express middleware.
 // Logging
-const morgan = require('morgan');
-// Cookie parsing
-const cookies = require('cookies');
+import morgan from 'morgan';
 // Request body parsing
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
 // Handlebars templating engine
-const exphbs  = require('express-handlebars');
+import exphbs from 'express-handlebars';
 
-const dbEngine = require('./db');
-const leaderboardEngine = require('./leaderboard');
-const leaderboard2 = require('./leaderboard2');
-const { from } = require('rxjs');
-const { bufferCount, mergeMap } = require('rxjs/operators');
-const stravaEngine = require('./strava');
-const util = require('./util');
+import { start as dbStart } from './db.js';
+import { build as buildLeaderboard } from './leaderboard.js';
+import * as leaderboard2 from './leaderboard2/index.js';
+import { from } from 'rxjs';
+import { bufferCount, mergeMap } from 'rxjs/operators';
+import { start as startStrava } from './strava.js';
+import { csvString, stringify } from './util.js';
 
 // Start the database.
-const db = dbEngine.start();
+const db = dbStart();
 
 // Start the Strava client.
-const strava = stravaEngine.start(
+const strava = startStrava(
   getAthleteToken,
   db.saveAthleteToken
 );
@@ -98,7 +96,8 @@ async function refreshActivity(activityId: any, athleteId: any) {
 
 async function deleteActivity(activityId: any) {
   console.log(`deleting activity ${activityId}`);
-  const activity = await db.getItems('activities', {'id' : activityId})[0];
+  const activities = await db.getItems('activities', {'id' : activityId});
+  const activity = activities[0];
   await db.deleteActivity(activityId);
 
   if (activity) {
@@ -157,8 +156,6 @@ var app = express();
 
 // Enable logging.
 app.use(morgan('combined', {}));
-// Enable cookie management for all requests.
-app.use(cookies.express());
 // Parse request bodies with encoding application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // Parse request bodies with encoding application/json
@@ -251,7 +248,7 @@ app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
           activity.id + ',' + activity.start_date_local + ',' + activity.timezone + ','
           + activity.distance + ',' + activity.moving_time + ',' + activity.elapsed_time + ','
           + activity.total_elevation_gain + ',' + activity.type + ',' + activity.average_speed + ','
-          + activity.max_speed + ',' + util.csvString(activity.name) + '\n');
+          + activity.max_speed + ',' + csvString(activity.name) + '\n');
       }
       res.end();
     })
@@ -310,7 +307,7 @@ app.get('/refreshallactivities', function(req: any, res: any) {
 // Display the leaderboard.
 app.get('/leaderboard', function(req: any, res: any) {
   getAthletesAndActivities()
-    .then(athletesAndActivities => leaderboardEngine.build(
+    .then(athletesAndActivities => buildLeaderboard(
       athletesAndActivities.athletes,
       athletesAndActivities.activities
     ))
@@ -323,12 +320,12 @@ app.get('/leaderboard', function(req: any, res: any) {
 // Display the leaderboard.
 app.get('/leaderboardjson', function(req: any, res: any) {
   getAthletesAndActivities()
-    .then(athletesAndActivities => leaderboardEngine.build(
+    .then(athletesAndActivities => buildLeaderboard(
       athletesAndActivities.athletes,
       athletesAndActivities.activities
     ))
     .then(leaderboard => res.render('leaderboardjson.handlebars', {
-      leaderboardjson : util.stringify(leaderboard),
+      leaderboardjson : stringify(leaderboard),
       leaderboard : leaderboard
     }))
     .catch(err => sendError(res, err));
@@ -411,8 +408,9 @@ app.post('/strava-webhook', function(req: any, res: any) {
 
 // Create a HTTP listener.
 console.log('Creating HTTP listener');
-var server = app.listen(process.env.PORT, function() {
-  console.log('Listening on port %d', server.address().port);
+const port = process.env.PORT;
+var server = app.listen(port, function() {
+  console.log('Listening on port %d', port);
 });
 
 export {};

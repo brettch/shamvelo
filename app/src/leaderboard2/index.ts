@@ -1,18 +1,13 @@
-const _ = require('lodash');
-const athleteSummarize = require('./athlete-summary');
-const leaderboardSummarize = require('./summary');
-const db = require('../db').start();
-const filterActivities = require('./filter-activities');
-const mapById = require('./map-by-id');
+import _ from 'lodash';
+import athleteSummarize from './athlete-summary.js';
+import leaderboardSummarize from './summary.js';
+import { start as startDb } from '../db.js';
+import filterActivities from './filter-activities.js';
+import mapById from './map-by-id.js';
 
-module.exports = {
-  refreshAthleteSummary,
-  refreshLeaderboard,
-  getLatestLeaderboardIds,
-  getLeaderboard
-};
+const db = startDb();
 
-async function refreshAthleteSummary(athleteId: any) {
+export async function refreshAthleteSummary(athleteId: any) {
   console.log(`refreshing summary for athlete ${athleteId}`);
   const activities = filterActivities(
     await db.getItems('activities', {'athlete.id' : athleteId})
@@ -25,7 +20,7 @@ async function refreshAthleteSummary(athleteId: any) {
   console.log(`summary refreshed for athlete ${athleteId}`);
 }
 
-async function refreshLeaderboard() {
+export async function refreshLeaderboard() {
   console.log('refreshing leaderboard 2');
 
   const athleteSummariesPromise = db.getItems('athlete-summaries', {});
@@ -44,7 +39,7 @@ async function refreshLeaderboard() {
   console.log('leaderboard 2 refreshed');
 }
 
-async function getLatestLeaderboardIds() {
+export async function getLatestLeaderboardIds() {
   const latestLeaderboardYear = await db.getFirstItem('leaderboards', 'year', true);
 
   const year = parseInt(latestLeaderboardYear.year);
@@ -64,7 +59,7 @@ async function getLatestLeaderboardIds() {
   return { year, month, week };
 }
 
-async function getLeaderboard(year: any, month: any, week: any) {
+export async function getLeaderboard(year: any, month: any, week: any) {
   const records = await db.getItems('leaderboards', {year});
   const yearRecord = records.length > 0 ? records[0] : {};
 

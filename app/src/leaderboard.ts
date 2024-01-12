@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const dateUtil = require('./date-util');
+import _ from 'lodash';
+import { yearFromDate, monthFromDate, weekFromDate, yearFromMonth, yearFromWeek } from './date-util.js';
 
 function buildDateSet(activities: any, dateMapper: any) {
   const reduceFunction = function(resultSet: any, activity: any) {
@@ -18,17 +18,17 @@ function buildDateSet(activities: any, dateMapper: any) {
 
 // Get the unique list of years present in the list of activities.
 function buildYearsSet(activities: any) {
-  return buildDateSet(activities, dateUtil.yearFromDate);
+  return buildDateSet(activities, yearFromDate);
 }
 
 // Get the unique list of months present in the list of activities.
 function buildMonthsSet(activities: any) {
-  return buildDateSet(activities, dateUtil.monthFromDate);
+  return buildDateSet(activities, monthFromDate);
 }
 
 // Get the unique list of weeks present in the list of activities.
 function buildWeeksSet(activities: any) {
-  return buildDateSet(activities, dateUtil.weekFromDate);
+  return buildDateSet(activities, weekFromDate);
 }
 
 // Create a map of athletes keyed by their id.
@@ -138,7 +138,7 @@ function buildSkeleton(yearsSet: any, monthsSet: any, weeksSet: any, athletes: a
       activityCount: summaries.slice(),
       summaryByAthleteId: summariesByAthleteId
     };
-    yearById[dateUtil.yearFromMonth(currentMonth)].month.push(monthObj);
+    yearById[yearFromMonth(currentMonth)].month.push(monthObj);
   });
   // Sort the month records by reverse chronological time, and create indexes of month objects by month id within each year.
   yearObj.forEach(function(yearRecord: any) {
@@ -166,7 +166,7 @@ function buildSkeleton(yearsSet: any, monthsSet: any, weeksSet: any, athletes: a
       activityCount: summaries.slice(),
       summaryByAthleteId: summariesByAthleteId
     };
-    yearById[dateUtil.yearFromWeek(currentWeek)].week.push(weekObj);
+    yearById[yearFromWeek(currentWeek)].week.push(weekObj);
   });
   // Sort the week records by reverse chronological time, and create indexes of week objects by week id within each year.
   yearObj.forEach(function(yearRecord: any) {
@@ -186,11 +186,11 @@ function calculateSummary(leaderboard: any, activities: any) {
   activities.forEach(function(activity: any) {
     // Get the year and month portions of the activity date.
     const date = new Date(activity.start_date);
-    const year = dateUtil.yearFromDate(date);
-    const month = dateUtil.monthFromDate(date);
-    const monthYear = dateUtil.yearFromMonth(month);
-    const week = dateUtil.weekFromDate(date);
-    const weekYear = dateUtil.yearFromWeek(week);
+    const year = yearFromDate(date);
+    const month = monthFromDate(date);
+    const monthYear = yearFromMonth(month);
+    const week = weekFromDate(date);
+    const weekYear = yearFromWeek(week);
 
     // Get all the distance records that the activity fits into.
     const summaryItems = [
@@ -274,7 +274,7 @@ function calculateWins(leaderboard: any) {
 function calculateLongestRide(leaderboard: any, activities: any, athletesById: any) {
   activities.forEach(function(activity: any) {
     const date = new Date(activity.start_date);
-    const year = dateUtil.yearFromDate(date);
+    const year = yearFromDate(date);
     const longestRideObj = leaderboard.yearById[year].longestRide;
 
     const updateLongestRide = function() {
@@ -320,7 +320,7 @@ function calculateFastestRide(leaderboard: any, activities: any, athletesById: a
 
   activities.forEach(function(activity: any) {
     const date = new Date(activity.start_date);
-    const year = dateUtil.yearFromDate(date);
+    const year = yearFromDate(date);
     const fastestRides = leaderboard.yearById[year].fastestRide;
 
     const updateFastestRides = function() {
@@ -363,7 +363,7 @@ function stripIndexes(leaderboard: any) {
   });
 }
 
-function buildLeaderboard(athletes: any, activities: any) {
+export function build(athletes: any, activities: any) {
   const blockedRideList = [356959035, 356959045, 356959046];
   // Only include bike rides.
   activities = activities.filter(function(activity: any) { return activity.type == 'Ride'; } );
@@ -394,5 +394,3 @@ function buildLeaderboard(athletes: any, activities: any) {
 
   return leaderboard;
 }
-
-module.exports.build = buildLeaderboard;

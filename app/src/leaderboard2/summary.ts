@@ -1,6 +1,6 @@
-const _ = require('lodash');
+import _ from 'lodash';
 
-module.exports = function(_allSummary: any, athleteSummary: any, athlete: any) {
+export default function(_allSummary: any, athleteSummary: any, athlete: any) {
   const allSummary = _allSummary ? _allSummary : {};
 
   applyYears(allSummary, athleteSummary, athlete);
