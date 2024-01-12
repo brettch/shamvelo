@@ -179,6 +179,9 @@ var hbs = exphbs.create({
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+// Serve static content.
+app.use('/static', express.static('static'));
+
 // Configure the home page to be the default.
 app.get('/', function (req, res) {
   db.getItems('athletes', {})
