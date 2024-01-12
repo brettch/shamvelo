@@ -16,14 +16,23 @@
 </head>
 <body>
 
-<h1>{{athlete.firstname}} {{athlete.lastname}} ({{athlete.id}})</h1>
+<h1>{{athlete.firstname}} {{athlete.lastname}}</h1>
+<div>
 <form action="./{{athlete.id}}/refresh" method="POST">
 	<input type="submit" name="btnRefresh" value="Refresh Athlete"/>
 </form>
+</div>
+<div>
 <form action="./{{athlete.id}}/refreshactivities" method="POST">
 	<input type="submit" name="btnRefresh" value="Refresh Activities"/>
 </form>
+</div>
+<div>
+<a href="https://www.strava.com/athletes/{{athlete.id}}">View on Strava</a>
+</div>
+<div>
 <a href="./{{athlete.id}}/activitiescsv">Download Activities</a>
+</div>
 
 </body>
 </html>

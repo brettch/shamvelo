@@ -35,21 +35,51 @@
 <div class="row">
   <div class="col-md-8">
     <table class="table">
-      <tr><th>Jersey</th><th>Leader</th></tr>
-      <tr><td>Yellow</td><td>{{year.distance.[0].athleteName}} ({{metresAsKilometres year.distance.[0].value}} km)</td></tr>
-      <tr><td>Dark Green (Monthly Points)</td><td>{{points.month.distance.[0].athleteName}} ({{points.month.total.[0].value}} pts)</td></tr>
-      <tr><td>Light Green (Weekly Points)</td><td>{{points.week.distance.[0].athleteName}} ({{points.week.total.[0].value}} pts)</td></tr>
-      <tr><td>Polka Dot</td><td>{{year.elevation.[0].athleteName}} ({{metresAsMetres year.elevation.[0].value}} m)</td></tr>
+      <tr>
+        <th>Jersey</th>
+        <th>Leader</th>
+        <th>Result</th>
+      </tr>
+      <tr>
+        <td>Yellow</td>
+        <td>{{year.distance.[0].athleteName}}</td>
+        <td>{{metresAsKilometres year.distance.[0].value}} km</td>
+      </tr>
+      <tr>
+        <td>Dark Green (Monthly Points)</td>
+        <td>{{points.month.distance.[0].athleteName}}</td>
+        <td>{{points.month.total.[0].value}} pts</td>
+      </tr>
+      <tr>
+        <td>Light Green (Weekly Points)</td>
+        <td>{{points.week.distance.[0].athleteName}}</td>
+        <td>{{points.week.total.[0].value}} pts</td>
+      </tr>
+      <tr>
+        <td>Polka Dot</td>
+        <td>{{year.elevation.[0].athleteName}}</td>
+        <td>{{metresAsMetres year.elevation.[0].value}} m</td>
+      </tr>
       <tr>
         <td>Ironman (Longest Ride)</td>
-        <td>{{year.longestRide.[0].athleteName}} (<a href="https://www.strava.com/activities/{{year.longestRide.[0].id}}">{{year.longestRide.[0].name}} - {{metresAsKilometres year.longestRide.[0].value}} km</a>)</td>
+        <td>{{year.longestRide.[0].athleteName}}</td>
+        <td>{{metresAsKilometres year.longestRide.[0].value}} km (<a href="https://www.strava.com/activities/{{year.longestRide.[0].id}}">View on Strava</a>)</td>
       </tr>
-      <tr><td>Alley Cat (Fastest Average)</td><td>{{year.averageSpeed.[0].athleteName}} ({{metresPerSecondAsKmh year.averageSpeed.[0].value}} km/h)</td></tr>
+      <tr>
+        <td>Alley Cat (Fastest Average)</td>
+        <td>{{year.averageSpeed.[0].athleteName}}</td>
+        <td>{{metresPerSecondAsKmh year.averageSpeed.[0].value}} km/h</td>
+      </tr>
       <tr>
         <td>VO2 Max (Fastest Average For Single Ride Over 10km)</td>
-        <td>{{year.fastestRide.[0].athleteName}} (<a href="https://www.strava.com/activities/{{year.fastestRide.[0].id}}">{{year.fastestRide.[0].name}} - {{metresPerSecondAsKmh year.fastestRide.[0].value}} km/h</a>)</td>
+        <td>{{year.fastestRide.[0].athleteName}}</td>
+        <td>{{metresPerSecondAsKmh year.fastestRide.[0].value}} km/h (<a href="https://www.strava.com/activities/{{year.fastestRide.[0].id}}">View on Strava</a>)</td>
       </tr>
-      <tr><td>Green Warrior (Most Number Of Days Ridden)</td><td>{{year.activeDayCount.[0].athleteName}} ({{year.activeDayCount.[0].value}} days)</td></tr>
+      <tr>
+        <td>Green Warrior (Most Number Of Days Ridden)</td>
+        <td>{{year.activeDayCount.[0].athleteName}}</td>
+        <td>{{year.activeDayCount.[0].value}} days</td>
+      </tr>
     </table>
   </div>
 </div>
@@ -454,7 +484,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Ride</th></tr>
           {{#each longestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">View on Strava</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -469,7 +499,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Speed</th></tr>
           {{#each fastestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">View on Strava</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -584,7 +614,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Ride</th></tr>
           {{#each longestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">View on Strava</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -599,7 +629,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Speed</th></tr>
           {{#each fastestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">View on Strava</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -714,7 +744,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Ride</th></tr>
           {{#each longestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">View on Strava</a>)</td></tr>
           {{/each}}
         </table>
       </div>
@@ -729,7 +759,7 @@
         <table class="table">
           <tr><th>Athlete</th><th>Speed</th></tr>
           {{#each fastestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">{{this.name}}</a>)</td></tr>
+          <tr><td>{{this.athleteName}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.id}}">View on Strava</a>)</td></tr>
           {{/each}}
         </table>
       </div>
