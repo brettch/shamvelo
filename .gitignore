@@ -1,5 +1,6 @@
 .env
 .serverless
+dist
 env.sh
 data/strava_config
 node_modules
