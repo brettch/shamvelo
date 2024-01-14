@@ -30,7 +30,7 @@ export async function refreshLeaderboard() {
   const athletesById = mapById(athletes);
 
   const summary = athleteSummaries.reduce((previousSummary: any, athleteSummary: any) => {
-    const athlete = athletesById[athleteSummary.athleteId];
+    const athlete = athletesById.get(athleteSummary.athleteId);
     return leaderboardSummarize(previousSummary, athleteSummary, athlete);
   }, {});
   const yearlySummaries = _.values(summary.year);
