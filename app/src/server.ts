@@ -75,7 +75,7 @@ async function refreshAthleteActivities(athleteId: any) {
 async function refreshAllAthleteActivities() {
   console.log('Refreshing all athlete activities');
 
-  const athletes = await db.getItems('athletes', {});
+  const athletes = await db.getAllItems('athletes');
   await from(athletes)
     .pipe(
       mergeMap((athlete: any) => from(refreshAthleteActivities(athlete.id)))
@@ -96,7 +96,7 @@ async function refreshActivity(activityId: any, athleteId: any) {
 
 async function deleteActivity(activityId: any) {
   console.log(`deleting activity ${activityId}`);
-  const activities = await db.getItems('activities', {'id' : activityId});
+  const activities = await db.getItemsWithFilter('activities', 'id', activityId);
   const activity = activities[0];
   await db.deleteActivity(activityId);
 
@@ -107,7 +107,7 @@ async function deleteActivity(activityId: any) {
 
 async function getAthleteAndActivities(athleteId: any) {
   const athletesPromise = db.getItemsByKey('athletes', athleteId);
-  const activitiesPromise = db.getItems('activities', {athleteId : athleteId});
+  const activitiesPromise = db.getItemsWithFilter('activities', 'athleteId', athleteId);
 
   const athletes = await athletesPromise;
   const activities = await activitiesPromise;
@@ -119,8 +119,8 @@ async function getAthleteAndActivities(athleteId: any) {
 }
 
 async function getAthletesAndActivities() {
-  const athletesPromise = db.getItems('athletes', {});
-  const activitiesPromise = db.getItems('activities', {});
+  const athletesPromise = db.getAllItems('athletes');
+  const activitiesPromise = db.getAllItems('activities');
 
   const athletes = await athletesPromise;
   const activities = await activitiesPromise;
@@ -235,7 +235,7 @@ app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
     return;
   }
 
-  db.getItems('activities', { 'athlete.id' : athleteId })
+  db.getItemsWithFilter('activities', 'athlete.id', athleteId)
     .then((activities: any) => {
       res.set({
         'Content-Type': 'text/csv',

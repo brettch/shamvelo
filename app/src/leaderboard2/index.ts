@@ -10,7 +10,7 @@ const db = startDb();
 export async function refreshAthleteSummary(athleteId: any) {
   console.log(`refreshing summary for athlete ${athleteId}`);
   const activities = filterActivities(
-    await db.getItems('activities', {'athlete.id' : athleteId})
+    await db.getItemsWithFilter('activities', 'athlete.id', athleteId)
   );
   const summary = activities.reduce(athleteSummarize, {});
   await db.saveAthleteSummary({
@@ -23,8 +23,8 @@ export async function refreshAthleteSummary(athleteId: any) {
 export async function refreshLeaderboard() {
   console.log('refreshing leaderboard 2');
 
-  const athleteSummariesPromise = db.getItems('athlete-summaries', {});
-  const athletesPromise = db.getItems('athletes', {});
+  const athleteSummariesPromise = db.getAllItems('athlete-summaries');
+  const athletesPromise = db.getAllItems('athletes');
   const athleteSummaries = await athleteSummariesPromise;
   const athletes = await athletesPromise;
   const athletesById = mapById(athletes);
@@ -60,7 +60,7 @@ export async function getLatestLeaderboardIds() {
 }
 
 export async function getLeaderboard(year: any, month: any, week: any) {
-  const records = await db.getItems('leaderboards', {year});
+  const records = await db.getItemsWithFilter('leaderboards', 'year', year);
   const yearRecord = records.length > 0 ? records[0] : {};
 
   const points = yearRecord.points;

@@ -1,16 +1,23 @@
-import { Datastore } from '@google-cloud/datastore';
+import { Datastore, PathType, Query } from '@google-cloud/datastore';
 import { from } from 'rxjs';
 import { map, toArray, mergeMap, bufferCount } from 'rxjs/operators';
 import { stringify } from './util.js';
+import { GetResponse } from '@google-cloud/datastore/build/src/request.js';
 
 export function start() {
   const ds = new Datastore();
+
+  async function runQuery(query: Query): Promise<any[]> {
+    const response = await query.run();
+    // Result is a two part array, first element is the results, second is query info.
+    return response[0];
+  }
 
   // Return accessor methods.
   return {
 
     // Get specific items by key.
-    getItemsByKey: async function(collection: any, keys: any) {
+    getItemsByKey: async function(collection: string, keys: PathType | PathType[]): Promise<GetResponse> {
       console.log('Retrieving ' + collection + ' with keys ' + stringify(keys));
 
       const dsKeys = Array.isArray(keys) ?
@@ -23,33 +30,36 @@ export function start() {
     },
 
     // Search for items in the specified collection.
-    getItems: async function(collection: any, criteria: any) {
-      console.log('Searching ' + collection + ' with criteria ' + stringify(criteria));
+    getItemsWithFilter: async function(collection: string, property: string, value: unknown): Promise<any[]> {
+      console.log(`Searching ${collection} with ${property}=${stringify(value)}`);
 
       const allItemsQuery = ds.createQuery(collection);
-      const filteringQuery = Object.keys(criteria)
-        .reduce(
-          (currentQuery, key) => currentQuery.filter(key, criteria[key]),
-          allItemsQuery
-        );
+      const filteringQuery = allItemsQuery.filter(property, value);
 
-      const items = await filteringQuery.run();
-
-      // Result is a two part array, first element is the results, second is query info.
-      return items[0];
+      return runQuery(filteringQuery);
     },
 
-    getFirstItem: async function(collection: any, sortField: any, descending = false) {
-      console.log(`Searching for first record in ${collection} based on field ${sortField}`);
-      const items = await ds
-        .createQuery(collection)
-        .order(sortField, {descending})
-        .limit(1)
-        .run();
+    // Search for items in the specified collection.
+    getAllItems: async function(collection: string): Promise<any[]> {
+      console.log(`Searching ${collection}`);
 
-      // Result is a two part array, first element is the results, second is query info.
-      // In this case we're only interested in the first record of the results.
-      return items[0][0];
+      const allItemsQuery = ds.createQuery(collection);
+
+      return runQuery(allItemsQuery);
+    },
+
+    getFirstItem: async function(collection: string, sortField: string, descending = false) {
+      console.log(`Searching for first record in ${collection} based on field ${sortField}`);
+
+      const allItemsQuery = ds.createQuery(collection);
+      const sortingQuery = allItemsQuery
+        .order(sortField, {descending})
+        .limit(1);
+
+      const items = await runQuery(sortingQuery);
+
+      // In this case we're only interested in the first result.
+      return items[0];
     },
 
     // Save or refresh an athlete.
@@ -78,7 +88,7 @@ export function start() {
 
     deleteActivities: async function(athleteId: any) {
       console.log(`Deleting activities for athlete ${athleteId}`);
-      const activities = await this.getItems('activities', { 'athlete.id': athleteId });
+      const activities = await this.getItemsWithFilter('activities', 'athlete.id', athleteId);
       await from(activities)
         .pipe(
           map((activity: any) => ds.key(['activities', activity.id])),
@@ -113,7 +123,7 @@ export function start() {
       });
     },
 
-    // Save or fresh a leaderboard.
+    // Save or refresh a leaderboard.
     saveLeaderboard: async function(leaderboard: any) {
       console.log(`Saving leaderboard ${leaderboard.id}`);
       await ds.upsert({
@@ -138,4 +148,4 @@ export function start() {
         .toPromise();
     }
   };
-};
+}
