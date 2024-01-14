@@ -152,7 +152,7 @@ function sendError(res: any, err: any) {
 }
 
 // Instantiate express app.
-var app = express();
+const app = express();
 
 // Enable logging.
 app.use(morgan('combined', {}));
@@ -162,7 +162,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Register the handlebars page templating engine.
-var hbs = exphbs.create({
+const hbs = exphbs.create({
   defaultLayout: 'main',
   helpers: {
     metresAsKilometres: (metres: any) => (metres / 1000).toFixed(1),
@@ -194,10 +194,10 @@ app.get('/register', function(req: any, res: any) {
 
 // Handle the OAuth callback from Strava, and exchange the temporary code for an access token.
 app.get('/registercode', function(req: any, res: any) {
-  var stravaCode = req.query.code;
+  const stravaCode = req.query.code;
 
   if (stravaCode == null) {
-    var description = 'Query parameter "code" is missing';
+    const description = 'Query parameter "code" is missing';
     console.log(description);
     sendErrorMessage(res, description);
     return;
@@ -210,10 +210,10 @@ app.get('/registercode', function(req: any, res: any) {
 
 // Display information available for a specific athlete.
 app.get('/athlete/:id', function(req: any, res: any) {
-  var athleteId = parseInt(req.params.id);
+  const athleteId = parseInt(req.params.id);
 
   if (isNaN(athleteId)) {
-    var description = 'Athlete identifier is missing';
+    const description = 'Athlete identifier is missing';
     console.log(description);
     sendErrorMessage(res, description);
     return;
@@ -226,10 +226,10 @@ app.get('/athlete/:id', function(req: any, res: any) {
 
 // Download athlete activities as a CSV.
 app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
-  var athleteId = parseInt(req.params.id);
+  const athleteId = parseInt(req.params.id);
 
   if (isNaN(athleteId)) {
-    var description = 'Athlete identifier is missing';
+    const description = 'Athlete identifier is missing';
     console.log(description);
     sendErrorMessage(res, description);
     return;
@@ -242,8 +242,8 @@ app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
         'Content-Disposition': 'attachment;filename=activities-' + athleteId + '.csv'
       });
       res.write('id,start_date_local,timezone,distance,moving_time,elapsed_time,total_elevation_gain,type,average_speed,max_speed,name\n');
-      for (var i = 0; i < activities.length; i++) {
-        var activity = activities[i];
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i];
         res.write(
           activity.id + ',' + activity.start_date_local + ',' + activity.timezone + ','
           + activity.distance + ',' + activity.moving_time + ',' + activity.elapsed_time + ','
@@ -409,7 +409,7 @@ app.post('/strava-webhook', function(req: any, res: any) {
 // Create a HTTP listener.
 console.log('Creating HTTP listener');
 const port = process.env.PORT;
-var server = app.listen(port, function() {
+app.listen(port, function() {
   console.log('Listening on port %d', port);
 });
 
