@@ -1,9 +1,13 @@
 import _ from 'lodash';
 import { of, from, empty, merge } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
-import stravaLib from 'strava-v3';
+import { Strava, default as strava1 } from 'strava-v3';
 
-const { default: strava } = stravaLib;
+// Work around a problem with TypeScript types. The default export implements the Strava
+// interface but the types say it only has a 'default' attribute which in turn implements
+// the Strava interface.
+const strava2: any = strava1;
+const strava: Strava = strava2;
 
 export function start(getTokenById: any, saveTokenById: any) {
   return {
@@ -14,16 +18,17 @@ export function start(getTokenById: any, saveTokenById: any) {
     getActivities
   };
 
-  function getOAuthRequestAccessUrl() {
+  function getOAuthRequestAccessUrl(): string {
     console.log('Generating OAuth request access URL');
-    var accessUrl = strava.oauth.getRequestAccessURL({
+    // Force the type to any and then string. The types say the method returns a Promise which is incorrect.
+    const accessUrl: any = strava.oauth.getRequestAccessURL({
       scope : ['read', 'activity:read']
     });
     console.log('Access URL: ' + accessUrl);
     return accessUrl;
   }
-  
-  async function getOAuthToken(code: any) {
+
+  async function getOAuthToken(code: string) {
     console.log('Getting OAuth token based on temporary code ' + code);
     return strava.oauth.getToken(code);
   }

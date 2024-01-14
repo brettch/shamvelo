@@ -19,6 +19,7 @@ import { from } from 'rxjs';
 import { bufferCount, mergeMap } from 'rxjs/operators';
 import { start as startStrava } from './strava.js';
 import { csvString, stringify } from './util.js';
+import { Response } from 'express-serve-static-core';
 
 // Start the database.
 const db = dbStart();
@@ -29,7 +30,7 @@ const strava = startStrava(
   db.saveAthleteToken
 );
 
-async function registerAthlete(stravaCode: any) {
+async function registerAthlete(stravaCode: string) {
   console.log('Registering athlete with code ' + stravaCode);
   // Exchange the temporary code for an access token.
   const payload = await strava.getOAuthToken(stravaCode);
@@ -65,7 +66,7 @@ async function refreshAthleteActivities(athleteId: any) {
   await strava.getActivities(athleteId)
     .pipe(
       bufferCount(100),
-      mergeMap((activities: any) => from(db.saveActivities(activities)))
+      mergeMap((activities) => from(db.saveActivities(activities)))
     )
     .toPromise();
 
@@ -78,7 +79,7 @@ async function refreshAllAthleteActivities() {
   const athletes = await db.getAllItems('athletes');
   await from(athletes)
     .pipe(
-      mergeMap((athlete: any) => from(refreshAthleteActivities(athlete.id)))
+      mergeMap((athlete) => from(refreshAthleteActivities(athlete.id)))
     )
     .toPromise();
 
@@ -132,14 +133,14 @@ async function getAthletesAndActivities() {
 }
 
 // Send an error message back to the user.
-function sendErrorMessage(res: any, description: any) {
+function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
   res.render('error.handlebars', {
     error : { description : description }
   });
 }
 
 // Send an error message back to the user.
-function sendError(res: any, err: any) {
+function sendError<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, err: unknown) {
   if (err) {
     console.log('Unhandled exception:\n', err);
   } else {
@@ -178,26 +179,33 @@ app.set('view engine', 'handlebars');
 app.use('/static', express.static('static'));
 
 // Configure the home page to be the default.
-app.get('/', function (req: any, res: any) {
-  db.getItems('athletes', {})
-    .then((athletes: any) => res.render('home.handlebars', {
+app.get('/', function (_, res) {
+  db.getAllItems('athletes')
+    .then((athletes) => res.render('home.handlebars', {
       athletes : athletes
     }))
-    .catch((err: any) => sendError(res, err));
+    .catch((err) => sendError(res, err));
 });
 
 // Initiate OAuth registration of a new Strava athlete/user.
-app.get('/register', function(req: any, res: any) {
+app.get('/register', function(_, res) {
   // Redirect the browser to the Strava OAuth grant page.
   res.redirect(strava.getOAuthRequestAccessUrl());
 });
 
 // Handle the OAuth callback from Strava, and exchange the temporary code for an access token.
-app.get('/registercode', function(req: any, res: any) {
+app.get('/registercode', function(req, res) {
   const stravaCode = req.query.code;
 
   if (stravaCode == null) {
     const description = 'Query parameter "code" is missing';
+    console.log(description);
+    sendErrorMessage(res, description);
+    return;
+  }
+
+  if (typeof stravaCode !== "string") {
+    const description = 'Query parameter "code" does not contain a string';
     console.log(description);
     sendErrorMessage(res, description);
     return;
@@ -209,7 +217,7 @@ app.get('/registercode', function(req: any, res: any) {
 });
 
 // Display information available for a specific athlete.
-app.get('/athlete/:id', function(req: any, res: any) {
+app.get('/athlete/:id', function(req, res) {
   const athleteId = parseInt(req.params.id);
 
   if (isNaN(athleteId)) {
@@ -225,7 +233,7 @@ app.get('/athlete/:id', function(req: any, res: any) {
 });
 
 // Download athlete activities as a CSV.
-app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
+app.get('/athlete/:id/activitiescsv', function(req, res) {
   const athleteId = parseInt(req.params.id);
 
   if (isNaN(athleteId)) {
@@ -236,7 +244,7 @@ app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
   }
 
   db.getItemsWithFilter('activities', 'athlete.id', athleteId)
-    .then((activities: any) => {
+    .then((activities) => {
       res.set({
         'Content-Type': 'text/csv',
         'Content-Disposition': 'attachment;filename=activities-' + athleteId + '.csv'
@@ -252,11 +260,11 @@ app.get('/athlete/:id/activitiescsv', function(req: any, res: any) {
       }
       res.end();
     })
-    .catch((err: any) => sendError(res, err));
+    .catch((err) => sendError(res, err));
 });
 
 // Refresh the athlete in the database.
-app.post('/athlete/:id/refresh', function(req: any, res: any) {
+app.post('/athlete/:id/refresh', function(req, res) {
   const athleteId = parseInt(req.params.id);
 
   if (isNaN(athleteId)) {
@@ -272,7 +280,7 @@ app.post('/athlete/:id/refresh', function(req: any, res: any) {
 });
 
 // Refresh all activities in the database for the athlete.
-app.post('/athlete/:id/refreshactivities', function(req: any, res: any) {
+app.post('/athlete/:id/refreshactivities', function(req, res) {
   const athleteId = parseInt(req.params.id);
 
   if (isNaN(athleteId)) {
@@ -289,7 +297,7 @@ app.post('/athlete/:id/refreshactivities', function(req: any, res: any) {
 });
 
 // Refresh all activities.  Intended for use by a web browser.
-app.post('/refreshallactivities', function(req: any, res: any) {
+app.post('/refreshallactivities', function(req, res) {
   refreshAllAthleteActivities()
     .then(() => leaderboard2.refreshLeaderboard())
     .then(() => res.redirect('..'))
@@ -297,7 +305,7 @@ app.post('/refreshallactivities', function(req: any, res: any) {
 });
 
 // Refresh all activities.  Intended for use by a cron trigger.
-app.get('/refreshallactivities', function(req: any, res: any) {
+app.get('/refreshallactivities', function(_, res) {
   refreshAllAthleteActivities()
     .then(() => leaderboard2.refreshLeaderboard())
     .then(() => res.send(''))
@@ -305,7 +313,7 @@ app.get('/refreshallactivities', function(req: any, res: any) {
 });
 
 // Display the leaderboard.
-app.get('/leaderboard', function(req: any, res: any) {
+app.get('/leaderboard', function(_, res) {
   getAthletesAndActivities()
     .then(athletesAndActivities => buildLeaderboard(
       athletesAndActivities.athletes,
@@ -318,7 +326,7 @@ app.get('/leaderboard', function(req: any, res: any) {
 });
 
 // Display the leaderboard.
-app.get('/leaderboardjson', function(req: any, res: any) {
+app.get('/leaderboardjson', function(_, res) {
   getAthletesAndActivities()
     .then(athletesAndActivities => buildLeaderboard(
       athletesAndActivities.athletes,
@@ -332,18 +340,18 @@ app.get('/leaderboardjson', function(req: any, res: any) {
 });
 
 // Determine the latest leaderboard 2 year/month/week combination and redirect to it.
-app.get('/leaderboard2', function(req: any, res: any) {
+app.get('/leaderboard2', function(_, res) {
   leaderboard2
     .getLatestLeaderboardIds()
-    .then((leaderboardIds: any) => res.redirect(
+    .then((leaderboardIds) => res.redirect(
       307,
       `./leaderboard2/${leaderboardIds.year}/${leaderboardIds.month}/${leaderboardIds.week}`
     ))
-    .catch((err: any) => sendError(res, err));
+    .catch((err) => sendError(res, err));
 });
 
 // Display leaderboard 2 for a specific year/month/week combination.
-app.get('/leaderboard2/:year/:month/:week', function(req: any, res: any) {
+app.get('/leaderboard2/:year/:month/:week', function(req, res) {
   const year = parseInt(req.params.year);
   const month = parseInt(req.params.month);
   const week = parseInt(req.params.week);
@@ -351,15 +359,15 @@ app.get('/leaderboard2/:year/:month/:week', function(req: any, res: any) {
 
   leaderboard2
     .getLeaderboard(year, month, week)
-    .then((leaderboard: any) => res.render('leaderboard2.handlebars', {
+    .then((leaderboard) => res.render('leaderboard2.handlebars', {
       leaderboard,
       leaderboardjson: JSON.stringify(leaderboard, null, 2)
     }))
-    .catch((err: any) => sendError(res, err));
+    .catch((err) => sendError(res, err));
 });
 
 // Callback URL used by strava to validate subscriptions.
-app.get('/strava-webhook', function(req: any, res: any) {
+app.get('/strava-webhook', function(req, res) {
   console.log('req.query:', req.query);
   const hubMode = req.query['hub.mode'];
   const hubChallenge = req.query['hub.challenge'];
@@ -375,7 +383,7 @@ app.get('/strava-webhook', function(req: any, res: any) {
   });
 });
 
-app.post('/strava-webhook', function(req: any, res: any) {
+app.post('/strava-webhook', function(req, res) {
   console.log('received strava notification:', req.body);
   const objectType = req.body.object_type;
   const aspectType = req.body.aspect_type;
