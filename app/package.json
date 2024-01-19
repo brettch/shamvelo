@@ -17,7 +17,9 @@
     "start": "node dist/index.js",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "strava:openapi": "mkdir -p openapi && curl https://developers.strava.com/swagger/swagger.json -o openapi/strava.json",
+    "strava:generate": "npx openapi-generator-cli generate --generator-name typescript-node --input-spec openapi/strava.json --output src/strava --additional-properties importFileExtension=.js,supportsES6=true --skip-validate-spec"
   },
   "type": "module",
   "dependencies": {
@@ -33,6 +35,7 @@
     "strava-v3": "2.2.0"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "2.7.0",
     "@tsconfig/node21": "21.0.1",
     "@types/cookies": "0.7.10",
     "@types/express": "4.17.21",
