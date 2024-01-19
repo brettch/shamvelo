@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { SummaryAthlete } from './summaryAthlete';
+import { RequestFile } from './models.js';
+import { SummaryAthlete } from './summaryAthlete.js';
 
 export class Comment {
     /**

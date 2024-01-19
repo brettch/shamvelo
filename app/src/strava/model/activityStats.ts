@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ActivityTotal } from './activityTotal';
+import { RequestFile } from './models.js';
+import { ActivityTotal } from './activityTotal.js';
 
 /**
 * A set of rolled-up statistics and totals for an athlete

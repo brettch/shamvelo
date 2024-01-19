@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
+import { RequestFile } from './models.js';
 
 /**
 * A union type representing the time spent in a given zone.

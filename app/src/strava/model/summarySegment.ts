@@ -10,9 +10,9 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { SummaryPRSegmentEffort } from './summaryPRSegmentEffort';
-import { SummarySegmentEffort } from './summarySegmentEffort';
+import { RequestFile } from './models.js';
+import { SummaryPRSegmentEffort } from './summaryPRSegmentEffort.js';
+import { SummarySegmentEffort } from './summarySegmentEffort.js';
 
 export class SummarySegment {
     /**

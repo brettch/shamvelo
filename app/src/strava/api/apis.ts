@@ -1,21 +1,21 @@
-export * from './activitiesApi';
-import { ActivitiesApi } from './activitiesApi';
-export * from './athletesApi';
-import { AthletesApi } from './athletesApi';
-export * from './clubsApi';
-import { ClubsApi } from './clubsApi';
-export * from './gearsApi';
-import { GearsApi } from './gearsApi';
-export * from './routesApi';
-import { RoutesApi } from './routesApi';
-export * from './segmentEffortsApi';
-import { SegmentEffortsApi } from './segmentEffortsApi';
-export * from './segmentsApi';
-import { SegmentsApi } from './segmentsApi';
-export * from './streamsApi';
-import { StreamsApi } from './streamsApi';
-export * from './uploadsApi';
-import { UploadsApi } from './uploadsApi';
+export * from './activitiesApi.js';
+import { ActivitiesApi } from './activitiesApi.js';
+export * from './athletesApi.js';
+import { AthletesApi } from './athletesApi.js';
+export * from './clubsApi.js';
+import { ClubsApi } from './clubsApi.js';
+export * from './gearsApi.js';
+import { GearsApi } from './gearsApi.js';
+export * from './routesApi.js';
+import { RoutesApi } from './routesApi.js';
+export * from './segmentEffortsApi.js';
+import { SegmentEffortsApi } from './segmentEffortsApi.js';
+export * from './segmentsApi.js';
+import { SegmentsApi } from './segmentsApi.js';
+export * from './streamsApi.js';
+import { StreamsApi } from './streamsApi.js';
+export * from './uploadsApi.js';
+import { UploadsApi } from './uploadsApi.js';
 import * as http from 'http';
 
 export class HttpError extends Error {
@@ -25,6 +25,6 @@ export class HttpError extends Error {
     }
 }
 
-export { RequestFile } from '../model/models';
+export { RequestFile } from '../model/models.js';
 
 export const APIS = [ActivitiesApi, AthletesApi, ClubsApi, GearsApi, RoutesApi, SegmentEffortsApi, SegmentsApi, StreamsApi, UploadsApi];

@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ExplorerSegment } from './explorerSegment';
+import { RequestFile } from './models.js';
+import { ExplorerSegment } from './explorerSegment.js';
 
 export class ExplorerResponse {
     /**

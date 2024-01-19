@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { TimedZoneRange } from './timedZoneRange';
+import { RequestFile } from './models.js';
+import { TimedZoneRange } from './timedZoneRange.js';
 
 export class ActivityZone {
     'score'?: number;

@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
+import { RequestFile } from './models.js';
 
 /**
 * A roll-up of metrics pertaining to a set of activities. Values are in seconds and meters.

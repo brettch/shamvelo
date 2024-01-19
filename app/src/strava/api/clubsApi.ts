@@ -15,17 +15,17 @@ import localVarRequest from 'request';
 import http from 'http';
 
 /* tslint:disable:no-unused-locals */
-import { ClubActivity } from '../model/clubActivity';
-import { ClubAthlete } from '../model/clubAthlete';
-import { DetailedClub } from '../model/detailedClub';
-import { Fault } from '../model/fault';
-import { SummaryAthlete } from '../model/summaryAthlete';
-import { SummaryClub } from '../model/summaryClub';
+import { ClubActivity } from '../model/clubActivity.js';
+import { ClubAthlete } from '../model/clubAthlete.js';
+import { DetailedClub } from '../model/detailedClub.js';
+import { Fault } from '../model/fault.js';
+import { SummaryAthlete } from '../model/summaryAthlete.js';
+import { SummaryClub } from '../model/summaryClub.js';
 
-import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
-import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models.js';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models.js';
 
-import { HttpError, RequestFile } from './apis';
+import { HttpError, RequestFile } from './apis.js';
 
 let defaultBasePath = 'https://www.strava.com/api/v3';
 

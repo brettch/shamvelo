@@ -15,15 +15,15 @@ import localVarRequest from 'request';
 import http from 'http';
 
 /* tslint:disable:no-unused-locals */
-import { DetailedSegment } from '../model/detailedSegment';
-import { ExplorerResponse } from '../model/explorerResponse';
-import { Fault } from '../model/fault';
-import { SummarySegment } from '../model/summarySegment';
+import { DetailedSegment } from '../model/detailedSegment.js';
+import { ExplorerResponse } from '../model/explorerResponse.js';
+import { Fault } from '../model/fault.js';
+import { SummarySegment } from '../model/summarySegment.js';
 
-import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
-import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models.js';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models.js';
 
-import { HttpError, RequestFile } from './apis';
+import { HttpError, RequestFile } from './apis.js';
 
 let defaultBasePath = 'https://www.strava.com/api/v3';
 

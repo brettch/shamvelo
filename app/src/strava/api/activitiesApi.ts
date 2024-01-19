@@ -15,19 +15,19 @@ import localVarRequest from 'request';
 import http from 'http';
 
 /* tslint:disable:no-unused-locals */
-import { ActivityZone } from '../model/activityZone';
-import { Comment } from '../model/comment';
-import { DetailedActivity } from '../model/detailedActivity';
-import { Fault } from '../model/fault';
-import { Lap } from '../model/lap';
-import { SummaryActivity } from '../model/summaryActivity';
-import { SummaryAthlete } from '../model/summaryAthlete';
-import { UpdatableActivity } from '../model/updatableActivity';
+import { ActivityZone } from '../model/activityZone.js';
+import { Comment } from '../model/comment.js';
+import { DetailedActivity } from '../model/detailedActivity.js';
+import { Fault } from '../model/fault.js';
+import { Lap } from '../model/lap.js';
+import { SummaryActivity } from '../model/summaryActivity.js';
+import { SummaryAthlete } from '../model/summaryAthlete.js';
+import { UpdatableActivity } from '../model/updatableActivity.js';
 
-import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
-import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models.js';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models.js';
 
-import { HttpError, RequestFile } from './apis';
+import { HttpError, RequestFile } from './apis.js';
 
 let defaultBasePath = 'https://www.strava.com/api/v3';
 

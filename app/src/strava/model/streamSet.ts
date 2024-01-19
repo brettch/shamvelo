@@ -10,18 +10,18 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { AltitudeStream } from './altitudeStream';
-import { CadenceStream } from './cadenceStream';
-import { DistanceStream } from './distanceStream';
-import { HeartrateStream } from './heartrateStream';
-import { LatLngStream } from './latLngStream';
-import { MovingStream } from './movingStream';
-import { PowerStream } from './powerStream';
-import { SmoothGradeStream } from './smoothGradeStream';
-import { SmoothVelocityStream } from './smoothVelocityStream';
-import { TemperatureStream } from './temperatureStream';
-import { TimeStream } from './timeStream';
+import { RequestFile } from './models.js';
+import { AltitudeStream } from './altitudeStream.js';
+import { CadenceStream } from './cadenceStream.js';
+import { DistanceStream } from './distanceStream.js';
+import { HeartrateStream } from './heartrateStream.js';
+import { LatLngStream } from './latLngStream.js';
+import { MovingStream } from './movingStream.js';
+import { PowerStream } from './powerStream.js';
+import { SmoothGradeStream } from './smoothGradeStream.js';
+import { SmoothVelocityStream } from './smoothVelocityStream.js';
+import { TemperatureStream } from './temperatureStream.js';
+import { TimeStream } from './timeStream.js';
 
 export class StreamSet {
     'time'?: TimeStream;

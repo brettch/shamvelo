@@ -10,9 +10,9 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { MetaActivity } from './metaActivity';
-import { MetaAthlete } from './metaAthlete';
+import { RequestFile } from './models.js';
+import { MetaActivity } from './metaActivity.js';
+import { MetaAthlete } from './metaAthlete.js';
 
 export class Lap {
     /**

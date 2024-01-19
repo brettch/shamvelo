@@ -10,9 +10,9 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ActivityType } from './activityType';
-import { SportType } from './sportType';
+import { RequestFile } from './models.js';
+import { ActivityType } from './activityType.js';
+import { SportType } from './sportType.js';
 
 export class UpdatableActivity {
     /**

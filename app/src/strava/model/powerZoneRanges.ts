@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ZoneRange } from './zoneRange';
+import { RequestFile } from './models.js';
+import { ZoneRange } from './zoneRange.js';
 
 export class PowerZoneRanges {
     'zones'?: Array<ZoneRange>;

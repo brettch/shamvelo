@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
+import { RequestFile } from './models.js';
 
 /**
 * Encapsulates the errors that may be returned from the API.

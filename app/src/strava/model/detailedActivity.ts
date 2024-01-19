@@ -10,16 +10,16 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ActivityType } from './activityType';
-import { DetailedSegmentEffort } from './detailedSegmentEffort';
-import { Lap } from './lap';
-import { MetaAthlete } from './metaAthlete';
-import { PhotosSummary } from './photosSummary';
-import { PolylineMap } from './polylineMap';
-import { Split } from './split';
-import { SportType } from './sportType';
-import { SummaryGear } from './summaryGear';
+import { RequestFile } from './models.js';
+import { ActivityType } from './activityType.js';
+import { DetailedSegmentEffort } from './detailedSegmentEffort.js';
+import { Lap } from './lap.js';
+import { MetaAthlete } from './metaAthlete.js';
+import { PhotosSummary } from './photosSummary.js';
+import { PolylineMap } from './polylineMap.js';
+import { Split } from './split.js';
+import { SportType } from './sportType.js';
+import { SummaryGear } from './summaryGear.js';
 
 export class DetailedActivity {
     /**

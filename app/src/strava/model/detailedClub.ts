@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ActivityType } from './activityType';
+import { RequestFile } from './models.js';
+import { ActivityType } from './activityType.js';
 
 export class DetailedClub {
     /**

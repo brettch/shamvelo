@@ -10,10 +10,10 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { PolylineMap } from './polylineMap';
-import { SummaryPRSegmentEffort } from './summaryPRSegmentEffort';
-import { SummarySegmentEffort } from './summarySegmentEffort';
+import { RequestFile } from './models.js';
+import { PolylineMap } from './polylineMap.js';
+import { SummaryPRSegmentEffort } from './summaryPRSegmentEffort.js';
+import { SummarySegmentEffort } from './summarySegmentEffort.js';
 
 export class DetailedSegment {
     /**

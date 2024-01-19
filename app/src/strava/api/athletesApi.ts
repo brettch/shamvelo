@@ -15,15 +15,15 @@ import localVarRequest from 'request';
 import http from 'http';
 
 /* tslint:disable:no-unused-locals */
-import { ActivityStats } from '../model/activityStats';
-import { DetailedAthlete } from '../model/detailedAthlete';
-import { Fault } from '../model/fault';
-import { Zones } from '../model/zones';
+import { ActivityStats } from '../model/activityStats.js';
+import { DetailedAthlete } from '../model/detailedAthlete.js';
+import { Fault } from '../model/fault.js';
+import { Zones } from '../model/zones.js';
 
-import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models';
-import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models';
+import { ObjectSerializer, Authentication, VoidAuth, Interceptor } from '../model/models.js';
+import { HttpBasicAuth, HttpBearerAuth, ApiKeyAuth, OAuth } from '../model/models.js';
 
-import { HttpError, RequestFile } from './apis';
+import { HttpError, RequestFile } from './apis.js';
 
 let defaultBasePath = 'https://www.strava.com/api/v3';
 

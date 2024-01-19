@@ -10,10 +10,10 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { PolylineMap } from './polylineMap';
-import { SummaryAthlete } from './summaryAthlete';
-import { SummarySegment } from './summarySegment';
+import { RequestFile } from './models.js';
+import { PolylineMap } from './polylineMap.js';
+import { SummaryAthlete } from './summaryAthlete.js';
+import { SummarySegment } from './summarySegment.js';
 
 export class Route {
     'athlete'?: SummaryAthlete;

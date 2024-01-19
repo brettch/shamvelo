@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { ActivityType } from './activityType';
-import { MetaAthlete } from './metaAthlete';
-import { PolylineMap } from './polylineMap';
-import { SportType } from './sportType';
+import { RequestFile } from './models.js';
+import { ActivityType } from './activityType.js';
+import { MetaAthlete } from './metaAthlete.js';
+import { PolylineMap } from './polylineMap.js';
+import { SportType } from './sportType.js';
 
 export class SummaryActivity {
     /**

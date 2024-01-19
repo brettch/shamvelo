@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { PhotosSummaryPrimary } from './photosSummaryPrimary';
+import { RequestFile } from './models.js';
+import { PhotosSummaryPrimary } from './photosSummaryPrimary.js';
 
 export class PhotosSummary {
     /**

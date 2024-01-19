@@ -10,9 +10,9 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { HeartRateZoneRanges } from './heartRateZoneRanges';
-import { PowerZoneRanges } from './powerZoneRanges';
+import { RequestFile } from './models.js';
+import { HeartRateZoneRanges } from './heartRateZoneRanges.js';
+import { PowerZoneRanges } from './powerZoneRanges.js';
 
 export class Zones {
     'heartRate'?: HeartRateZoneRanges;

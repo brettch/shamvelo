@@ -10,9 +10,9 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
-import { SummaryClub } from './summaryClub';
-import { SummaryGear } from './summaryGear';
+import { RequestFile } from './models.js';
+import { SummaryClub } from './summaryClub.js';
+import { SummaryGear } from './summaryGear.js';
 
 export class DetailedAthlete {
     /**
