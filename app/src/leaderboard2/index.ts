@@ -3,7 +3,7 @@ import athleteSummarize from './athlete-summary.js';
 import leaderboardSummarize from './summary.js';
 import { start as startDb } from '../db.js';
 import filterActivities from './filter-activities.js';
-import mapById from './map-by-id.js';
+import { mapById } from '../identified.js';
 
 const db = startDb();
 

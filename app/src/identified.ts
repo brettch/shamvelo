@@ -1,9 +1,9 @@
-interface HasId {
+export interface Identified {
   id: string,
 }
 
 // Create a map of items keyed by their id.
-export default function<T extends HasId>(items: T[]): Map<string, T> {
+export function mapById<T extends Identified>(items: T[]): Map<string, T> {
   return items.reduce(function(itemsById, item) {
     itemsById.set(item.id, item);
     return itemsById;
