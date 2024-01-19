@@ -52,14 +52,14 @@ async function getAthleteToken(athleteId: any) {
 }
 
 // Refresh athlete details in our database.
-async function refreshAthlete(athleteId: any) {
+async function refreshAthlete(athleteId: number) {
   console.log('Refreshing athlete ' + athleteId);
   const athlete = await strava.getAthlete(athleteId);
   await db.saveAthlete(athlete);
 }
 
 // Refresh an athlete's activities in our database.
-async function refreshAthleteActivities(athleteId: any) {
+async function refreshAthleteActivities(athleteId: number) {
   console.log('Refreshing athlete activities ' + athleteId);
   
   await db.deleteActivities(athleteId);
