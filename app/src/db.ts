@@ -3,6 +3,7 @@ import { from } from 'rxjs';
 import { map, toArray, mergeMap, bufferCount } from 'rxjs/operators';
 import { stringify } from './util.js';
 import { GetResponse } from '@google-cloud/datastore/build/src/request.js';
+import { Identified } from './identified.js';
 
 export function start() {
   const ds = new Datastore();
@@ -17,16 +18,14 @@ export function start() {
   return {
 
     // Get specific items by key.
-    getItemsByKey: async function(collection: string, keys: PathType | PathType[]): Promise<GetResponse> {
-      console.log('Retrieving ' + collection + ' with keys ' + stringify(keys));
+    getItemByKey: async function(collection: string, id: PathType): Promise<any> {
+      console.log(`Retrieving ${collection} with id ${id}`);
 
-      const dsKeys = Array.isArray(keys) ?
-        keys.map(key => ds.key([collection, key])) :
-        ds.key([collection, keys]);
+      const key = ds.key([collection, id]);
 
-      const items = await ds.get(dsKeys);
+      const entities = await ds.get(key);
 
-      return items;
+      return entities[0];
     },
 
     // Search for items in the specified collection.
@@ -62,28 +61,16 @@ export function start() {
       return items[0];
     },
 
-    // Save or refresh an athlete.
-    saveAthlete: async function(athlete: any) {
-      console.log(`Saving athlete ${athlete.id}`);
+    saveItem: async function(type: string, item: Identified): Promise<void> {
+      console.log(`Saving ${type} ${item.id}`);
       await ds.upsert({
-        key: ds.key(['athletes', athlete.id]),
-        data: athlete
+        key: ds.key([type, item.id]),
+        data: item
       });
     },
 
-    // Save or refresh an athlete's token.
-    saveAthleteToken: async function(id: any, token: any) {
-      console.log(`Saving token for athlete ${id}`);
-      await ds.upsert({
-        key: ds.key(['tokens', id]),
-        data: token
-      });
-    },
-
-    deleteActivity: async function(activityId: any) {
-      console.log(`Deleting activity ${activityId}`);
-      const key = ds.key(['activities', activityId]);
-      await ds.delete(key);
+    deleteItem: async function(type: string, id: number): Promise<void> {
+      console.log(`Saving ${type} ${id}`);
     },
 
     deleteActivities: async function(athleteId: any) {

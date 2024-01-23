@@ -12,50 +12,46 @@ import bodyParser from 'body-parser';
 // Handlebars templating engine
 import exphbs from 'express-handlebars';
 
-import { start as dbStart } from './db.js';
+import { start as startDb } from './db.js';
 import { build as buildLeaderboard } from './leaderboard.js';
 import * as leaderboard2 from './leaderboard2/index.js';
 import { from } from 'rxjs';
 import { bufferCount, mergeMap } from 'rxjs/operators';
-import { start as startStrava } from './strava.js';
+import { SlimActivity, SlimAthlete, start as startStrava } from './strava.js';
 import { csvString, stringify } from './util.js';
 import { Response } from 'express-serve-static-core';
+import { Token, start as startRegistration } from './registration.js';
+import { assertIdentified } from './identified.js';
 
 // Start the database.
-const db = dbStart();
+const db = startDb();
+
+const { registration, tokenAccess } = startRegistration(
+  (id) => db.getItemByKey('tokens', id),
+  (token) => db.saveItem('tokens', token),
+  getIdForToken,
+);
 
 // Start the Strava client.
-const strava = startStrava(
-  getAthleteToken,
-  db.saveAthleteToken
-);
+const strava = startStrava(tokenAccess);
+
+async function getIdForToken(token: Token): Promise<number> {
+  const athlete = await strava.getAthleteWithToken(token);
+  return athlete.id!;
+}
 
 async function registerAthlete(stravaCode: string) {
   console.log('Registering athlete with code ' + stravaCode);
-  // Exchange the temporary code for an access token.
-  const payload = await strava.getOAuthToken(stravaCode);
-  const athlete = payload.athlete;
-  const token = {
-    id: athlete.id,
-    expires_at: payload.expires_at,
-    expires_in: payload.expires_in,
-    refresh_token: payload.refresh_token,
-    access_token: payload.access_token
-  };
-  await db.saveAthlete(athlete);
-  await db.saveAthleteToken(athlete.id, token);
-}
-
-async function getAthleteToken(athleteId: any) {
-  const tokens = await db.getItemsByKey('tokens', athleteId);
-  return tokens[0];
+  const athleteId = await registration.registerUser(stravaCode);
+  await refreshAthlete(athleteId);
 }
 
 // Refresh athlete details in our database.
 async function refreshAthlete(athleteId: number) {
   console.log('Refreshing athlete ' + athleteId);
   const athlete = await strava.getAthlete(athleteId);
-  await db.saveAthlete(athlete);
+  console.log(`athlete: ${stringify(athlete)}`);
+  await db.saveItem('athletes', assertIdentified(athlete));
 }
 
 // Refresh an athlete's activities in our database.
@@ -97,24 +93,24 @@ async function refreshActivity(activityId: any, athleteId: any) {
 
 async function deleteActivity(activityId: any) {
   console.log(`deleting activity ${activityId}`);
-  const activities = await db.getItemsWithFilter('activities', 'id', activityId);
-  const activity = activities[0];
-  await db.deleteActivity(activityId);
+  const activity: SlimActivity | undefined = await db.getItemByKey('activities', activityId);
+  await db.deleteItem('activities', activityId);
 
-  if (activity) {
-    await leaderboard2.refreshAthleteSummary(activity.athlete.id);
+  const athleteId = activity?.athlete?.id;
+  if (athleteId) {
+    await leaderboard2.refreshAthleteSummary(athleteId);
   }
 }
 
 async function getAthleteAndActivities(athleteId: any) {
-  const athletesPromise = db.getItemsByKey('athletes', athleteId);
+  const athletePromise = db.getItemByKey('athletes', athleteId);
   const activitiesPromise = db.getItemsWithFilter('activities', 'athleteId', athleteId);
 
-  const athletes = await athletesPromise;
-  const activities = await activitiesPromise;
+  const athlete: SlimAthlete = await athletePromise;
+  const activities: SlimActivity[] = await activitiesPromise;
 
   return {
-    athlete: athletes[0],
+    athlete: athlete,
     activities: activities
   };
 }
@@ -123,8 +119,8 @@ async function getAthletesAndActivities() {
   const athletesPromise = db.getAllItems('athletes');
   const activitiesPromise = db.getAllItems('activities');
 
-  const athletes = await athletesPromise;
-  const activities = await activitiesPromise;
+  const athletes: SlimAthlete[] = await athletesPromise;
+  const activities: SlimActivity[] = await activitiesPromise;
 
   return {
     athletes: athletes,
@@ -190,7 +186,7 @@ app.get('/', function (_, res) {
 // Initiate OAuth registration of a new Strava athlete/user.
 app.get('/register', function(_, res) {
   // Redirect the browser to the Strava OAuth grant page.
-  res.redirect(strava.getOAuthRequestAccessUrl());
+  res.redirect(registration.getOAuthRequestAccessUrl());
 });
 
 // Handle the OAuth callback from Strava, and exchange the temporary code for an access token.

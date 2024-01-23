@@ -12,4 +12,4 @@ export default function(activity: any) {
     /* month path */ `year.${year}.month.${month}.summary`,
     /* week path */ `year.${weekYear}.week.${week}.summary`
   ];
-};
+}
