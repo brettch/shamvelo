@@ -1,14 +1,12 @@
-'use strict';
-
-const summarize = require('../../src/leaderboard2/athlete-summary');
+import summarize from './athlete-summary.js';
 
 const activity = {
   id: 1,
   distance: 2,
-  moving_time: 4,
+  movingTime: 4,
   name: 'my activity',
-  total_elevation_gain: 3,
-  start_date: '2020-01-01:00:00:00',
+  totalElevationGain: 3,
+  startDate: new Date('2020-01-01:00:00:00'),
   athlete: { id: 1234 },
 };
 

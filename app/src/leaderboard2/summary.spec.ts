@@ -1,6 +1,4 @@
-'use strict';
-
-const summarize = require('../../src/leaderboard2/summary');
+import summarize from './summary.js';
 
 const athletePeriod = {
   summary: {
@@ -327,7 +325,7 @@ test('merge two year summaries', () => {
     ]
   };
 
-  const actualSummary = [
+  const actualSummary: any = [
     athlete1Data,
     athlete2Data
   ].reduce(

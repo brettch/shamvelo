@@ -1,15 +1,11 @@
-'use strict';
-
-const summaryPaths = require('../../src/leaderboard2/athlete-summary-paths');
+import summaryPaths from './athlete-summary-paths.js';
 
 const activity = {
-  start_date: '2020-01-01T00:00:00Z',
-  athlete: { id: 1234 }
+  startDate: new Date('2020-01-01T00:00:00Z'),
 };
 
 const activityWithWeekInNextYear = {
-  start_date: '2019-12-31T00:00:00Z',
-  athlete: { id: 1234 }
+  startDate: new Date('2019-12-31T00:00:00Z'),
 };
 
 test('athlete summary paths', () => {

@@ -1,23 +1,35 @@
-'use strict';
-
-const summarize = require('../../src/leaderboard2/period-summary');
+import { create, addActivity } from './period-summary.js';
 
 const activity = {
   id: 1,
   distance: 2,
-  moving_time: 4,
+  movingTime: 4,
   name: 'my activity',
-  start_date: '2020-01-01:00:00:00',
-  total_elevation_gain: 3
+  startDate: new Date('2020-01-01:00:00:00'),
+  totalElevationGain: 3
 };
 
-const singleSummary = summarize(null, activity);
-const doubleSummary = summarize(summarize(null, activity), activity);
+const singleSummary = addActivity(create(), activity);
+const doubleSummary = addActivity(addActivity(create(), activity), activity);
+
+test('new summary is initialized correctly', () => {
+  expect(create()).toEqual({
+    distance: 0,
+    elevation: 0,
+    movingTime: 0,
+    activityCount: 0,
+    averageSpeed: 0,
+    activeDays: [],
+    activeDayCount: 0,
+    longestRide: [],
+    fastestRide: []
+  });
+});
 
 test('single summary is initialized correctly', () => {
   expect(singleSummary.distance).toEqual(activity.distance);
-  expect(singleSummary.elevation).toEqual(activity.total_elevation_gain);
-  expect(singleSummary.movingTime).toEqual(activity.moving_time);
+  expect(singleSummary.elevation).toEqual(activity.totalElevationGain);
+  expect(singleSummary.movingTime).toEqual(activity.movingTime);
   expect(singleSummary.activityCount).toEqual(1);
   expect(singleSummary.averageSpeed).toEqual(0.5);
   expect(singleSummary.activeDays.length).toEqual(1);
@@ -36,11 +48,11 @@ test('distance is added', () => {
 });
 
 test('elevation is added', () => {
-  expect(doubleSummary.elevation).toEqual(2 * activity.total_elevation_gain);
+  expect(doubleSummary.elevation).toEqual(2 * activity.totalElevationGain);
 });
 
 test('moving time is added', () => {
-  expect(doubleSummary.movingTime).toEqual(2 * activity.moving_time);
+  expect(doubleSummary.movingTime).toEqual(2 * activity.movingTime);
 });
 
 test('activity count is tallied', () => {
@@ -58,11 +70,12 @@ test('unique days are identified', () => {
     '2020-01-02:00:00:00',
     '2020-01-02:00:00:00'
   ]
+    .map(dateS => new Date(dateS))
     .map(date => ({
       ...activity,
-      start_date: date
+      startDate: date
     }))
-    .reduce(summarize, null);
+    .reduce(addActivity, create());
 
   expect(summary.activeDays.length).toEqual(2);
   expect(summary.activeDayCount).toEqual(2);
@@ -83,27 +96,27 @@ test('longest rides are identified', () => {
       ...activity,
       ...data
     }))
-    .reduce(summarize, null);
+    .reduce(addActivity, create());
   expect(summary.longestRide.length).toEqual(5);
   expect(summary.longestRide.map(activity => activity.id)).toEqual([8, 7, 6, 5, 4]);
 });
 
 test('fastest rides are identified', () => {
   const summary = [
-    {id: 1, moving_time: 1},
-    {id: 3, moving_time: 3},
-    {id: 5, moving_time: 5},
-    {id: 7, moving_time: 7},
-    {id: 2, moving_time: 2},
-    {id: 4, moving_time: 4},
-    {id: 6, moving_time: 6},
-    {id: 8, moving_time: 8},
+    {id: 1, movingTime: 1},
+    {id: 3, movingTime: 3},
+    {id: 5, movingTime: 5},
+    {id: 7, movingTime: 7},
+    {id: 2, movingTime: 2},
+    {id: 4, movingTime: 4},
+    {id: 6, movingTime: 6},
+    {id: 8, movingTime: 8},
   ]
     .map(data => ({
       ...activity,
       ...data
     }))
-    .reduce(summarize, null);
+    .reduce(addActivity, create());
   expect(summary.fastestRide.length).toEqual(5);
   expect(summary.fastestRide.map(activity => activity.id)).toEqual([1, 2, 3, 4, 5]);
 });
