@@ -7,7 +7,7 @@ import { mapById } from '../identified.js';
 
 const db = startDb();
 
-export async function refreshAthleteSummary(athleteId: any) {
+export async function refreshAthleteSummary(athleteId: number) {
   console.log(`refreshing summary for athlete ${athleteId}`);
   const activities = filterActivities(
     await db.getItemsWithFilter('activities', 'athlete.id', athleteId)

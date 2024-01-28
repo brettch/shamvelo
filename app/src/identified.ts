@@ -13,13 +13,3 @@ export function mapById<T extends Identified>(items: T[]): Map<string, T> {
     return itemsById;
   }, new Map());
 }
-
-export function assertIdentified<T extends IdentifiedMaybe>(o: T): Identified {
-  if (o.id) {
-    return {
-      ...o,
-      id: o.id!,
-    };
-  }
-  throw new Error("id is not available");
-}

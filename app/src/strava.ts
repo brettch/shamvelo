@@ -3,30 +3,38 @@ import { mergeMap, tap } from 'rxjs/operators';
 import { ActivitiesApi, AthletesApi, DetailedAthlete, SummaryActivity } from './strava/api.js';
 import { Token, TokenAccess, TokenWithId } from './registration.js';
 
-export type SlimAthlete = Pick<DetailedAthlete, "id" | "firstname" | "lastname" >;
+export type SlimAthlete = Required<Pick<DetailedAthlete, "id" | "firstname" | "lastname" >>;
 
 function pickAthleteFields(athlete: DetailedAthlete): SlimAthlete {
+  function missingField<T>(fieldName: string): T {
+    throw new Error(`Athlete ${athlete.id} is missing field ${fieldName}`);
+  }
+
   return {
-    id: athlete.id,
-    firstname: athlete.firstname,
-    lastname: athlete.lastname,
+    id: athlete.id ? athlete.id : missingField('id'),
+    firstname: athlete.firstname ? athlete.firstname : missingField('firstname'),
+    lastname: athlete.lastname ? athlete.lastname : missingField('lastname'),
   };
 }
 
-export type SlimActivity = Pick<SummaryActivity, "id" | "athlete" | "distance" | "movingTime" | "name" | "startDate" | "totalElevationGain" | "type">;
+export type SlimActivity = Required<Pick<SummaryActivity, "id" | "athlete" | "distance" | "movingTime" | "name" | "startDate" | "totalElevationGain" | "type">>;
 
 function pickActivityFields(activity: SummaryActivity): SlimActivity {
+  function missingField<T>(fieldName: string): T {
+    throw new Error(`Activity ${activity.id} is missing field ${fieldName}`);
+  }
+
   return {
-    id: activity.id,
+    id: activity.id ? activity.id : missingField('id'),
     athlete: {
       id: activity?.athlete?.id,
     },
-    distance: activity.distance,
-    movingTime: activity.movingTime,
-    name: activity.name,
-    startDate: activity.startDate,
-    totalElevationGain: activity.totalElevationGain,
-    type: activity.type,
+    distance: activity.distance ? activity.distance : missingField('distance'),
+    movingTime: activity.movingTime ? activity.movingTime : missingField('movingTime'),
+    name: activity.name ? activity.name : missingField('name'),
+    startDate: activity.startDate ? activity.startDate : missingField('startDate'),
+    totalElevationGain: activity.totalElevationGain ? activity.totalElevationGain : missingField('totalElevationGain'),
+    type: activity.type ? activity.type : missingField('type'),
   }
 }
 

@@ -1,30 +1,65 @@
 import _ from 'lodash';
 import moment from 'moment';
+import { SlimActivity } from '../strava.js';
 
-const emptySummary = {
-  distance: 0,
-  elevation: 0,
-  movingTime: 0,
-  activityCount: 0,
-  averageSpeed: 0,
-  activeDays: [],
-  activeDayCount: 0,
-  longestRide: [],
-  fastestRide: []
-};
+export interface PeriodSummary {
+  distance: number,
+  elevation: number,
+  movingTime: number,
+  activityCount: number,
+  averageSpeed: number,
+  activeDays: string[],
+  activeDayCount: number,
+  longestRide: DistanceRideSummary[],
+  fastestRide: SpeedRideSummary[],
+}
 
-export default function(_summary: any, activity: any) {
-  const summary = defaultIfNull(_summary);
+interface RideSummary {
+  id: number,
+  name: string,
+}
 
+interface DistanceRideSummary extends RideSummary {
+  distance: number,
+}
+
+interface SpeedRideSummary extends RideSummary {
+  averageSpeed: number,
+}
+
+export function create() {
+  return {
+    distance: 0,
+    elevation: 0,
+    movingTime: 0,
+    activityCount: 0,
+    averageSpeed: 0,
+    activeDays: [],
+    activeDayCount: 0,
+    longestRide: [],
+    fastestRide: []
+  };
+}
+
+export type SummarisableActivity = Pick<SlimActivity,
+  'id' |
+  'name' |
+  'distance' |
+  'totalElevationGain' |
+  'movingTime' |
+  'startDate'
+>;
+
+export function addActivity(summary: PeriodSummary, activity: SummarisableActivity) {
   // Update top level counters.
-  summary.distance += activity.distance;
-  summary.elevation += activity.total_elevation_gain;
-  summary.movingTime += activity.moving_time;
+  if (activity.distance) summary.distance += activity.distance;
+  if (activity.totalElevationGain) summary.elevation += activity.totalElevationGain;
+  if (activity.movingTime) summary.movingTime += activity.movingTime;
   summary.activityCount++;
   summary.averageSpeed = toAverageSpeed(summary.distance, summary.movingTime);
 
   // Update the unique list of days that have been ridden.  The size of the list is what matters, the values less so.
-  const dayCode = toDayCode(activity);
+  const dayCode = toDayCode(activity.startDate);
   if (!summary.activeDays.includes(dayCode)) {
     summary.activeDays.push(dayCode);
   }
@@ -49,7 +84,7 @@ export default function(_summary: any, activity: any) {
     {
       id: activity.id,
       name: activity.name,
-      averageSpeed: toAverageSpeed(activity.distance, activity.moving_time)
+      averageSpeed: toAverageSpeed(activity.distance, activity.movingTime)
     },
     (a: any, b: any) => b.averageSpeed - a.averageSpeed
   );
@@ -57,21 +92,16 @@ export default function(_summary: any, activity: any) {
   return summary;
 };
 
-function defaultIfNull(summary: any) {
-  return summary ? summary : _.cloneDeep(emptySummary);
-}
-
-function toDayCode(activity: any) {
-  const date = new Date(activity.start_date);
+function toDayCode(date: Date) {
   const momentDate = moment(date);
   return momentDate.format('YYYYMMDD');
 }
 
-function toAverageSpeed(distance: any, movingTime: any) {
+function toAverageSpeed(distance: number, movingTime: number) {
   return distance / movingTime;
 }
 
-function updatePodium(podium: any, maxPodiumSize: any, item: any, sortBy: any) {
+function updatePodium<T extends RideSummary>(podium: T[], maxPodiumSize: number, item: T, sortBy: (a: T, b: T) => number) {
   podium.push(item);
   podium.sort(sortBy);
   while(podium.length > maxPodiumSize) {

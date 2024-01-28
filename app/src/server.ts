@@ -15,13 +15,12 @@ import exphbs from 'express-handlebars';
 import { start as startDb } from './db.js';
 import { build as buildLeaderboard } from './leaderboard.js';
 import * as leaderboard2 from './leaderboard2/index.js';
-import { from } from 'rxjs';
+import { from, lastValueFrom } from 'rxjs';
 import { bufferCount, mergeMap } from 'rxjs/operators';
 import { SlimActivity, SlimAthlete, start as startStrava } from './strava.js';
 import { csvString, stringify } from './util.js';
 import { Response } from 'express-serve-static-core';
 import { Token, start as startRegistration } from './registration.js';
-import { assertIdentified } from './identified.js';
 
 // Start the database.
 const db = startDb();
@@ -37,7 +36,7 @@ const strava = startStrava(tokenAccess);
 
 async function getIdForToken(token: Token): Promise<number> {
   const athlete = await strava.getAthleteWithToken(token);
-  return athlete.id!;
+  return athlete.id;
 }
 
 async function registerAthlete(stravaCode: string) {
@@ -51,20 +50,20 @@ async function refreshAthlete(athleteId: number) {
   console.log('Refreshing athlete ' + athleteId);
   const athlete = await strava.getAthlete(athleteId);
   console.log(`athlete: ${stringify(athlete)}`);
-  await db.saveItem('athletes', assertIdentified(athlete));
+  await db.saveItem('athletes', athlete);
 }
 
 // Refresh an athlete's activities in our database.
 async function refreshAthleteActivities(athleteId: number) {
   console.log('Refreshing athlete activities ' + athleteId);
-  
+
   await db.deleteActivities(athleteId);
-  await strava.getActivities(athleteId)
+  const o = await strava.getActivities(athleteId)
     .pipe(
       bufferCount(100),
       mergeMap((activities) => from(db.saveActivities(activities)))
-    )
-    .toPromise();
+    );
+  await lastValueFrom(o);
 
   await leaderboard2.refreshAthleteSummary(athleteId);
 }

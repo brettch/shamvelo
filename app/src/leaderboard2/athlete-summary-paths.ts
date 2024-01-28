@@ -1,7 +1,8 @@
 import moment from 'moment';
+import { SlimActivity } from '../strava.js';
 
-export default function(activity: any) {
-  const date = new Date(activity.start_date);
+export default function(activity: Pick<SlimActivity, 'startDate'>): string[] {
+  const date = activity.startDate;
   const year = date.getFullYear();
   const month = date.getMonth();
   const week = moment(date).isoWeek();
