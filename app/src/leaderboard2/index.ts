@@ -1,5 +1,8 @@
 import _ from 'lodash';
-import athleteSummarize from './athlete-summary.js';
+import {
+  create as createAthleteSummary,
+  addActivity as addActivityToAthleteSummary
+} from './athlete-summary.js';
 import leaderboardSummarize from './summary.js';
 import { start as startDb } from '../db.js';
 import filterActivities from './filter-activities.js';
@@ -12,7 +15,7 @@ export async function refreshAthleteSummary(athleteId: number) {
   const activities = filterActivities(
     await db.getItemsWithFilter('activities', 'athlete.id', athleteId)
   );
-  const summary = activities.reduce(athleteSummarize, {});
+  const summary = activities.reduce(addActivityToAthleteSummary, createAthleteSummary(athleteId));
   await db.saveAthleteSummary({
     ...summary,
     athleteId

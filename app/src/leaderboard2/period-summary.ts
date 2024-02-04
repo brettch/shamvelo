@@ -27,7 +27,16 @@ interface SpeedRideSummary extends RideSummary {
   averageSpeed: number,
 }
 
-export function create() {
+export type SummarisableActivity = Pick<SlimActivity,
+  'id' |
+  'name' |
+  'distance' |
+  'totalElevationGain' |
+  'movingTime' |
+  'startDate'
+>;
+
+export function create(): PeriodSummary {
   return {
     distance: 0,
     elevation: 0,
@@ -40,15 +49,6 @@ export function create() {
     fastestRide: []
   };
 }
-
-export type SummarisableActivity = Pick<SlimActivity,
-  'id' |
-  'name' |
-  'distance' |
-  'totalElevationGain' |
-  'movingTime' |
-  'startDate'
->;
 
 export function addActivity(summary: PeriodSummary, activity: SummarisableActivity) {
   // Update top level counters.
