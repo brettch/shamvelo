@@ -145,7 +145,7 @@ export function start() {
     saveActivities: async function(activities: any[]) {
       console.log(`Saving ${activities.length} activities`);
 
-      await setItems(activities, 'activities', (item) => item.id);
+      await setItems(activities, 'activities', (item) => item.id.toString());
     },
 
     // Save or refresh an athlete summary.
@@ -172,7 +172,7 @@ export function start() {
     saveLeaderboards: async function(leaderboards: any[]) {
       console.log(`Saving ${leaderboards.length} leaderboards`);
 
-      await setItems(leaderboards, 'leaderboards', (item) => item.id);
+      await setItems(leaderboards, 'leaderboards', (item) => item.id.toString());
     }
   };
 }
