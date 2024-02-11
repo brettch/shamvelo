@@ -33,7 +33,7 @@ function pickActivityFields(activity: SummaryActivity): SlimActivity {
     movingTime: activity.movingTime ? activity.movingTime : missingField('movingTime'),
     name: activity.name ? activity.name : missingField('name'),
     startDate: activity.startDate ? activity.startDate : missingField('startDate'),
-    totalElevationGain: activity.totalElevationGain ? activity.totalElevationGain : missingField('totalElevationGain'),
+    totalElevationGain: activity.totalElevationGain ? activity.totalElevationGain : 0,
     type: activity.type ? activity.type : missingField('type'),
   }
 }
