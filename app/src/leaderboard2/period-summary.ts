@@ -10,21 +10,14 @@ export interface PeriodSummary {
   averageSpeed: number,
   activeDays: string[],
   activeDayCount: number,
-  longestRide: DistanceRideSummary[],
-  fastestRide: SpeedRideSummary[],
+  longestRide: RideSummary[],
+  fastestRide: RideSummary[],
 }
 
 interface RideSummary {
   id: number,
   name: string,
-}
-
-interface DistanceRideSummary extends RideSummary {
-  distance: number,
-}
-
-interface SpeedRideSummary extends RideSummary {
-  averageSpeed: number,
+  value: number,
 }
 
 export type SummarisableActivity = Pick<SlimActivity,
@@ -72,9 +65,8 @@ export function addActivity(summary: PeriodSummary, activity: SummarisableActivi
     {
       id: activity.id,
       name: activity.name,
-      distance: activity.distance
-    },
-    (a: any, b: any) => b.distance - a.distance
+      value: activity.distance
+    }
   );
 
   // Create a sorted list of the fastest rides.
@@ -84,9 +76,8 @@ export function addActivity(summary: PeriodSummary, activity: SummarisableActivi
     {
       id: activity.id,
       name: activity.name,
-      averageSpeed: toAverageSpeed(activity.distance, activity.movingTime)
-    },
-    (a: any, b: any) => b.averageSpeed - a.averageSpeed
+      value: toAverageSpeed(activity.distance, activity.movingTime)
+    }
   );
 
   return summary;
@@ -101,9 +92,9 @@ function toAverageSpeed(distance: number, movingTime: number) {
   return distance / movingTime;
 }
 
-function updatePodium<T extends RideSummary>(podium: T[], maxPodiumSize: number, item: T, sortBy: (a: T, b: T) => number) {
+function updatePodium(podium: RideSummary[], maxPodiumSize: number, item: RideSummary) {
   podium.push(item);
-  podium.sort(sortBy);
+  podium.sort((a, b) => b.value - a.value);
   while(podium.length > maxPodiumSize) {
     podium.pop();
   }

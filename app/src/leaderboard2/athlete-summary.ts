@@ -1,25 +1,18 @@
-// import _ from 'lodash';
 import { getPeriods } from './athlete-summary-paths.js';
 import { create as createSummary, addActivity as addActivityToSummary, PeriodSummary, SummarisableActivity } from './period-summary.js';
 import { Identified } from '../identified.js';
 
 export interface AthleteSummary extends Identified {
-  year: {
-    [year: string]: YearSummaryContainer,
-  }
+  year: Record<string, YearContainer>,
 }
 
-export interface SummaryContainer {
+export interface PeriodContainer {
   summary: PeriodSummary,
 }
 
-export interface YearSummaryContainer extends SummaryContainer {
-  month: {
-    [month: string]: SummaryContainer,
-  },
-  week: {
-    [week: string]: SummaryContainer,
-  }
+export interface YearContainer extends PeriodContainer {
+  month: Record<number, PeriodContainer>,
+  week: Record<number, PeriodContainer>,
 }
 
 export function create(id: number): AthleteSummary {
@@ -69,7 +62,7 @@ export function addActivity(summary: AthleteSummary, activity: SummarisableActiv
   return summary;
 };
 
-function createSummaryContainer(): SummaryContainer {
+function createSummaryContainer(): PeriodContainer {
   return {
     summary: createSummary(),
   };

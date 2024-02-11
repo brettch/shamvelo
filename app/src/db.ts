@@ -2,7 +2,6 @@ import { Datastore, PathType, Query } from '@google-cloud/datastore';
 import { from } from 'rxjs';
 import { map, toArray, mergeMap, bufferCount } from 'rxjs/operators';
 import { stringify } from './util.js';
-import { GetResponse } from '@google-cloud/datastore/build/src/request.js';
 import { Identified } from './identified.js';
 
 export function start() {

@@ -36,11 +36,11 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.longestRide.length).toEqual(1);
   expect(singleSummary.longestRide[0].id).toEqual(activity.id);
   expect(singleSummary.longestRide[0].name).toEqual(activity.name);
-  expect(singleSummary.longestRide[0].distance).toEqual(activity.distance);
+  expect(singleSummary.longestRide[0].value).toEqual(activity.distance);
   expect(singleSummary.fastestRide.length).toEqual(1);
   expect(singleSummary.fastestRide[0].id).toEqual(activity.id);
   expect(singleSummary.fastestRide[0].name).toEqual(activity.name);
-  expect(singleSummary.fastestRide[0].averageSpeed).toEqual(0.5);
+  expect(singleSummary.fastestRide[0].value).toEqual(0.5);
 });
 
 test('distance is added', () => {

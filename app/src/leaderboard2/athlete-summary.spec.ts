@@ -14,7 +14,7 @@ test('athlete summary has all time period summaries populated', () => {
   const id = 1;
   const summary = addActivity(create(id), activity);
   expect(summary.id).toEqual(id);
-  expect(summary.year['2020'].summary).toBeTruthy();
-  expect(summary.year['2020'].month['0']).toBeTruthy();
-  expect(summary.year['2020'].week['1']).toBeTruthy();
+  expect(summary.year[2020].summary).toBeTruthy();
+  expect(summary.year[2020].month[0]).toBeTruthy();
+  expect(summary.year[2020].week[1]).toBeTruthy();
 });

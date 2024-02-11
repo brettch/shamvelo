@@ -1,117 +1,233 @@
-import _ from 'lodash';
+import { Identified, Named } from '../identified.js';
+import { AthleteSummary, YearContainer as AthleteYearContainer, PeriodContainer as AthletePeriodContainer } from './athlete-summary.js';
+import { PeriodSummary as AthletePeriodSummary } from './period-summary.js'
+import { SlimAthlete } from '../strava.js';
 
-export default function(_allSummary: any, athleteSummary: any, athlete: any) {
-  const allSummary = _allSummary ? _allSummary : {};
+export interface Leaderboard {
+  year: Record<number, YearContainer>,
+}
 
-  applyYears(allSummary, athleteSummary, athlete);
+export function create(): Leaderboard {
+  return {
+    year: {},
+  };
+}
 
-  return allSummary;
+export interface YearContainer extends Identified, PeriodContainer {
+  month: Record<number, PeriodContainer>,
+  week: Record<number, PeriodContainer>,
+  points: {
+    month: PeriodPoints,
+    week: PeriodPoints,
+  },
+}
+
+function createYearContainer(year: number): YearContainer {
+  return {
+    ...createPeriodContainer(),
+    id: year,
+    month: {},
+    week: {},
+    points: {
+      month: createPeriodPoints(),
+      week: createPeriodPoints(),
+    },
+  };
+}
+
+export interface PeriodContainer {
+  summary: PeriodSummary,
+}
+
+function createPeriodContainer(): PeriodContainer {
+  return {
+    summary: {
+      activityCount: [],
+      activeDayCount: [],
+      averageSpeed: [],
+      distance: [],
+      elevation: [],
+      fastestRide: [],
+      longestRide: [],
+      movingTime: [],
+    },
+  };
+}
+
+export interface PeriodSummary {
+  activityCount: AthleteScore[],
+  activeDayCount: AthleteScore[],
+  averageSpeed: AthleteScore[],
+  distance: AthleteScore[],
+  elevation: AthleteScore[],
+  fastestRide: RideScore[],
+  longestRide: RideScore[],
+  movingTime: AthleteScore[],
+}
+
+// Build types representing the sets of keys in PeriodSummary
+type KeysMatching<T, V> = NonNullable<
+  { [K in keyof T]: T[K] extends V ? K : never }[keyof T]
+>;
+type PeriodSummaryRideScoreField = KeysMatching<PeriodSummary, RideScore[]>;
+type PeriodSummaryAthleteScoreField = Exclude<KeysMatching<PeriodSummary, AthleteScore[]>, PeriodSummaryRideScoreField>;
+
+export interface AthleteScore {
+  value: number,
+  athlete: Named,
+}
+
+export interface RideScore extends AthleteScore {
+  ride: Named,
+}
+
+export interface PeriodPoints {
+  activeDayCount: AthleteScore[],
+  activityCount: AthleteScore[],
+  averageSpeed: AthleteScore[],
+  distance: AthleteScore[],
+  elevation: AthleteScore[],
+  fastestRide: AthleteScore[],
+  longestRide: AthleteScore[],
+  movingTime: AthleteScore[],
+  total: AthleteScore[];
+}
+
+function createPeriodPoints(): PeriodPoints {
+  return {
+    activeDayCount: [],
+    activityCount: [],
+    averageSpeed: [],
+    distance: [],
+    elevation: [],
+    fastestRide: [],
+    longestRide: [],
+    movingTime: [],
+    total: [],
+  };
+}
+
+export function addAthlete(leaderboard: Leaderboard, athleteSummary: AthleteSummary, athlete: SlimAthlete): Leaderboard {
+  applyYears(leaderboard, athleteSummary, athlete);
+
+  return leaderboard;
 };
 
-function applyYears(allSummary: any, athleteSummary: any, athlete: any) {
-  const allYears = _.get(allSummary, 'year', {});
-  _.set(allSummary, 'year', allYears);
-  const athleteYears = _.get(athleteSummary, 'year', {});
-
+function applyYears(leaderboard: Leaderboard, athleteSummary: AthleteSummary, athlete: SlimAthlete) {
+  const leaderboardYears = leaderboard.year;
+  const athleteYears = athleteSummary.year;
   Object.keys(athleteYears).forEach(year => {
-    applyYear(year, allYears, athleteYears, athlete);
+    applyYear(+year, leaderboardYears, athleteYears, athlete);
   });
 }
 
-function applyYear(year: any, allYears: any, athleteYears: any, athlete: any) {
-  const allYear = _.get(allYears, year, {year: parseInt(year)});
-  _.set(allYears, year, allYear);
-  const athleteYear = _.get(athleteYears, year, {});
-  applyPeriod(allYear, athleteYear, athlete);
-  applySubYears('month', allYear, athleteYear, athlete);
-  applySubYears('week', allYear, athleteYear, athlete);
-  calculatePoints('month', allYear);
-  calculatePoints('week', allYear);
+function applyYear(year: number, leaderboardYears: Record<number, YearContainer>, athleteYears: Record<number, AthleteYearContainer>, athlete: SlimAthlete) {
+  if (!leaderboardYears[year]) {
+    leaderboardYears[year] = createYearContainer(year);
+  }
+  const leaderboardYear = leaderboardYears[year];
+  const athleteYear = athleteYears[year];
+
+  applyPeriod(leaderboardYear, athleteYear, athlete);
+  applySubYears(leaderboardYear.month, athleteYear.month, athlete);
+  applySubYears(leaderboardYear.week, athleteYear.week, athlete);
+  calculatePoints(leaderboardYear.month, leaderboardYear.points.month);
+  calculatePoints(leaderboardYear.week, leaderboardYear.points.week);
 }
 
-function applySubYears(periodType: any, allYear: any, athleteYear: any, athlete: any) {
-  const allPeriods = _.get(allYear, periodType, {});
-  _.set(allYear, periodType, allPeriods);
-  const athletePeriods = _.get(athleteYear, periodType, {});
-
-  Object.keys(athletePeriods).forEach(periodKey => {
-    applySubYear(periodKey, allPeriods, athletePeriods, athlete);
+function applySubYears(leaderboardPeriods: Record<number, PeriodContainer>, athletePeriods: Record<number, AthletePeriodContainer>, athlete: SlimAthlete) {
+  Object.keys(athletePeriods).forEach(periodId => {
+    applySubYear(+periodId, leaderboardPeriods, athletePeriods, athlete);
   });
 }
 
-function applySubYear(periodKey: any, allPeriods: any, athletePeriods: any, athlete: any) {
-  const allPeriod = _.get(allPeriods, periodKey, {});
-  _.set(allPeriods, periodKey, allPeriod);
-  const athletePeriod = _.get(athletePeriods, periodKey, {});
+function applySubYear(periodId: number, leaderboardPeriods: Record<number, PeriodContainer>, athletePeriods: Record<number, AthletePeriodContainer>, athlete: SlimAthlete) {
+  if (!leaderboardPeriods[periodId]) {
+    leaderboardPeriods[periodId] = createPeriodContainer();
+  }
+  const leaderboardPeriod = leaderboardPeriods[periodId];
+  const athletePeriod = athletePeriods[periodId];
 
-  applyPeriod(allPeriod, athletePeriod, athlete);
+  applyPeriod(leaderboardPeriod, athletePeriod, athlete);
 }
 
-function applyPeriod(allPeriod: any, athletePeriod: any, athlete: any) {
-  const allPeriodSummary = _.get(allPeriod, 'summary', {});
-  _.set(allPeriod, 'summary', allPeriodSummary);
-  const athletePeriodSummary = _.get(athletePeriod, 'summary', {});
-  mergeNumericField('distance', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeNumericField('elevation', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeNumericField('movingTime', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeNumericField('activityCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeNumericField('activeDayCount', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeNumericField('averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeRideField('longestRide', 'distance', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
-  mergeRideField('fastestRide', 'averageSpeed', sortDescending, allPeriodSummary, athletePeriodSummary, athlete);
+function applyPeriod(leaderboardPeriod: PeriodContainer, athletePeriod: AthletePeriodContainer, athlete: SlimAthlete) {
+  const numericFieldNames = [
+    'distance',
+    'elevation',
+    'movingTime',
+    'activityCount',
+    'activeDayCount',
+    'averageSpeed',
+  ] as const;
+
+  const rideFieldNames = [
+    'longestRide',
+    'fastestRide',
+  ] as const;
+
+  const leaderboardSummary = leaderboardPeriod.summary;
+  const athleteSummary = athletePeriod.summary;
+
+  numericFieldNames.forEach(fieldName =>
+    mergeNumericField(fieldName, leaderboardSummary, athleteSummary, athlete)
+  );
+
+  rideFieldNames.forEach(fieldName =>
+    mergeRideField(fieldName, leaderboardSummary, athleteSummary, athlete)
+  );
 }
 
-function sortDescending(a: any, b: any) {
-  return b - a;
+function mergeNumericField(fieldName: PeriodSummaryAthleteScoreField, leaderboardSummary: PeriodSummary, athleteSummary: AthletePeriodSummary, athlete: SlimAthlete) {
+  const leaderboardField = leaderboardSummary[fieldName];
+  const athleteValue = athleteSummary[fieldName];
+  const athleteScore: AthleteScore = {
+    value: athleteValue,
+    athlete: {
+      id: athlete.id,
+      name: buildAthleteName(athlete),
+    },
+  }
+  leaderboardField.push(athleteScore);
+  leaderboardField.sort(compareScoreDescending);
 }
 
-function mergeNumericField(fieldName: any, compareFn: any, allPeriod: any, athletePeriod: any, athlete: any) {
-  const athleteField = {
-    athleteId: athlete.id,
-    athleteName: buildAthleteName(athlete),
-    value: _.get(athletePeriod, fieldName)
-  };
-
-  const allField = _.get(allPeriod, fieldName, []);
-  _.set(allPeriod, fieldName, allField);
-
-  allField.push(athleteField);
-  allField.sort((a: any, b: any) => compareFn(a.value, b.value));
+function compareScoreDescending(a: AthleteScore, b: AthleteScore): number {
+  return b.value - a.value;
 }
 
-function mergeRideField(fieldName: any, rideFieldName: any, compareFn: any, allPeriodSummary: any, athletePeriodSummary: any, athlete: any) {
-  const athleteRideRecords = _
-    .get(athletePeriodSummary, fieldName)
-    .map((rideRecord: any) => ({
+function mergeRideField(fieldName: PeriodSummaryRideScoreField, leaderboardSummary: PeriodSummary, athleteSummary: AthletePeriodSummary, athlete: SlimAthlete) {
+  const leaderboardRecords = leaderboardSummary[fieldName];
+  const athleteRides = athleteSummary[fieldName];
+
+  const athleteRideScores: RideScore[] = athleteRides.map(rideRecord => ({
+    value: rideRecord.value,
+    athlete: {
+      id: athlete.id,
+      name: buildAthleteName(athlete),
+    },
+    ride: {
       id: rideRecord.id,
       name: rideRecord.name,
-      value: _.get(rideRecord, rideFieldName),
-      athleteId: athlete.id,
-      athleteName: buildAthleteName(athlete)
-    }));
+    },
+  }));
 
-  const allExistingRideRecords = _.get(allPeriodSummary, fieldName, []);
-
-  const combinedRideRecords = _.concat(allExistingRideRecords, athleteRideRecords);
-  combinedRideRecords.sort((a: any, b: any) => compareFn(a.value, b.value));
-
-  _.set(allPeriodSummary, fieldName, combinedRideRecords.slice(0, 5));
+  leaderboardRecords.push(...athleteRideScores);
+  leaderboardRecords.sort(compareScoreDescending);
 }
 
-function buildAthleteName(athlete: any) {
+function buildAthleteName(athlete: SlimAthlete) {
   return `${athlete.firstname} ${athlete.lastname}`;
 }
 
-function calculatePoints(periodKey: any, allYear: any) {
-  const allPeriods = _.get(allYear, periodKey, {});
-  const periodPoints = {};
-  _.set(allYear, `points.${periodKey}`, periodPoints);
+function calculatePoints(periods: Record<number, PeriodContainer>, points: PeriodPoints) {
+  const periodSummaries = Object
+    .keys(periods)
+    .map(periodKey => +periodKey)
+    .map(periodKey => periods[periodKey])
+    .map(period => period.summary);
 
-  const allPeriodSummaries = _
-    .values(allPeriods)
-    .map((allPeriod: any) => allPeriod.summary);
-
-  [
+  ([
     'distance',
     'elevation',
     'movingTime',
@@ -120,48 +236,67 @@ function calculatePoints(periodKey: any, allYear: any) {
     'averageSpeed',
     'longestRide',
     'fastestRide'
-  ].forEach(fieldName => {
-    calculatePointsForField(periodPoints, allPeriodSummaries, fieldName);
+  ] as const).forEach(fieldName => {
+    calculatePointsForField(fieldName, periodSummaries, points);
   });
 
-  tallyPointsForTotalField(periodPoints, [
+  // We leave out moving time (too similar to distance) and activity count (too similar to active day count).
+  tallyPointsForTotalField(points, ([
     'distance',
     'elevation',
     'activeDayCount',
     'averageSpeed',
     'longestRide',
     'fastestRide'
-  ]);
+  ]) as const);
 }
 
-function calculatePointsForField(periodPoints: any, allPeriodSummaries: any, fieldName: any) {
-  const athleteWins = allPeriodSummaries
-    .map((allPeriodSummary: any) => _.get(allPeriodSummary, `${fieldName}[0]`))
-    .filter((value: any) => value !== null);
-  const athleteWinsGroupedByAthlete = _.values(
-    _.groupBy(
-      athleteWins,
-      (record: any) => record.athleteId
-    )
-  );
-  const athletePoints = athleteWinsGroupedByAthlete
-    .map((athleteWins: any) => ({
-      athleteId: athleteWins[0].athleteId,
-      athleteName: athleteWins[0].athleteName,
-      value: athleteWins.length
-    })).sort((a: any, b: any) => b.value - a.value);
-  _.set(periodPoints, fieldName, athletePoints);
+function calculatePointsForField(fieldName: keyof PeriodSummary, periodSummaries: PeriodSummary[], points: PeriodPoints) {
+  const fieldPoints = points[fieldName];
+
+  // Take the field results for each period and take the top score/athlete from each one.
+  const allAthleteWins = periodSummaries
+    .map(periodSummary => periodSummary[fieldName])
+    .filter(fieldScores => fieldScores.length > 0)
+    .map(fieldScores => fieldScores[0]);
+
+  // Group wins by athlete.
+  const athleteWinsByAthlete = groupBy(allAthleteWins, (athleteWin) => athleteWin.athlete.id);
+
+  // Score each athlete by number of wins and sort.
+  points[fieldName] =
+    Array
+      .from(athleteWinsByAthlete.values())
+      .map(singleAthleteWins => ({
+        value: singleAthleteWins.length,
+        athlete: singleAthleteWins[0].athlete,
+      }))
+      .sort(compareScoreDescending);
 }
 
-function tallyPointsForTotalField(periodPoints: any, fieldNames: any) {
-  const allFieldPoints = _.flatMap(fieldNames, (fieldName: any) => _.get(periodPoints, fieldName));
-  const allPointsGroupedByAthlete = _.values(_.groupBy(allFieldPoints, (record: any) => record.athleteId));
-  const totalPoints = allPointsGroupedByAthlete
-    .map((athletePointsRecords: any) => athletePointsRecords.reduce((totalRecord: any, fieldRecord: any) => ({
-      athleteId: totalRecord.athleteId,
-      athleteName: totalRecord.athleteName,
-      value: totalRecord.value + fieldRecord.value
-    })))
-    .sort((a: any, b: any) => b.value - a.value);
-  _.set(periodPoints, 'total', totalPoints);
+function tallyPointsForTotalField(points: PeriodPoints, fieldNames: (keyof PeriodPoints)[]) {
+  const allPoints = fieldNames
+    .flatMap(fieldName => points[fieldName]);
+
+  const allPointsByAthlete = groupBy(allPoints, (athletePoints) => athletePoints.athlete.id);
+  points.total =
+    Array
+      .from(allPointsByAthlete.values())
+      .map(singleAthletePoints => singleAthletePoints.reduce((totalRecord, nextRecord) => ({
+        athlete: totalRecord.athlete,
+        value: totalRecord.value + nextRecord.value,
+      })))
+      .sort(compareScoreDescending);
+}
+
+function groupBy<K, V>(values: V[], toKey: (value: V) => K): Map<K, V[]> {
+  const groups = new Map<K, V[]>();
+  for (const value of values) {
+    const key = toKey(value);
+    const groupValues = groups.get(key) || [];
+    groupValues.push(value);
+    groups.set(key, groupValues);
+  }
+
+  return groups;
 }

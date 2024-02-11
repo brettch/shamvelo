@@ -1,32 +1,34 @@
-import summarize from './summary.js';
+import { SlimAthlete } from '../strava.js';
+import { AthleteSummary, PeriodContainer, YearContainer as AthleteYearContainer } from './athlete-summary.js';
+import { AthleteScore, Leaderboard, PeriodPoints, PeriodSummary, YearContainer as LeaderboardYearContainer, addAthlete, create } from './summary.js';
 
-const athletePeriod = {
+const athletePeriod: PeriodContainer = {
   summary: {
     distance: 10000,
     elevation: 1000,
     movingTime: 3600,
     activityCount: 2,
-    activeDays: [20190101, 20190102],
+    activeDays: ['20190101', '20190102'],
     activeDayCount: 2,
     averageSpeed: 25.7,
     longestRide: [
       {
         id: 1001,
         name: 'morning ride',
-        distance: 5000
+        value: 5000
       }
     ],
     fastestRide: [
       {
         id: 1002,
         name: 'afternoon ride',
-        averageSpeed: 25
+        value: 25
       }
     ]
   }
 };
 
-const athleteYear = {
+const athleteYear: AthleteYearContainer = {
   ...athletePeriod,
   month: {
     '1': athletePeriod,
@@ -38,28 +40,31 @@ const athleteYear = {
   }
 };
 
-const athleteSummary = {
+const athleteSummary: AthleteSummary = {
+  id: 1,
   year: {
     '2019': athleteYear,
     '2020': athleteYear
   }
 };
 
-const athlete = {
+const athlete: SlimAthlete = {
   id: 1,
   firstname: 'Alice',
   lastname: 'Smith'
 };
 
-const allAthleteRecord = {
-  athleteId: athlete.id,
-  athleteName: `${athlete.firstname} ${athlete.lastname}`,
-  value: 0
+const allAthleteRecord: AthleteScore = {
+  athlete: {
+    id: athlete.id,
+    name: `${athlete.firstname} ${athlete.lastname}`,
+  },
+  value: 0,
 };
 
 test('merge of single athlete', () => {
-  const summary = summarize(null, athleteSummary, athlete);
-  const expectedAllPeriodSummary = {
+  const summary = addAthlete(create(), athleteSummary, athlete);
+  const expectedAllPeriodSummary: PeriodSummary = {
     distance: [{
       ...allAthleteRecord,
       value: athletePeriod.summary.distance
@@ -86,22 +91,26 @@ test('merge of single athlete', () => {
     }],
     fastestRide: [{
       ...allAthleteRecord,
-      id: athletePeriod.summary.fastestRide[0].id,
-      name: athletePeriod.summary.fastestRide[0].name,
-      value: athletePeriod.summary.fastestRide[0].averageSpeed
+      ride: {
+        id: athletePeriod.summary.fastestRide[0].id,
+        name: athletePeriod.summary.fastestRide[0].name,
+      },
+      value: athletePeriod.summary.fastestRide[0].value
     }],
     longestRide: [{
       ...allAthleteRecord,
-      id: athletePeriod.summary.longestRide[0].id,
-      name: athletePeriod.summary.longestRide[0].name,
-      value: athletePeriod.summary.longestRide[0].distance
+      ride: {
+        id: athletePeriod.summary.longestRide[0].id,
+        name: athletePeriod.summary.longestRide[0].name,
+      },
+      value: athletePeriod.summary.longestRide[0].value
     }]
   };
-  const expectedAllYearFieldPoints = [{
+  const expectedAllYearFieldPoints: AthleteScore[] = [{
     ...allAthleteRecord,
     value: 2
   }];
-  const expectedAllYearPoints = {
+  const expectedAllYearPoints: PeriodPoints = {
     distance: expectedAllYearFieldPoints,
     elevation: expectedAllYearFieldPoints,
     movingTime: expectedAllYearFieldPoints,
@@ -115,7 +124,8 @@ test('merge of single athlete', () => {
       value: 12
     }]
   };
-  const expectedAllYear = {
+  const expectedAllYear: LeaderboardYearContainer = {
+    id: 0,
     summary: expectedAllPeriodSummary,
     month: {
       '1': {
@@ -138,15 +148,15 @@ test('merge of single athlete', () => {
       week: expectedAllYearPoints
     }
   };
-  const expectedSummary = {
+  const expectedSummary: Leaderboard = {
     year: {
       '2019': {
         ...expectedAllYear,
-        year: 2019
+        id: 2019
       },
       '2020': {
         ...expectedAllYear,
-        year: 2020
+        id: 2020
       }
     }
   };
@@ -155,16 +165,22 @@ test('merge of single athlete', () => {
 });
 
 test('merge two year summaries', () => {
-  const athlete1Data = {
+  interface AthleteTestData {
+    athlete: SlimAthlete,
+    summary: AthleteSummary,
+  }
+  const athlete1Data: AthleteTestData = {
     athlete: {
       id: 1,
       firstname: 'A',
       lastname: 'AA'
     },
     summary: {
+      id: 2020,
       year: {
         '2020': {
           summary: {
+            activeDays: [],
             distance: 1000,
             elevation: 100,
             movingTime: 300,
@@ -174,28 +190,32 @@ test('merge two year summaries', () => {
             fastestRide: [{
               id: 11,
               name: 'a1ride1',
-              averageSpeed: 24
+              value: 24
             }],
             longestRide: [{
               id: 12,
               name:'a1ride2',
-              distance: 100
+              value: 100
             }]
-          }
+          },
+          month: {},
+          week: {},
         }
-      }
+      },
     }
   };
-  const athlete2Data = {
+  const athlete2Data: AthleteTestData = {
     athlete: {
       id: 2,
       firstname: 'B',
       lastname: 'BB'
     },
     summary: {
+      id: 2020,
       year: {
         '2020': {
           summary: {
+            activeDays: [],
             distance: 2000,
             elevation: 50,
             movingTime: 600,
@@ -205,132 +225,174 @@ test('merge two year summaries', () => {
             fastestRide: [{
               id: 21,
               name: 'a2ride1',
-              averageSpeed: 23
+              value: 23
             }],
             longestRide: [{
               id: 22,
               name:'a2ride2',
-              distance: 200
+              value: 200
             }]
-          }
+          },
+          month: {},
+          week: {},
         }
       }
     }
   };
 
-  const expectedSummary = {
+  const expectedSummary: PeriodSummary = {
     distance: [
       {
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
         value: 2000
       },
       {
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
         value: 1000
       }
     ],
     elevation: [
       {
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
         value: 100
       },
       {
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
         value: 50
       }
     ],
     movingTime: [
       {
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
         value: 600
       },
       {
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
         value: 300
       }
     ],
     activityCount: [
       {
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
         value: 2
       },
       {
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
         value: 1
       }
     ],
     activeDayCount: [
       {
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
         value: 2
       },
       {
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
         value: 1
       }
     ],
     averageSpeed: [
       {
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
         value: 25
       },
       {
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
         value: 24
       }
     ],
     fastestRide: [
       {
-        id: 11,
-        name: 'a1ride1',
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
+        ride: {
+          id: 11,
+          name: 'a1ride1',
+        },
         value: 24
       },
       {
-        id: 21,
-        name: 'a2ride1',
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
+        ride: {
+          id: 21,
+          name: 'a2ride1',
+        },
         value: 23
       }
     ],
     longestRide: [
       {
-        id: 22,
-        name: 'a2ride2',
-        athleteId: 2,
-        athleteName: 'B BB',
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
+        ride: {
+          id: 22,
+          name: 'a2ride2',
+        },
         value: 200
       },
       {
-        id: 12,
-        name: 'a1ride2',
-        athleteId: 1,
-        athleteName: 'A AA',
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
+        ride: {
+          id: 12,
+          name: 'a1ride2',
+        },
         value: 100
       }
     ]
   };
 
-  const actualSummary: any = [
+  const actualSummary = [
     athlete1Data,
     athlete2Data
   ].reduce(
-    (previousSummary, athleteData) => summarize(previousSummary, athleteData.summary, athleteData.athlete),
-    {}
+    (previousSummary, athleteData) => addAthlete(previousSummary, athleteData.summary, athleteData.athlete),
+    create(),
   );
 
   expect(actualSummary.year['2020'].summary).toEqual(expectedSummary);
