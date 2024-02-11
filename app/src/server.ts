@@ -1,5 +1,5 @@
-// Source environment from file if it's not already supplied, required for app engine
-import './config.js';
+// Load configuration.
+import { appConfig } from './config.js';
 
 // Base express framework.
 import express from 'express';
@@ -411,9 +411,8 @@ app.post('/strava-webhook', function(req, res) {
 
 // Create a HTTP listener.
 console.log('Creating HTTP listener');
-const port = process.env.PORT;
-app.listen(port, function() {
-  console.log('Listening on port %d', port);
+app.listen(appConfig.port, function() {
+  console.log('Listening on port %d', appConfig.port);
 });
 
 export {};
