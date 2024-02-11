@@ -23,7 +23,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@google-cloud/datastore": "8.4.0",
+    "@google-cloud/firestore": "7.3.0",
     "body-parser": "1.20.2",
     "dotenv": "16.3.1",
     "express": "4.18.2",

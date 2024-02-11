@@ -1,137 +1,178 @@
-import { Datastore, PathType, Query } from '@google-cloud/datastore';
-import { from } from 'rxjs';
-import { map, toArray, mergeMap, bufferCount } from 'rxjs/operators';
-import { stringify } from './util.js';
+import { Firestore, Query } from '@google-cloud/firestore';
+import { appConfig } from './config.js'
 import { Identified } from './identified.js';
+import { stringify } from './util.js';
 
 export function start() {
-  const ds = new Datastore();
+  const fs = new Firestore({
+    databaseId: appConfig.databaseId,
+  });
 
-  async function runQuery(query: Query): Promise<any[]> {
-    const response = await query.run();
-    // Result is a two part array, first element is the results, second is query info.
-    return response[0];
+  async function runQuery(query: Query<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>): Promise<FirebaseFirestore.DocumentData[]> {
+    const querySnapshot = await query.get();
+    const records =
+      querySnapshot.docs
+      .map(value => value.data());
+
+    return records;
+  }
+
+  async function setItems<T extends FirebaseFirestore.WithFieldValue<FirebaseFirestore.DocumentData>>(items: T[], collectionPath: string, toDocId: (item: T) => string): Promise<void> {
+    const batchSize = 100;
+    const collection = fs.collection(collectionPath);
+
+    function* chunkItems() {
+      for (let i = 0; i < items.length; i += batchSize) {
+        yield items.slice(i, i + batchSize);
+      }
+    }
+
+    function* runSaveBatches() {
+      for (const itemsChunk of chunkItems()) {
+        const fsBatch = fs.batch();
+
+        for (const item of itemsChunk) {
+          fsBatch.set(collection.doc(toDocId(item)), item);
+        }
+
+        yield fsBatch.commit();
+      }
+    }
+
+    await Promise.all(
+      runSaveBatches()
+    );
   }
 
   // Return accessor methods.
   return {
 
     // Get specific items by key.
-    getItemByKey: async function(collection: string, id: PathType): Promise<any> {
+    getItemByKey: async function(collection: string, id: string | number): Promise<any> {
       console.log(`Retrieving ${collection} with id ${id}`);
 
-      const key = ds.key([collection, id]);
-
-      const entities = await ds.get(key);
-
-      return entities[0];
+      const path = `${collection}/${id}`;
+      const document = await fs.doc(path).get();
+      const data = document.data();
+      if (!data) {
+        throw new Error(`Document ${path} could not be found`);
+      }
+      return data;
     },
 
     // Search for items in the specified collection.
     getItemsWithFilter: async function(collection: string, property: string, value: unknown): Promise<any[]> {
       console.log(`Searching ${collection} with ${property}=${stringify(value)}`);
 
-      const allItemsQuery = ds.createQuery(collection);
-      const filteringQuery = allItemsQuery.filter(property, value);
-
-      return runQuery(filteringQuery);
+      return runQuery(
+        fs.collection(collection)
+          .where(property, '==', value),
+      );
     },
 
     // Search for items in the specified collection.
     getAllItems: async function(collection: string): Promise<any[]> {
       console.log(`Searching ${collection}`);
-
-      const allItemsQuery = ds.createQuery(collection);
-
-      return runQuery(allItemsQuery);
+      
+      return runQuery(
+        fs.collection(collection),
+      );
     },
 
-    getFirstItem: async function(collection: string, sortField: string, descending = false) {
+    getFirstItem: async function(collection: string, sortField: string, descending = false): Promise<any> {
       console.log(`Searching for first record in ${collection} based on field ${sortField}`);
 
-      const allItemsQuery = ds.createQuery(collection);
-      const sortingQuery = allItemsQuery
-        .order(sortField, {descending})
-        .limit(1);
+      const records = await runQuery(
+        fs
+          .collection(collection)
+          .orderBy(sortField, descending ? 'desc' : 'asc')
+          .limit(1)
+      );
 
-      const items = await runQuery(sortingQuery);
+      if (records.length <= 0) {
+        throw new Error(`No records found in collection ${collection}`);
+      }
 
       // In this case we're only interested in the first result.
-      return items[0];
+      return records[0];
     },
 
-    saveItem: async function(type: string, item: Identified): Promise<void> {
-      console.log(`Saving ${type} ${item.id}`);
-      await ds.upsert({
-        key: ds.key([type, item.id]),
-        data: item
-      });
+    saveItem: async function(collection: string, item: Identified): Promise<void> {
+      console.log(`Saving ${collection} with id ${item.id}`);
+
+      await fs
+        .collection(collection)
+        .doc(item.id.toString())
+        .set(item);
     },
 
-    deleteItem: async function(type: string, id: number): Promise<void> {
-      console.log(`Saving ${type} ${id}`);
+    deleteItem: async function(collection: string, id: number): Promise<void> {
+      console.log(`Deleting ${collection} with id ${id}`);
+
+      await fs
+        .collection(collection)
+        .doc(id.toString())
+        .delete();
     },
 
     deleteActivities: async function(athleteId: any) {
       console.log(`Deleting activities for athlete ${athleteId}`);
-      const activities = await this.getItemsWithFilter('activities', 'athlete.id', athleteId);
-      await from(activities)
-        .pipe(
-          map((activity: any) => ds.key(['activities', activity.id])),
-          bufferCount(100),
-          mergeMap((keys: any) => from(ds.delete(keys)))
-        )
-        .toPromise();
+
+      // Delete in batches of 100.
+      const activityQuery = fs
+        .collection('activities')
+        .where('athlete.id', '==', athleteId)
+        .limit(100);
+
+      while (true) {
+        const activitySnapshot = await activityQuery.get();
+
+        if (activitySnapshot.size <= 0) {
+          break;
+        }
+
+        const deleteBatch = fs.batch();
+
+        activitySnapshot.docs.forEach(doc =>
+          deleteBatch.delete(doc.ref)
+        );
+
+        await deleteBatch.commit();
+      }
     },
 
     // Save or refresh a list of activities.
-    saveActivities: async function(activities: any) {
+    saveActivities: async function(activities: any[]) {
       console.log(`Saving ${activities.length} activities`);
-      await from(activities)
-        .pipe(
-          map((activity: any) => ({
-            key: ds.key(['activities', activity.id]),
-            data: activity
-          })),
-          toArray(),
-          mergeMap((entities: any) => ds.upsert(entities))
-        )
-        .toPromise();
+
+      await setItems(activities, 'activities', (item) => item.id);
     },
 
     // Save or refresh an athlete summary.
     saveAthleteSummary: async function(athleteSummary: any) {
       console.log(`Saving summary for athlete ${athleteSummary.athleteId}`);
-      await ds.upsert({
-        key: ds.key(['athlete-summaries', athleteSummary.athleteId]),
-        excludeFromIndexes: ['year'],
-        data: athleteSummary
-      });
+
+      await fs
+        .collection('athlete-summaries')
+        .doc(athleteSummary.athleteId)
+        .set(athleteSummary);
     },
 
     // Save or refresh a leaderboard.
     saveLeaderboard: async function(leaderboard: any) {
       console.log(`Saving leaderboard ${leaderboard.id}`);
-      await ds.upsert({
-        key: ds.key(['leaderboards', leaderboard.id]),
-        excludeFromIndexes: ['year'],
-        data: leaderboard
-      });
+
+      await fs
+        .collection('leaderboards')
+        .doc(leaderboard.id)
+        .set(leaderboard);
     },
 
     // Save or refresh a list of yearly leaderboards.
-    saveLeaderboards: async function(leaderboards: any) {
-      console.log('saving leaderboards');
-      await from(leaderboards)
-        .pipe(
-          map((leaderboard: any) => ({
-            key: ds.key(['leaderboards', leaderboard.year]),
-            data: leaderboard
-          })),
-          toArray(),
-          mergeMap((entities: any) => ds.upsert(entities))
-        )
-        .toPromise();
+    saveLeaderboards: async function(leaderboards: any[]) {
+      console.log(`Saving ${leaderboards.length} leaderboards`);
+
+      await setItems(leaderboards, 'leaderboards', (item) => item.id);
     }
   };
 }
