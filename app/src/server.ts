@@ -12,120 +12,11 @@ import bodyParser from 'body-parser';
 // Handlebars templating engine
 import exphbs from 'express-handlebars';
 
-import { start as startDb } from './db.js';
 import { build as buildLeaderboard } from './leaderboard.js';
 import * as leaderboard2 from './leaderboard2/index.js';
-import { from, lastValueFrom } from 'rxjs';
-import { bufferCount, mergeMap } from 'rxjs/operators';
-import { SlimActivity, SlimAthlete, start as startStrava } from './strava.js';
 import { csvString, stringify } from './util.js';
 import { Response } from 'express-serve-static-core';
-import { Token, start as startRegistration } from './registration.js';
-
-// Start the database.
-const db = startDb();
-
-const { registration, tokenAccess } = startRegistration(
-  (id) => db.getItemByKey('tokens', id),
-  (token) => db.saveItem('tokens', token),
-  getIdForToken,
-);
-
-// Start the Strava client.
-const strava = startStrava(tokenAccess);
-
-async function getIdForToken(token: Token): Promise<number> {
-  const athlete = await strava.getAthleteWithToken(token);
-  return athlete.id;
-}
-
-async function registerAthlete(stravaCode: string) {
-  console.log('Registering athlete with code ' + stravaCode);
-  const athleteId = await registration.registerUser(stravaCode);
-  await refreshAthlete(athleteId);
-}
-
-// Refresh athlete details in our database.
-async function refreshAthlete(athleteId: number) {
-  console.log('Refreshing athlete ' + athleteId);
-  const athlete = await strava.getAthlete(athleteId);
-  console.log(`athlete: ${stringify(athlete)}`);
-  await db.saveItem('athletes', athlete);
-}
-
-// Refresh an athlete's activities in our database.
-async function refreshAthleteActivities(athleteId: number) {
-  console.log('Refreshing athlete activities ' + athleteId);
-
-  await db.deleteActivities(athleteId);
-  const o = await strava.getActivities(athleteId)
-    .pipe(
-      bufferCount(100),
-      mergeMap((activities) => from(db.saveActivities(activities)))
-    );
-  await lastValueFrom(o);
-
-  await leaderboard2.refreshAthleteSummary(athleteId);
-}
-
-async function refreshAllAthleteActivities() {
-  console.log('Refreshing all athlete activities');
-
-  const athletes = await db.getAllItems('athletes');
-  await from(athletes)
-    .pipe(
-      mergeMap((athlete) => from(refreshAthleteActivities(athlete.id)))
-    )
-    .toPromise();
-
-  console.log('Completed refreshing all athlete activities');
-}
-
-async function refreshActivity(activityId: any, athleteId: any) {
-  console.log(`refreshing activity ${activityId} for athlete ${athleteId}`);
-  const activity = await strava.getActivity(activityId, athleteId);
-  console.log('activity:', activity);
-  await db.saveActivities([activity]);
-
-  await leaderboard2.refreshAthleteSummary(athleteId);
-}
-
-async function deleteActivity(activityId: any) {
-  console.log(`deleting activity ${activityId}`);
-  const activity: SlimActivity | undefined = await db.getItemByKey('activities', activityId);
-  await db.deleteItem('activities', activityId);
-
-  const athleteId = activity?.athlete?.id;
-  if (athleteId) {
-    await leaderboard2.refreshAthleteSummary(athleteId);
-  }
-}
-
-async function getAthleteAndActivities(athleteId: any) {
-  const athletePromise = db.getItemByKey('athletes', athleteId);
-  const activitiesPromise = db.getItemsWithFilter('activities', 'athleteId', athleteId);
-
-  const athlete: SlimAthlete = await athletePromise;
-  const activities: SlimActivity[] = await activitiesPromise;
-
-  return {
-    athlete: athlete,
-    activities: activities
-  };
-}
-
-async function getAthletesAndActivities() {
-  const athletesPromise = db.getAllItems('athletes');
-  const activitiesPromise = db.getAllItems('activities');
-
-  const athletes: SlimAthlete[] = await athletesPromise;
-  const activities: SlimActivity[] = await activitiesPromise;
-
-  return {
-    athletes: athletes,
-    activities: activities
-  };
-}
+import { db, deleteActivity, getAthleteAndActivities, getAthletesAndActivities, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
 
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
@@ -161,10 +52,10 @@ app.use(bodyParser.json());
 const hbs = exphbs.create({
   defaultLayout: 'main',
   helpers: {
-    metresAsKilometres: (metres: any) => (metres / 1000).toFixed(1),
-    metresAsMetres: (metres: any) => metres.toFixed(0),
-    secondsAsHours: (seconds: any) => (seconds / 3600).toFixed(1),
-    metresPerSecondAsKmh: (mps: any) => (mps * 3.6).toFixed(1)
+    metresAsKilometres: (metres: number) => (metres / 1000).toFixed(1),
+    metresAsMetres: (metres: number) => metres.toFixed(0),
+    secondsAsHours: (seconds: number) => (seconds / 3600).toFixed(1),
+    metresPerSecondAsKmh: (mps: number) => (mps * 3.6).toFixed(1)
   }
 });
 app.engine('handlebars', hbs.engine);
