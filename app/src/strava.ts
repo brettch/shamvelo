@@ -29,7 +29,7 @@ function pickActivityFields(activity: SummaryActivity): SlimActivity {
     athlete: {
       id: activity?.athlete?.id,
     },
-    distance: activity.distance ? activity.distance : missingField('distance'),
+    distance: activity.distance ? activity.distance : 0,
     movingTime: activity.movingTime ? activity.movingTime : missingField('movingTime'),
     name: activity.name ? activity.name : missingField('name'),
     startDate: activity.startDate ? activity.startDate : missingField('startDate'),
