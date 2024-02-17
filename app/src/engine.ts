@@ -1,6 +1,6 @@
 import './config.js';
 import { start as startDb } from './db.js';
-import * as leaderboard2 from './leaderboard2/index.js';
+import * as leaderboard from './leaderboard/index.js';
 import { from, lastValueFrom } from 'rxjs';
 import { bufferCount, mergeMap } from 'rxjs/operators';
 import { SlimActivity, SlimAthlete, start as startStrava } from './strava.js';
@@ -51,7 +51,7 @@ export async function refreshAthleteActivities(athleteId: number): Promise<void>
     );
   await lastValueFrom(o);
 
-  await leaderboard2.refreshAthleteSummary(athleteId);
+  await leaderboard.refreshAthleteSummary(athleteId);
 }
 
 export async function refreshAllAthleteActivities(): Promise<void> {
@@ -73,7 +73,7 @@ export async function refreshActivity(activityId: number, athleteId: number): Pr
   console.log('activity:', activity);
   await db.saveActivities([activity]);
 
-  await leaderboard2.refreshAthleteSummary(athleteId);
+  await leaderboard.refreshAthleteSummary(athleteId);
 }
 
 export async function deleteActivity(activityId: number): Promise<void> {
@@ -83,7 +83,7 @@ export async function deleteActivity(activityId: number): Promise<void> {
 
   const athleteId = activity?.athlete?.id;
   if (athleteId) {
-    await leaderboard2.refreshAthleteSummary(athleteId);
+    await leaderboard.refreshAthleteSummary(athleteId);
   }
 }
 

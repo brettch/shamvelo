@@ -31,230 +31,366 @@
   <body>
 	<h1>Leaderboard</h1>
 
-{{#with leaderboard.year.[0]}}
+{{#with leaderboard}}
 <div class="row">
   <div class="col-md-8">
     <table class="table">
-      <tr><th>Jersey</th><th>Leader</th></tr>
-      <tr><td>Yellow</td><td>{{distance.[0].athleteName}} ({{distance.[0].distance}} km)</td></tr>
-      <tr><td>Dark Green (Monthly Points)</td><td>{{monthlyWins.[0].athleteName}} ({{monthlyWins.[0].wins}} pts)</td></tr>
-      <tr><td>Light Green (Weekly Points)</td><td>{{weeklyWins.[0].athleteName}} ({{weeklyWins.[0].wins}} pts)</td></tr>
-      {{#with longestRide}}
+      <tr>
+        <th>Jersey</th>
+        <th>Leader</th>
+        <th>Result</th>
+      </tr>
+      <tr>
+        <td>Yellow</td>
+        <td>{{year.distance.[0].athlete.name}}</td>
+        <td>{{metresAsKilometres year.distance.[0].value}} km</td>
+      </tr>
+      <tr>
+        <td>Dark Green (Monthly Points)</td>
+        <td>{{points.month.distance.[0].athlete.name}}</td>
+        <td>{{points.month.total.[0].value}} pts</td>
+      </tr>
+      <tr>
+        <td>Light Green (Weekly Points)</td>
+        <td>{{points.week.distance.[0].athlete.name}}</td>
+        <td>{{points.week.total.[0].value}} pts</td>
+      </tr>
+      <tr>
+        <td>Polka Dot</td>
+        <td>{{year.elevation.[0].athlete.name}}</td>
+        <td>{{metresAsMetres year.elevation.[0].value}} m</td>
+      </tr>
       <tr>
         <td>Ironman (Longest Ride)</td>
-        <td>{{athleteName}} (<a href="https://www.strava.com/activities/{{activity.id}}">{{activity.name}}</a>)</td>
+        <td>{{year.longestRide.[0].athlete.name}}</td>
+        <td>{{metresAsKilometres year.longestRide.[0].value}} km (<a href="https://www.strava.com/activities/{{year.longestRide.[0].ride.id}}">View on Strava</a>)</td>
       </tr>
-      {{/with}}
-      <tr><td>Alley Cat (Fastest Average)</td><td>{{averageSpeed.[0].athleteName}} ({{averageSpeed.[0].averageSpeed}} km/h)</td></tr>
+      <tr>
+        <td>Alley Cat (Fastest Average)</td>
+        <td>{{year.averageSpeed.[0].athlete.name}}</td>
+        <td>{{metresPerSecondAsKmh year.averageSpeed.[0].value}} km/h</td>
+      </tr>
       <tr>
         <td>VO2 Max (Fastest Average For Single Ride Over 10km)</td>
-        <td>{{fastestRide.[0].athleteName}} ({{fastestRide.[0].averageSpeed}} km/h)</td>
+        <td>{{year.fastestRide.[0].athlete.name}}</td>
+        <td>{{metresPerSecondAsKmh year.fastestRide.[0].value}} km/h (<a href="https://www.strava.com/activities/{{year.fastestRide.[0].ride.id}}">View on Strava</a>)</td>
       </tr>
-      <tr><td>Green Warrior (Most Number Of Rides)</td><td>{{activityCount.[0].athleteName}} ({{activityCount.[0].activityCount}} rides)</td></tr>
+      <tr>
+        <td>Green Warrior (Most Number Of Days Ridden)</td>
+        <td>{{year.activeDayCount.[0].athlete.name}}</td>
+        <td>{{year.activeDayCount.[0].value}} days</td>
+      </tr>
     </table>
+  </div>
+</div>
+
+{{#with points.month}}
+<h2>Monthly Points Details</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Total</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each total}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Distance</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each distance}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Elevation</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each elevation}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moving Time (excluded from total)</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each movingTime}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Activity Count (excluded from total)</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Active Day Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Average Speed</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Longest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each longestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fastest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each fastestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 {{/with}}
 
-<h2>Current Distance Details</h2>
+{{#with points.week}}
+<h2>Weekly Points Details</h2>
 <div class="row">
   <div class="col-md-4">
     <div class="panel panel-default">
-      {{#with leaderboard.year.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Year ({{year}})</h3>
+        <h3 class="panel-title">Total</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Distance</th></tr>
-          {{#each distance}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.distance}}</td></tr>
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each total}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
-      {{/with}}
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      {{#with leaderboard.year.[0].month.[0]}}
-      <div class="panel-heading">
-        <h3 class="panel-title">Month ({{month}})</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table">
-          <tr><th>Athlete</th><th>Distance</th></tr>
-          {{#each distance}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.distance}}</td></tr>
-          {{/each}}
-        </table>
-      </div>
-      {{/with}}
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      {{#with leaderboard.year.[0].week.[0]}}
-      <div class="panel-heading">
-        <h3 class="panel-title">Week ({{week}})</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table">
-          <tr><th>Athlete</th><th>Distance</th></tr>
-          {{#each distance}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.distance}}</td></tr>
-          {{/each}}
-        </table>
-      </div>
-      {{/with}}
     </div>
   </div>
 </div>
-
-<h2>Current Average Speed Details</h2>
 <div class="row">
   <div class="col-md-4">
     <div class="panel panel-default">
-      {{#with leaderboard.year.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Year ({{year}})</h3>
+        <h3 class="panel-title">Distance</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Average Speed</th></tr>
-          {{#each averageSpeed}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each distance}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
-      {{/with}}
     </div>
   </div>
   <div class="col-md-4">
     <div class="panel panel-default">
-      {{#with leaderboard.year.[0].month.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Month ({{month}})</h3>
+        <h3 class="panel-title">Elevation</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Average Speed</th></tr>
-          {{#each averageSpeed}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each elevation}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
-      {{/with}}
     </div>
   </div>
   <div class="col-md-4">
     <div class="panel panel-default">
-      {{#with leaderboard.year.[0].week.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Week ({{week}})</h3>
+        <h3 class="panel-title">Moving Time (excluded from total)</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Average Speed</th></tr>
-          {{#each averageSpeed}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}}</td></tr>
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each movingTime}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
-      {{/with}}
     </div>
   </div>
 </div>
-
-<h2>Current Fastest Ride Details</h2>
 <div class="row">
   <div class="col-md-4">
     <div class="panel panel-default">
-      {{#with leaderboard.year.[0]}}
       <div class="panel-heading">
-        <h3 class="panel-title">Year ({{year}})</h3>
+        <h3 class="panel-title">Activity Count (excluded from total)</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Average Speed</th></tr>
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Active Day Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Average Speed</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Longest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each longestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fastest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
           {{#each fastestRide}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.averageSpeed}} (<a href="https://www.strava.com/activities/{{this.activity.id}}">{{this.activity.name}}</a>)</td></tr>
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
-      {{/with}}
     </div>
   </div>
 </div>
+{{/with}}
 
-<h2>Current Ride Details</h2>
-<div class="row">
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      {{#with leaderboard.year.[0]}}
-      <div class="panel-heading">
-        <h3 class="panel-title">Year ({{year}})</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table">
-          <tr><th>Athlete</th><th>Rides</th></tr>
-          {{#each activityCount}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.activityCount}}</td></tr>
-          {{/each}}
-        </table>
-      </div>
-      {{/with}}
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      {{#with leaderboard.year.[0].month.[0]}}
-      <div class="panel-heading">
-        <h3 class="panel-title">Month ({{month}})</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table">
-          <tr><th>Athlete</th><th>Rides</th></tr>
-          {{#each activityCount}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.activityCount}}</td></tr>
-          {{/each}}
-        </table>
-      </div>
-      {{/with}}
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="panel panel-default">
-      {{#with leaderboard.year.[0].week.[0]}}
-      <div class="panel-heading">
-        <h3 class="panel-title">Week ({{week}})</h3>
-      </div>
-      <div class="panel-body">
-        <table class="table">
-          <tr><th>Athlete</th><th>Rides</th></tr>
-          {{#each activityCount}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.activityCount}}</td></tr>
-          {{/each}}
-        </table>
-      </div>
-      {{/with}}
-    </div>
-  </div>
-</div>
-
-{{#with leaderboard.year.[0]}}
-<h2>Current Points Details ({{year}})</h2>
+{{#with year}}
+<h2>Year Details</h2>
 <div class="row">
   <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Monthly Points</h3>
+        <h3 class="panel-title">Distance</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Points</th></tr>
-          {{#each monthlyWins}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.wins}}</td></tr>
+          <tr><th>Athlete</th><th>Distance</th></tr>
+          {{#each distance}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsKilometres this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
@@ -263,23 +399,378 @@
   <div class="col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Weekly Points</h3>
+        <h3 class="panel-title">Elevation</h3>
       </div>
       <div class="panel-body">
         <table class="table">
-          <tr><th>Athlete</th><th>Points</th></tr>
-          {{#each weeklyWins}}
-          <tr><td>{{this.athleteName}}</td><td>{{this.wins}}</td></tr>
+          <tr><th>Athlete</th><th>Elevation</th></tr>
+          {{#each elevation}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsMetres this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moving Time</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Duration</th></tr>
+          {{#each movingTime}}
+          <tr><td>{{this.athlete.name}}</td><td>{{secondsAsHours this.value}}</td></tr>
           {{/each}}
         </table>
       </div>
     </div>
   </div>
 </div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Activity Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Active Day Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Average Speed</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Speed</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresPerSecondAsKmh this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Longest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Ride</th></tr>
+          {{#each longestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.ride.id}}">View on Strava</a>)</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fastest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Speed</th></tr>
+          {{#each fastestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.ride.id}}">View on Strava</a>)</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{{/with}}
+
+{{#with month}}
+<h2>Month Details</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Distance</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Distance</th></tr>
+          {{#each distance}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsKilometres this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Elevation</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Elevation</th></tr>
+          {{#each elevation}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsMetres this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moving Time</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Duration</th></tr>
+          {{#each movingTime}}
+          <tr><td>{{this.athlete.name}}</td><td>{{secondsAsHours this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Activity Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Active Day Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Average Speed</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Speed</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresPerSecondAsKmh this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Longest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Ride</th></tr>
+          {{#each longestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.ride.id}}">View on Strava</a>)</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fastest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Speed</th></tr>
+          {{#each fastestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.ride.id}}">View on Strava</a>)</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{{/with}}
+
+{{#with week}}
+<h2>Week Details</h2>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Distance</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Distance</th></tr>
+          {{#each distance}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsKilometres this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Elevation</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Elevation</th></tr>
+          {{#each elevation}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsMetres this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Moving Time</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Duration</th></tr>
+          {{#each movingTime}}
+          <tr><td>{{this.athlete.name}}</td><td>{{secondsAsHours this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Activity Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each activityCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Active Day Count</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Average Speed</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Speed</th></tr>
+          {{#each averageSpeed}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresPerSecondAsKmh this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Longest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Ride</th></tr>
+          {{#each longestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresAsKilometres this.value}} (<a href="https://www.strava.com/activities/{{this.ride.id}}">View on Strava</a>)</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Fastest Ride</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Speed</th></tr>
+          {{#each fastestRide}}
+          <tr><td>{{this.athlete.name}}</td><td>{{metresPerSecondAsKmh this.value}} (<a href="https://www.strava.com/activities/{{this.ride.id}}">View on Strava</a>)</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{{/with}}
+
 {{/with}}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
   </body>
 </html>
-

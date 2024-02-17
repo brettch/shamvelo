@@ -12,11 +12,10 @@ import bodyParser from 'body-parser';
 // Handlebars templating engine
 import exphbs from 'express-handlebars';
 
-import { build as buildLeaderboard } from './leaderboard.js';
-import * as leaderboard2 from './leaderboard2/index.js';
-import { csvString, stringify } from './util.js';
+import * as leaderboard from './leaderboard/index.js';
+import { csvString } from './util.js';
 import { Response } from 'express-serve-static-core';
-import { db, deleteActivity, getAthleteAndActivities, getAthletesAndActivities, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
+import { db, deleteActivity, getAthleteAndActivities, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
 
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
@@ -177,7 +176,7 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
   }
   
   refreshAthleteActivities(athleteId)
-    .then(() => leaderboard2.refreshLeaderboard())
+    .then(() => leaderboard.refreshLeaderboard())
     .then(() => res.redirect('../' + athleteId))
     .catch(err => sendError(res, err));
 });
@@ -185,7 +184,7 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
 // Refresh all activities.  Intended for use by a web browser.
 app.post('/refreshallactivities', function(req, res) {
   refreshAllAthleteActivities()
-    .then(() => leaderboard2.refreshLeaderboard())
+    .then(() => leaderboard.refreshLeaderboard())
     .then(() => res.redirect('..'))
     .catch(err => sendError(res, err));
 });
@@ -193,59 +192,32 @@ app.post('/refreshallactivities', function(req, res) {
 // Refresh all activities.  Intended for use by a cron trigger.
 app.get('/refreshallactivities', function(_, res) {
   refreshAllAthleteActivities()
-    .then(() => leaderboard2.refreshLeaderboard())
+    .then(() => leaderboard.refreshLeaderboard())
     .then(() => res.send(''))
     .catch(err => sendError(res, err));
 });
 
-// Display the leaderboard.
+// Determine the latest leaderboard year/month/week combination and redirect to it.
 app.get('/leaderboard', function(_, res) {
-  getAthletesAndActivities()
-    .then(athletesAndActivities => buildLeaderboard(
-      athletesAndActivities.athletes,
-      athletesAndActivities.activities
-    ))
-    .then(leaderboard => res.render('leaderboard.handlebars', {
-      leaderboard : leaderboard
-    }))
-    .catch(err => sendError(res, err));
-});
-
-// Display the leaderboard.
-app.get('/leaderboardjson', function(_, res) {
-  getAthletesAndActivities()
-    .then(athletesAndActivities => buildLeaderboard(
-      athletesAndActivities.athletes,
-      athletesAndActivities.activities
-    ))
-    .then(leaderboard => res.render('leaderboardjson.handlebars', {
-      leaderboardjson : stringify(leaderboard),
-      leaderboard : leaderboard
-    }))
-    .catch(err => sendError(res, err));
-});
-
-// Determine the latest leaderboard 2 year/month/week combination and redirect to it.
-app.get('/leaderboard2', function(_, res) {
-  leaderboard2
+  leaderboard
     .getLatestLeaderboardIds()
     .then((leaderboardIds) => res.redirect(
       307,
-      `./leaderboard2/${leaderboardIds.year}/${leaderboardIds.month}/${leaderboardIds.week}`
+      `./leaderboard/${leaderboardIds.year}/${leaderboardIds.month}/${leaderboardIds.week}`
     ))
     .catch((err) => sendError(res, err));
 });
 
 // Display leaderboard 2 for a specific year/month/week combination.
-app.get('/leaderboard2/:year/:month/:week', function(req, res) {
+app.get('/leaderboard/:year/:month/:week', function(req, res) {
   const year = parseInt(req.params.year);
   const month = parseInt(req.params.month);
   const week = parseInt(req.params.week);
   console.log(`Displaying leaderboard for year ${year}, month ${month}, week ${week}`);
 
-  leaderboard2
+  leaderboard
     .getLeaderboard(year, month, week)
-    .then((leaderboard) => res.render('leaderboard2.handlebars', {
+    .then((leaderboard) => res.render('leaderboard.handlebars', {
       leaderboard,
       leaderboardjson: JSON.stringify(leaderboard, null, 2)
     }))
@@ -286,12 +258,12 @@ app.post('/strava-webhook', function(req, res) {
 
     if ((aspectType === 'create' || aspectType === 'update') && authorised) {
       refreshActivity(objectId, ownerId)
-        .then(() => leaderboard2.refreshLeaderboard())
+        .then(() => leaderboard.refreshLeaderboard())
         .then(() => console.log('activity refreshed successfully'))
         .catch(err => console.log(err));
     } else if (aspectType === 'delete' || authorised === false) {
       deleteActivity(objectId)
-        .then(() => leaderboard2.refreshLeaderboard())
+        .then(() => leaderboard.refreshLeaderboard())
         .then(() => console.log('activity deleted successfully'))
         .catch(err => console.log(err));
     }
