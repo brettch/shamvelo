@@ -20,7 +20,11 @@ export interface LeaderboardInterval {
 export async function refreshAthleteSummary(athleteId: number): Promise<void> {
   console.log(`refreshing summary for athlete ${athleteId}`);
   const activities = filterActivities(
-    await db.getItemsWithFilter('activities', 'athlete.id', athleteId)
+    (await db.getItemsWithFilter('activities', 'athlete.id', athleteId))
+      .map(activity => ({
+        ...activity,
+        startDate: activity.startDate.toDate(),
+      })),
   );
   const summary = activities.reduce(addActivityToAthleteSummary, createAthleteSummary(athleteId));
   await db.saveAthleteSummary(summary);
