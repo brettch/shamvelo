@@ -23,10 +23,7 @@ export async function refreshAthleteSummary(athleteId: number): Promise<void> {
     await db.getItemsWithFilter('activities', 'athlete.id', athleteId)
   );
   const summary = activities.reduce(addActivityToAthleteSummary, createAthleteSummary(athleteId));
-  await db.saveAthleteSummary({
-    ...summary,
-    athleteId
-  });
+  await db.saveAthleteSummary(summary);
   console.log(`summary refreshed for athlete ${athleteId}`);
 }
 
@@ -53,7 +50,7 @@ export async function refreshLeaderboard(): Promise<void> {
 }
 
 export async function getLatestLeaderboardIds(): Promise<LeaderboardInterval> {
-  const latestLeaderboardYear: YearContainer = await db.getFirstItem('leaderboards', 'year', true);
+  const latestLeaderboardYear: YearContainer = await db.getFirstItem('leaderboards', 'id', true);
 
   const year = latestLeaderboardYear.id;
   const month = Object
