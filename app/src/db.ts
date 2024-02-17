@@ -150,11 +150,11 @@ export function start() {
 
     // Save or refresh an athlete summary.
     saveAthleteSummary: async function(athleteSummary: any) {
-      console.log(`Saving summary for athlete ${athleteSummary.athleteId}`);
+      console.log(`Saving summary for athlete ${athleteSummary.id}`);
 
       await fs
         .collection('athlete-summaries')
-        .doc(athleteSummary.athleteId)
+        .doc(athleteSummary.id.toString())
         .set(athleteSummary);
     },
 
@@ -164,7 +164,7 @@ export function start() {
 
       await fs
         .collection('leaderboards')
-        .doc(leaderboard.id)
+        .doc(leaderboard.id.toString())
         .set(leaderboard);
     },
 
