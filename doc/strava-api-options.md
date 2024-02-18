@@ -30,6 +30,8 @@ extensions. The `typescript-fetch` generator uses the new Fetch API which should
 types are unavailable in Node. The `typescript` generator supports a `node` platform target but they seem more suited to
 server bindings than client bindings.
 
+The `typescript-node` generator compiles after the import statements are corrected.
+
 ### OpenAPI TypeScript Codegen
 
 The [OpenAPI TypeScript Codegen](https://www.npmjs.com/package/openapi-typescript-codegen) package looks like it might
