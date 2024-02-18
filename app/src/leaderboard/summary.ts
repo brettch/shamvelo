@@ -190,6 +190,10 @@ function mergeNumericField(fieldName: PeriodSummaryAthleteScoreField, leaderboar
   }
   leaderboardField.push(athleteScore);
   leaderboardField.sort(compareScoreDescending);
+  const maxResultsLength = 10;
+  if (leaderboardField.length > maxResultsLength) {
+    leaderboardField.length = maxResultsLength;
+  }
 }
 
 function compareScoreDescending(a: AthleteScore, b: AthleteScore): number {
@@ -214,6 +218,10 @@ function mergeRideField(fieldName: PeriodSummaryRideScoreField, leaderboardSumma
 
   leaderboardRecords.push(...athleteRideScores);
   leaderboardRecords.sort(compareScoreDescending);
+  const maxResultsLength = 10;
+  if (leaderboardRecords.length > maxResultsLength) {
+    leaderboardRecords.length = maxResultsLength;
+  }
 }
 
 function buildAthleteName(athlete: SlimAthlete) {
