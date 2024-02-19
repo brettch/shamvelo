@@ -10,6 +10,7 @@ const athletePeriod: PeriodContainer = {
     activityCount: 2,
     activeDays: {},
     activeDayCount: 2,
+    eddingtonNumber: 1,
     averageSpeed: 25.7,
     longestRide: [
       {
@@ -89,6 +90,10 @@ test('merge of single athlete', () => {
       ...allAthleteRecord,
       value: athletePeriod.summary.averageSpeed
     }],
+    eddingtonNumber: [{
+      ...allAthleteRecord,
+      value: athletePeriod.summary.eddingtonNumber
+    }],
     fastestRide: [{
       ...allAthleteRecord,
       ride: {
@@ -117,6 +122,7 @@ test('merge of single athlete', () => {
     activityCount: expectedAllYearFieldPoints,
     activeDayCount: expectedAllYearFieldPoints,
     averageSpeed: expectedAllYearFieldPoints,
+    eddingtonNumber: expectedAllYearFieldPoints,
     fastestRide: expectedAllYearFieldPoints,
     longestRide: expectedAllYearFieldPoints,
     total: [{
@@ -187,6 +193,7 @@ test('merge two year summaries', () => {
             activityCount: 1,
             activeDayCount: 1,
             averageSpeed: 25,
+            eddingtonNumber: 1,
             fastestRide: [{
               id: 11,
               name: 'a1ride1',
@@ -222,6 +229,7 @@ test('merge two year summaries', () => {
             activityCount: 2,
             activeDayCount: 2,
             averageSpeed: 24,
+            eddingtonNumber: 2,
             fastestRide: [{
               id: 21,
               name: 'a2ride1',
@@ -336,6 +344,22 @@ test('merge two year summaries', () => {
         },
         value: 24
       }
+    ],
+    eddingtonNumber: [
+      {
+        athlete: {
+          id: 2,
+          name: 'B BB',
+        },
+        value: 2
+      },
+      {
+        athlete: {
+          id: 1,
+          name: 'A AA',
+        },
+        value: 1
+      },
     ],
     fastestRide: [
       {

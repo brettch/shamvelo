@@ -46,6 +46,7 @@ function createPeriodContainer(): PeriodContainer {
       activeDayCount: [],
       averageSpeed: [],
       distance: [],
+      eddingtonNumber: [],
       elevation: [],
       fastestRide: [],
       longestRide: [],
@@ -59,6 +60,7 @@ export interface PeriodSummary {
   activeDayCount: AthleteScore[],
   averageSpeed: AthleteScore[],
   distance: AthleteScore[],
+  eddingtonNumber: AthleteScore[],
   elevation: AthleteScore[],
   fastestRide: RideScore[],
   longestRide: RideScore[],
@@ -87,6 +89,7 @@ export interface PeriodPoints {
   averageSpeed: AthleteScore[],
   distance: AthleteScore[],
   elevation: AthleteScore[],
+  eddingtonNumber: AthleteScore[],
   fastestRide: AthleteScore[],
   longestRide: AthleteScore[],
   movingTime: AthleteScore[],
@@ -100,6 +103,7 @@ function createPeriodPoints(): PeriodPoints {
     averageSpeed: [],
     distance: [],
     elevation: [],
+    eddingtonNumber: [],
     fastestRide: [],
     longestRide: [],
     movingTime: [],
@@ -159,6 +163,7 @@ function applyPeriod(leaderboardPeriod: PeriodContainer, athletePeriod: AthleteP
     'activityCount',
     'activeDayCount',
     'averageSpeed',
+    'eddingtonNumber',
   ] as const;
 
   const rideFieldNames = [
@@ -243,6 +248,7 @@ function calculatePoints(periods: Record<number, PeriodContainer>, points: Perio
     'activeDayCount',
     'averageSpeed',
     'longestRide',
+    'eddingtonNumber',
     'fastestRide'
   ] as const).forEach(fieldName => {
     calculatePointsForField(fieldName, periodSummaries, points);

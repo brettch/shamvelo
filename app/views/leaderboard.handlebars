@@ -80,6 +80,11 @@
         <td>{{year.activeDayCount.[0].athlete.name}}</td>
         <td>{{year.activeDayCount.[0].value}} days</td>
       </tr>
+      <tr>
+        <td>Astrophysicist (Highest Eddington Number)</td>
+        <td>{{year.eddingtonNumber.[0].athlete.name}}</td>
+        <td>{{year.eddingtonNumber.[0].value}}</td>
+      </tr>
     </table>
   </div>
 </div>
@@ -175,6 +180,21 @@
         <table class="table">
           <tr><th>Athlete</th><th>Points</th></tr>
           {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Eddington Number (excluded from total)</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each eddingtonNumber}}
           <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
@@ -328,6 +348,21 @@
       </div>
     </div>
   </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Eddington Number (excluded from total)</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Points</th></tr>
+          {{#each eddingtonNumber}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
   <div class="col-md-4">
@@ -452,6 +487,21 @@
         <table class="table">
           <tr><th>Athlete</th><th>Count</th></tr>
           {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Eddington Number</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each eddingtonNumber}}
           <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>
@@ -588,6 +638,21 @@
       </div>
     </div>
   </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Eddington Number</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each eddingtonNumber}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
   <div class="col-md-4">
@@ -712,6 +777,21 @@
         <table class="table">
           <tr><th>Athlete</th><th>Count</th></tr>
           {{#each activeDayCount}}
+          <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
+          {{/each}}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Eddington Number</h3>
+      </div>
+      <div class="panel-body">
+        <table class="table">
+          <tr><th>Athlete</th><th>Count</th></tr>
+          {{#each eddingtonNumber}}
           <tr><td>{{this.athlete.name}}</td><td>{{this.value}}</td></tr>
           {{/each}}
         </table>

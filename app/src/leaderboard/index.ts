@@ -1,6 +1,7 @@
 import {
   create as createAthleteSummary,
   addActivity as addActivityToAthleteSummary,
+  pruneSummary as pruneAthleteSummary,
   AthleteSummary
 } from './athlete-summary.js';
 import { YearContainer, addAthlete as addAthleteSummary, create as createLeaderboard } from './summary.js';
@@ -27,6 +28,7 @@ export async function refreshAthleteSummary(athleteId: number): Promise<void> {
       })),
   );
   const summary = activities.reduce(addActivityToAthleteSummary, createAthleteSummary(athleteId));
+  pruneAthleteSummary(summary);
   await db.saveAthleteSummary(summary);
   console.log(`summary refreshed for athlete ${athleteId}`);
 }

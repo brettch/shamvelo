@@ -2,8 +2,8 @@ import { create, addActivity, PeriodSummary } from './period-summary.js';
 
 const activity = {
   id: 1,
-  distance: 2,
-  movingTime: 4,
+  distance: 4000,
+  movingTime: 400,
   name: 'my activity',
   startDate: new Date('2020-01-01:00:00:00'),
   totalElevationGain: 3
@@ -21,6 +21,7 @@ test('new summary is initialized correctly', () => {
     averageSpeed: 0,
     activeDays: {},
     activeDayCount: 0,
+    eddingtonNumber: 0,
     longestRide: [],
     fastestRide: []
   } as PeriodSummary);
@@ -31,9 +32,10 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.elevation).toEqual(activity.totalElevationGain);
   expect(singleSummary.movingTime).toEqual(activity.movingTime);
   expect(singleSummary.activityCount).toEqual(1);
-  expect(singleSummary.averageSpeed).toEqual(0.5);
+  expect(singleSummary.averageSpeed).toEqual(10);
   expect(Object.keys(singleSummary.activeDays).length).toEqual(1);
-  expect(singleSummary.activeDays['20200101'].distance).toEqual(2);
+  expect(singleSummary.activeDays['20200101'].distance).toEqual(4000);
+  expect(singleSummary.eddingtonNumber).toEqual(1),
   expect(singleSummary.longestRide.length).toEqual(1);
   expect(singleSummary.longestRide[0].id).toEqual(activity.id);
   expect(singleSummary.longestRide[0].name).toEqual(activity.name);
@@ -41,7 +43,7 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.fastestRide.length).toEqual(1);
   expect(singleSummary.fastestRide[0].id).toEqual(activity.id);
   expect(singleSummary.fastestRide[0].name).toEqual(activity.name);
-  expect(singleSummary.fastestRide[0].value).toEqual(0.5);
+  expect(singleSummary.fastestRide[0].value).toEqual(10);
 });
 
 test('distance is added', () => {
@@ -61,7 +63,7 @@ test('activity count is tallied', () => {
 });
 
 test('average speed is averaged', () => {
-  expect(doubleSummary.averageSpeed).toEqual(0.5);
+  expect(doubleSummary.averageSpeed).toEqual(10);
 });
 
 test('unique days are identified', () => {
@@ -80,6 +82,10 @@ test('unique days are identified', () => {
 
   expect(Object.keys(summary.activeDays).length).toEqual(2);
   expect(summary.activeDayCount).toEqual(2);
+});
+
+test('eddington number is calculated', () => {
+  expect(doubleSummary.eddingtonNumber).toEqual(1);
 });
 
 test('longest rides are identified', () => {

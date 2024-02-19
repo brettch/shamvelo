@@ -1,5 +1,5 @@
 import { getPeriods } from './athlete-summary-paths.js';
-import { create as createSummary, addActivity as addActivityToSummary, PeriodSummary, SummarisableActivity } from './period-summary.js';
+import { create as createSummary, addActivity as addActivityToSummary, pruneSummary as prunePeriodSummary, PeriodSummary, SummarisableActivity } from './period-summary.js';
 import { Identified } from '../identified.js';
 
 export interface AthleteSummary extends Identified {
@@ -61,6 +61,18 @@ export function addActivity(summary: AthleteSummary, activity: SummarisableActiv
 
   return summary;
 };
+
+export function pruneSummary(summary: AthleteSummary): void {
+  Object
+    .values(summary.year)
+    .forEach(year => {
+      prunePeriodSummary(year.summary);
+
+      [year.month, year.week]
+        .flatMap(periods => Object.values(periods))
+        .forEach(period => prunePeriodSummary(period.summary));
+    });
+}
 
 function createSummaryContainer(): PeriodContainer {
   return {
