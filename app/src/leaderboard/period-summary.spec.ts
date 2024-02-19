@@ -1,4 +1,4 @@
-import { create, addActivity } from './period-summary.js';
+import { create, addActivity, PeriodSummary } from './period-summary.js';
 
 const activity = {
   id: 1,
@@ -19,11 +19,11 @@ test('new summary is initialized correctly', () => {
     movingTime: 0,
     activityCount: 0,
     averageSpeed: 0,
-    activeDays: [],
+    activeDays: {},
     activeDayCount: 0,
     longestRide: [],
     fastestRide: []
-  });
+  } as PeriodSummary);
 });
 
 test('single summary is initialized correctly', () => {
@@ -32,7 +32,8 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.movingTime).toEqual(activity.movingTime);
   expect(singleSummary.activityCount).toEqual(1);
   expect(singleSummary.averageSpeed).toEqual(0.5);
-  expect(singleSummary.activeDays.length).toEqual(1);
+  expect(Object.keys(singleSummary.activeDays).length).toEqual(1);
+  expect(singleSummary.activeDays['20200101'].distance).toEqual(2);
   expect(singleSummary.longestRide.length).toEqual(1);
   expect(singleSummary.longestRide[0].id).toEqual(activity.id);
   expect(singleSummary.longestRide[0].name).toEqual(activity.name);
@@ -77,7 +78,7 @@ test('unique days are identified', () => {
     }))
     .reduce(addActivity, create());
 
-  expect(summary.activeDays.length).toEqual(2);
+  expect(Object.keys(summary.activeDays).length).toEqual(2);
   expect(summary.activeDayCount).toEqual(2);
 });
 

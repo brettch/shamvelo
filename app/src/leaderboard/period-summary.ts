@@ -8,10 +8,14 @@ export interface PeriodSummary {
   movingTime: number,
   activityCount: number,
   averageSpeed: number,
-  activeDays: string[],
+  activeDays: Record<string, DaySummary>,
   activeDayCount: number,
   longestRide: RideSummary[],
   fastestRide: RideSummary[],
+}
+
+interface DaySummary {
+  distance: number,
 }
 
 interface RideSummary {
@@ -36,7 +40,7 @@ export function create(): PeriodSummary {
     movingTime: 0,
     activityCount: 0,
     averageSpeed: 0,
-    activeDays: [],
+    activeDays: {},
     activeDayCount: 0,
     longestRide: [],
     fastestRide: []
@@ -51,12 +55,13 @@ export function addActivity(summary: PeriodSummary, activity: SummarisableActivi
   summary.activityCount++;
   summary.averageSpeed = toAverageSpeed(summary.distance, summary.movingTime);
 
-  // Update the unique list of days that have been ridden.  The size of the list is what matters, the values less so.
   const dayCode = toDayCode(activity.startDate);
-  if (!summary.activeDays.includes(dayCode)) {
-    summary.activeDays.push(dayCode);
-  }
-  summary.activeDayCount = summary.activeDays.length;
+  const activeDay = summary.activeDays[dayCode] || {
+    distance: 0
+  };
+  summary.activeDays[dayCode] = activeDay;
+  activeDay.distance += activity.distance;
+  summary.activeDayCount = Object.keys(summary.activeDays).length;
 
   // Create a sorted list of the longest rides.
   updatePodium(

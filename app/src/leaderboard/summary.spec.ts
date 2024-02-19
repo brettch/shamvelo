@@ -8,7 +8,7 @@ const athletePeriod: PeriodContainer = {
     elevation: 1000,
     movingTime: 3600,
     activityCount: 2,
-    activeDays: ['20190101', '20190102'],
+    activeDays: {},
     activeDayCount: 2,
     averageSpeed: 25.7,
     longestRide: [
@@ -180,7 +180,7 @@ test('merge two year summaries', () => {
       year: {
         '2020': {
           summary: {
-            activeDays: [],
+            activeDays: {},
             distance: 1000,
             elevation: 100,
             movingTime: 300,
@@ -215,7 +215,7 @@ test('merge two year summaries', () => {
       year: {
         '2020': {
           summary: {
-            activeDays: [],
+            activeDays: {},
             distance: 2000,
             elevation: 50,
             movingTime: 600,
