@@ -17,7 +17,12 @@ function pickAthleteFields(athlete: DetailedAthlete): SlimAthlete {
   };
 }
 
-export type SlimActivity = Required<Pick<SummaryActivity, "id" | "athlete" | "distance" | "movingTime" | "name" | "startDate" | "totalElevationGain" | "type">>;
+type SlimActivityPicked = Required<Pick<SummaryActivity, "id" | "distance" | "movingTime" | "name" | "startDate" | "totalElevationGain" | "type">>;
+export interface SlimActivity extends SlimActivityPicked {
+  athlete: {
+    id: number,
+  }
+}
 
 function pickActivityFields(activity: SummaryActivity): SlimActivity {
   function missingField<T>(fieldName: string): T {
@@ -25,16 +30,16 @@ function pickActivityFields(activity: SummaryActivity): SlimActivity {
   }
 
   return {
-    id: activity.id ? activity.id : missingField('id'),
+    id: activity.id || missingField('id'),
     athlete: {
-      id: activity?.athlete?.id,
+      id: activity?.athlete?.id || missingField('athlete.id'),
     },
-    distance: activity.distance ? activity.distance : 0,
-    movingTime: activity.movingTime ? activity.movingTime : missingField('movingTime'),
-    name: activity.name ? activity.name : missingField('name'),
-    startDate: activity.startDate ? activity.startDate : missingField('startDate'),
-    totalElevationGain: activity.totalElevationGain ? activity.totalElevationGain : 0,
-    type: activity.type ? activity.type : missingField('type'),
+    distance: activity.distance || 0,
+    movingTime: activity.movingTime || missingField('movingTime'),
+    name: activity.name || missingField('name'),
+    startDate: activity.startDate || missingField('startDate'),
+    totalElevationGain: activity.totalElevationGain || 0,
+    type: activity.type || missingField('type'),
   }
 }
 

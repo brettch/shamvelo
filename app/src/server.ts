@@ -15,7 +15,7 @@ import exphbs from 'express-handlebars';
 import * as leaderboard from './leaderboard/index.js';
 import { csvString } from './util.js';
 import { Response } from 'express-serve-static-core';
-import { db, deleteActivity, getAthleteAndActivities, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
+import { activityPersist, athletePersist, deleteActivity, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
 
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
@@ -65,7 +65,7 @@ app.use('/static', express.static('static'));
 
 // Configure the home page to be the default.
 app.get('/', function (_, res) {
-  db.getAllItems('athletes')
+  athletePersist.getAll()
     .then((athletes) => res.render('home.handlebars', {
       athletes : athletes
     }))
@@ -112,40 +112,10 @@ app.get('/athlete/:id', function(req, res) {
     return;
   }
 
-  getAthleteAndActivities(athleteId)
-    .then(athleteAndActivities => res.render('athlete.handlebars', athleteAndActivities))
+  athletePersist.get(athleteId)
+    .then(athlete => ({athlete}))
+    .then(athlete => res.render('athlete.handlebars', athlete))
     .catch(err => sendError(res, err));
-});
-
-// Download athlete activities as a CSV.
-app.get('/athlete/:id/activitiescsv', function(req, res) {
-  const athleteId = parseInt(req.params.id);
-
-  if (isNaN(athleteId)) {
-    const description = 'Athlete identifier is missing';
-    console.log(description);
-    sendErrorMessage(res, description);
-    return;
-  }
-
-  db.getItemsWithFilter('activities', 'athlete.id', athleteId)
-    .then((activities) => {
-      res.set({
-        'Content-Type': 'text/csv',
-        'Content-Disposition': 'attachment;filename=activities-' + athleteId + '.csv'
-      });
-      res.write('id,start_date_local,timezone,distance,moving_time,elapsed_time,total_elevation_gain,type,average_speed,max_speed,name\n');
-      for (let i = 0; i < activities.length; i++) {
-        const activity = activities[i];
-        res.write(
-          activity.id + ',' + activity.start_date_local + ',' + activity.timezone + ','
-          + activity.distance + ',' + activity.moving_time + ',' + activity.elapsed_time + ','
-          + activity.total_elevation_gain + ',' + activity.type + ',' + activity.average_speed + ','
-          + activity.max_speed + ',' + csvString(activity.name) + '\n');
-      }
-      res.end();
-    })
-    .catch((err) => sendError(res, err));
 });
 
 // Refresh the athlete in the database.

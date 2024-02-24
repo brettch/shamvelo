@@ -1,18 +1,24 @@
 import './config.js';
-import { start as startDb } from './db.js';
 import * as leaderboard from './leaderboard/index.js';
 import { from, lastValueFrom } from 'rxjs';
 import { bufferCount, mergeMap } from 'rxjs/operators';
 import { SlimActivity, SlimAthlete, start as startStrava } from './strava.js';
 import { stringify } from './util.js';
 import { Token, start as startRegistration } from './registration.js';
+import { createFirestore } from './db/persist.js';
+import { createAthletePersist } from './db/athlete.js';
+import { createTokenPersist } from './db/token.js';
+import { createActivityPersist } from './db/activity.js';
 
 // Start the database.
-export const db = startDb();
+const firestore = createFirestore();
+export const activityPersist = createActivityPersist(firestore);
+export const athletePersist = createAthletePersist(firestore);
+export const tokenPersist = createTokenPersist(firestore);
 
 const { registration, tokenAccess } = startRegistration(
-  (id) => db.getItemByKey('tokens', id),
-  (token) => db.saveItem('tokens', token),
+  tokenPersist.get,
+  tokenPersist.set,
   getIdForToken,
 );
 export { registration };
@@ -36,18 +42,18 @@ export async function refreshAthlete(athleteId: number): Promise<void> {
   console.log('Refreshing athlete ' + athleteId);
   const athlete = await strava.getAthlete(athleteId);
   console.log(`athlete: ${stringify(athlete)}`);
-  await db.saveItem('athletes', athlete);
+  await athletePersist.set(athlete);
 }
 
 // Refresh an athlete's activities in our database.
 export async function refreshAthleteActivities(athleteId: number): Promise<void> {
   console.log('Refreshing athlete activities ' + athleteId);
 
-  await db.deleteActivities(athleteId);
+  activityPersist.deleteByAthlete(athleteId);
   const o = await strava.getActivities(athleteId)
     .pipe(
       bufferCount(100),
-      mergeMap((activities) => from(db.saveActivities(activities)))
+      mergeMap((activities) => from(activityPersist.setAll(activities)))
     );
   await lastValueFrom(o);
 
@@ -57,7 +63,7 @@ export async function refreshAthleteActivities(athleteId: number): Promise<void>
 export async function refreshAllAthleteActivities(): Promise<void> {
   console.log('Refreshing all athlete activities');
 
-  const athletes = await db.getAllItems('athletes');
+  const athletes = await athletePersist.getAll();
   await from(athletes)
     .pipe(
       mergeMap((athlete) => from(refreshAthleteActivities(athlete.id)))
@@ -71,54 +77,16 @@ export async function refreshActivity(activityId: number, athleteId: number): Pr
   console.log(`refreshing activity ${activityId} for athlete ${athleteId}`);
   const activity = await strava.getActivity(activityId, athleteId);
   console.log('activity:', activity);
-  await db.saveActivities([activity]);
+  await activityPersist.set(activity);
 
   await leaderboard.refreshAthleteSummary(athleteId);
 }
 
 export async function deleteActivity(activityId: number): Promise<void> {
   console.log(`deleting activity ${activityId}`);
-  const activity: SlimActivity | undefined = await db.getItemByKey('activities', activityId);
-  await db.deleteItem('activities', activityId);
-
-  const athleteId = activity?.athlete?.id;
-  if (athleteId) {
-    await leaderboard.refreshAthleteSummary(athleteId);
+  const activity = await activityPersist.getIfExists(activityId);
+  if (activity) {
+    await activityPersist.deleteItem(activityId);
+    await leaderboard.refreshAthleteSummary(activity.athlete.id);
   }
-}
-
-export interface AthleteAndActivities {
-  athlete: SlimAthlete,
-  activities: SlimActivity[],
-}
-
-export async function getAthleteAndActivities(athleteId: number): Promise<AthleteAndActivities> {
-  const athletePromise = db.getItemByKey('athletes', athleteId);
-  const activitiesPromise = db.getItemsWithFilter('activities', 'athleteId', athleteId);
-
-  const athlete: SlimAthlete = await athletePromise;
-  const activities: SlimActivity[] = await activitiesPromise;
-
-  return {
-    athlete: athlete,
-    activities: activities
-  };
-}
-
-export interface AthletesAndActivities {
-  athletes: SlimAthlete[],
-  activities: SlimActivity[],
-}
-
-export async function getAthletesAndActivities(): Promise<AthletesAndActivities> {
-  const athletesPromise = db.getAllItems('athletes');
-  const activitiesPromise = db.getAllItems('activities');
-
-  const athletes: SlimAthlete[] = await athletesPromise;
-  const activities: SlimActivity[] = await activitiesPromise;
-
-  return {
-    athletes: athletes,
-    activities: activities
-  };
 }

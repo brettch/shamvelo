@@ -5,12 +5,20 @@ import {
   AthleteSummary
 } from './athlete-summary.js';
 import { YearContainer, addAthlete as addAthleteSummary, create as createLeaderboard } from './summary.js';
-import { start as startDb } from '../db.js';
 import filterActivities from './filter-activities.js';
 import { mapById } from '../identified.js';
 import { SlimAthlete } from '../strava.js';
+import { createFirestore } from '../db/persist.js';
+import { createActivityPersist } from '../db/activity.js';
+import { createAthleteSummaryPersist } from '../db/athlete-summary.js';
+import { createAthletePersist } from '../db/athlete.js';
+import { createLeaderboardPersist } from '../db/leaderboard.js';
 
-const db = startDb();
+const firestore = createFirestore();
+const activityPersist = createActivityPersist(firestore);
+const athletePersist = createAthletePersist(firestore);
+const athleteSummaryPersist = createAthleteSummaryPersist(firestore);
+const leaderboardPersist = createLeaderboardPersist(firestore);
 
 export interface LeaderboardInterval {
   year: number,
@@ -21,25 +29,21 @@ export interface LeaderboardInterval {
 export async function refreshAthleteSummary(athleteId: number): Promise<void> {
   console.log(`refreshing summary for athlete ${athleteId}`);
   const activities = filterActivities(
-    (await db.getItemsWithFilter('activities', 'athlete.id', athleteId))
-      .map(activity => ({
-        ...activity,
-        startDate: activity.startDate.toDate(),
-      })),
+    await activityPersist.getByAthlete(athleteId),
   );
   const summary = activities.reduce(addActivityToAthleteSummary, createAthleteSummary(athleteId));
   pruneAthleteSummary(summary);
-  await db.saveAthleteSummary(summary);
+  await athleteSummaryPersist.set(summary);
   console.log(`summary refreshed for athlete ${athleteId}`);
 }
 
 export async function refreshLeaderboard(): Promise<void> {
   console.log('refreshing leaderboard 2');
 
-  const athleteSummariesPromise = db.getAllItems('athlete-summaries');
-  const athletesPromise = db.getAllItems('athletes');
-  const athleteSummaries: AthleteSummary[] = await athleteSummariesPromise;
-  const athletes: SlimAthlete[] = await athletesPromise;
+  const [athletes, athleteSummaries] = await Promise.all([
+    athletePersist.getAll(),
+    athleteSummaryPersist.getAll(),
+  ]);
   const athletesById = mapById(athletes);
 
   const summary = athleteSummaries.reduce((previousSummary, athleteSummary) => {
@@ -50,13 +54,13 @@ export async function refreshLeaderboard(): Promise<void> {
     return addAthleteSummary(previousSummary, athleteSummary, athlete);
   }, createLeaderboard());
   const yearlySummaries = Object.values(summary.year);
-  await db.saveLeaderboards(yearlySummaries);
+  await leaderboardPersist.setAll(yearlySummaries);
 
   console.log('leaderboard 2 refreshed');
 }
 
 export async function getLatestLeaderboardIds(): Promise<LeaderboardInterval> {
-  const latestLeaderboardYear: YearContainer = await db.getFirstItem('leaderboards', 'id', true);
+  const latestLeaderboardYear: YearContainer = await leaderboardPersist.getLatest();
 
   const year = latestLeaderboardYear.id;
   const month = Object
@@ -74,11 +78,7 @@ export async function getLatestLeaderboardIds(): Promise<LeaderboardInterval> {
 }
 
 export async function getLeaderboard(year: number, month: number, week: number) {
-  const records: YearContainer[] = await db.getItemsWithFilter('leaderboards', 'id', year);
-  if (records.length <= 0) {
-    throw new Error(`Year ${year} could not be found.`);
-  }
-  const yearRecord = records[0];
+  const yearRecord = await leaderboardPersist.get(year);
 
   const points = yearRecord.points;
   const yearSummary = yearRecord.summary;
