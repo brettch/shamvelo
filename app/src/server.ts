@@ -167,32 +167,6 @@ app.get('/refreshallactivities', function(_, res) {
     .catch(err => sendError(res, err));
 });
 
-// Determine the latest leaderboard year/month/week combination and redirect to it.
-app.get('/leaderboard', function(_, res) {
-  leaderboard
-    .getLatestLeaderboardIds()
-    .then((leaderboardIds) => res.redirect(
-      307,
-      `./leaderboard/${leaderboardIds.year}/${leaderboardIds.month}/${leaderboardIds.week}`
-    ))
-    .catch((err) => sendError(res, err));
-});
-
-// Display leaderboard for a specific year/month/week combination.
-app.get('/leaderboard/:year/:month/:week', function(req, res) {
-  const year = parseInt(req.params.year);
-  const month = parseInt(req.params.month);
-  const week = parseInt(req.params.week);
-  console.log(`Displaying leaderboard for year ${year}, month ${month}, week ${week}`);
-
-  leaderboard
-    .getLeaderboard(year, month, week)
-    .then((leaderboard) => res.render('leaderboard.handlebars', {
-      leaderboard,
-    }))
-    .catch((err) => sendError(res, err));
-});
-
 // Determine the latest leaderboard year and redirect to it.
 app.get('/year', function(_, res) {
   console.log('Getting latest year');

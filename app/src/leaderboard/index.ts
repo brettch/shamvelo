@@ -3,7 +3,7 @@ import {
   addActivity as addActivityToAthleteSummary,
   pruneSummary as pruneAthleteSummary
 } from './athlete-summary.js';
-import { YearContainer, addAthlete as addAthleteSummary, create as createLeaderboard } from './summary.js';
+import { addAthlete as addAthleteSummary, create as createLeaderboard } from './summary.js';
 import filterActivities from './filter-activities.js';
 import { mapById } from '../identified.js';
 import { createFirestore } from '../db/persist.js';
@@ -55,24 +55,6 @@ export async function refreshLeaderboard(): Promise<void> {
   await leaderboardPersist.setAll(yearlySummaries);
 
   console.log('leaderboard 2 refreshed');
-}
-
-export async function getLatestLeaderboardIds(): Promise<LeaderboardInterval> {
-  const latestLeaderboardYear: YearContainer = await leaderboardPersist.getLatest();
-
-  const year = latestLeaderboardYear.id;
-  const month = Object
-    .keys(latestLeaderboardYear.month)
-    .map(monthString => parseInt(monthString))
-    .sort((a, b) => b - a)
-    [0];
-  const week = Object
-    .keys(latestLeaderboardYear.week)
-    .map(weekString => parseInt(weekString))
-    .sort((a, b) => b - a)
-    [0];
-
-  return { year, month, week };
 }
 
 export async function getLeaderboard(year: number, month: number, week: number) {
