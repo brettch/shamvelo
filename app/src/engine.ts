@@ -1,8 +1,8 @@
 import './config.js';
 import * as leaderboard from './leaderboard/index.js';
-import { from, lastValueFrom } from 'rxjs';
-import { bufferCount, mergeMap } from 'rxjs/operators';
-import { SlimActivity, SlimAthlete, start as startStrava } from './strava.js';
+import { from } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { start as startStrava } from './strava.js';
 import { stringify } from './util.js';
 import { Token, start as startRegistration } from './registration.js';
 import { createFirestore } from './db/persist.js';
@@ -49,13 +49,13 @@ export async function refreshAthlete(athleteId: number): Promise<void> {
 export async function refreshAthleteActivities(athleteId: number): Promise<void> {
   console.log('Refreshing athlete activities ' + athleteId);
 
-  activityPersist.deleteByAthlete(athleteId);
-  const o = await strava.getActivities(athleteId)
-    .pipe(
-      bufferCount(100),
-      mergeMap((activities) => from(activityPersist.setAll(activities)))
-    );
-  await lastValueFrom(o);
+  const activities = [];
+  for await (const activity of strava.getActivities(athleteId)) {
+    activities.push(activity);
+  }
+
+  await activityPersist.deleteByAthlete(athleteId);
+  await activityPersist.setAll(activities);
 
   await leaderboard.refreshAthleteSummary(athleteId);
 }

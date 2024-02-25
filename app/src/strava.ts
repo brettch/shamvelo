@@ -1,5 +1,3 @@
-import { of, from, merge, EMPTY, Observable } from 'rxjs';
-import { mergeMap, tap } from 'rxjs/operators';
 import { ActivitiesApi, AthletesApi, DetailedAthlete, SummaryActivity } from './strava/api.js';
 import { Token, TokenAccess, TokenWithId } from './registration.js';
 
@@ -88,41 +86,48 @@ export function start(tokenAccess: TokenAccess) {
       return slimActivity;
     }
   }
-  
-  function getActivities(athleteId: number) {
+
+  async function* getActivities(athleteId: number): AsyncGenerator<SlimActivity> {
     console.log(`Getting athlete ${athleteId} activities`);
 
-    // Create recursive function to retrieve all activity pages.
-    function getActivityPage(page: number): Observable<SlimActivity> {
-      return of({}).pipe(
-        tap(() => console.log(`Getting athlete activities page ${page}`)),
-        mergeMap(() => from(invokeActionWithTokenRefresh(
-          getActivitiesPageImpl,
-          athleteId
-        ))),
-        mergeMap((activities) => {
-          if (activities.length > 0) {
-            return merge(
-              activities,
-              getActivityPage(page + 1)
-            );
-          } else {
-            return EMPTY;
-          }
-        })
+    async function getActivitiesPage(token: TokenWithId, page: number): Promise<SlimActivity[]> {
+      console.log(`Getting athlete ${athleteId} activities page ${page}`);
+      const api = new ActivitiesApi();
+      api.accessToken = token.access_token;
+      const activities = (await api.getLoggedInAthleteActivities(undefined, undefined, page, 100)).body;
+      const slimActivities = activities.map(pickActivityFields);
+      return slimActivities;
+    }
+
+    async function getActivitiesPagesFrom(token: TokenWithId, pageFrom: number, pageCount: number): Promise<SlimActivity[]> {
+      const requests = Array
+        .from(Array(pageCount).keys()) // number range from 0
+        .map(pageOffset => pageFrom + pageOffset) // add page offset
+        .map(page => getActivitiesPage(token, page)); // request the page from strava
+
+      const results = await Promise.all(requests);
+      const mergedResults = results
+        .reduce((a, b) => a.concat(b));
+
+      return mergedResults;
+    }
+
+    const concurrency = 10;
+    for (let page = 1; true; page += concurrency) {
+      const activities = await invokeActionWithTokenRefresh(
+        token => getActivitiesPagesFrom(token, page, concurrency),
+        athleteId,
       );
 
-      async function getActivitiesPageImpl(token: TokenWithId): Promise<SlimActivity[]> {
-        const api = new ActivitiesApi();
-        api.accessToken = token.access_token;
-        const activities = (await api.getLoggedInAthleteActivities(undefined, undefined, page, 100)).body;
-        const slimActivities = activities.map(pickActivityFields);
-        return slimActivities;
+      if (activities.length <= 0) {
+        console.log(`Activities page is empty, retrieval is complete`);
+        break;
+      }
+
+      for (const activity of activities) {
+        yield activity;
       }
     }
-  
-    // Begin retrieving pages from page 1.
-    return getActivityPage(1);
   }
 
   async function invokeActionWithTokenRefresh<T>(action: (token: TokenWithId) => Promise<T>, athleteId: number) {
