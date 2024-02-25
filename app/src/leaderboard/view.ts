@@ -105,7 +105,7 @@ export async function getWeekView(year: number, week: number): Promise<PeriodVie
     year,
     periodIndex: week,
     isActive,
-    displayName: 'Week of ' + format(startOfWeek, "yyyy, MMMM do"),
+    displayName: `${format(startOfWeek, 'yyyy')}, week of ${format(startOfWeek, "MMMM do")}`,
     summary: (yearContainer.week[week] || createPeriodContainer()).summary,
     points: yearContainer.points.week,
     next: (moreWeeksAvailable) ? week + 1 : undefined,
