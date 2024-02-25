@@ -1,13 +1,11 @@
 import {
   create as createAthleteSummary,
   addActivity as addActivityToAthleteSummary,
-  pruneSummary as pruneAthleteSummary,
-  AthleteSummary
+  pruneSummary as pruneAthleteSummary
 } from './athlete-summary.js';
 import { YearContainer, addAthlete as addAthleteSummary, create as createLeaderboard } from './summary.js';
 import filterActivities from './filter-activities.js';
 import { mapById } from '../identified.js';
-import { SlimAthlete } from '../strava.js';
 import { createFirestore } from '../db/persist.js';
 import { createActivityPersist } from '../db/activity.js';
 import { createAthleteSummaryPersist } from '../db/athlete-summary.js';
@@ -92,3 +90,4 @@ export async function getLeaderboard(year: number, month: number, week: number) 
     week: weekSummary
   };
 }
+

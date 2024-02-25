@@ -16,13 +16,15 @@ export function create(): Leaderboard {
 export interface YearContainer extends Identified, PeriodContainer {
   month: Record<number, PeriodContainer>,
   week: Record<number, PeriodContainer>,
-  points: {
-    month: PeriodPoints,
-    week: PeriodPoints,
-  },
+  points: YearPoints,
 }
 
-function createYearContainer(year: number): YearContainer {
+export interface YearPoints {
+  month: PeriodPoints,
+  week: PeriodPoints,
+}
+
+export function createYearContainer(year: number): YearContainer {
   return {
     ...createPeriodContainer(),
     id: year,
@@ -39,7 +41,7 @@ export interface PeriodContainer {
   summary: PeriodSummary,
 }
 
-function createPeriodContainer(): PeriodContainer {
+export function createPeriodContainer(): PeriodContainer {
   return {
     summary: {
       activityCount: [],
