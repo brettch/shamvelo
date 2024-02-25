@@ -31,6 +31,9 @@
   <body>
 	<h1>Leaderboard: {{displayName}}</h1>
 
+<a href="../..">Back to Home</a><br/>
+{{#if previous}}<a href="./{{previous}}">Previous</a>{{/if}} {{#if next}}<a href="./{{next}}">Next</a>{{/if}}
+
 <div class="row">
   <div class="col-md-8">
     <table class="table">
@@ -88,7 +91,7 @@
   </div>
 </div>
 
-<h2>Period Details</h2>
+<h2>Details</h2>
 {{#with summary}}
 <div class="row">
   <div class="col-md-4">

@@ -31,7 +31,8 @@
   <body>
 	<h1>Leaderboard: {{displayName}}</h1>
 
-<a href="../../{{year}}">Back to year</a>
+<a href="../../{{year}}">Back to Year</a><br/>
+{{#if previous includeZero=true}}<a href="./{{previous}}">Previous</a>{{/if}} {{#if next}}<a href="./{{next}}">Next</a>{{/if}}
 
 <h2>Yearly Points</h2>
 {{#with points}}
