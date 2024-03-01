@@ -2,12 +2,13 @@ import { Firestore } from "@google-cloud/firestore";
 import { Db, Persist, createDb, createDirectConverter } from "./persist.js";
 import { YearContainer } from "../leaderboard/summary.js";
 
-export interface LeaderboardPersist extends Persist<YearContainer> {
+export interface LeaderboardPersist extends Persist<number, YearContainer> {
   getLatest(): Promise<YearContainer>;
 }
 
 export function createLeaderboardPersist(fs: Firestore): LeaderboardPersist {
-  const db: Db<YearContainer, YearContainer> = createDb(fs, 'leaderboards', createDirectConverter());
+  const db: Db<number, YearContainer, YearContainer> =
+    createDb(fs, 'leaderboards', createDirectConverter(), id => id.toString());
 
   async function getLatest(): Promise<YearContainer> {
     const records = await db.runQuery(

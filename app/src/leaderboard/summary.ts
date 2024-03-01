@@ -13,7 +13,7 @@ export function create(): Leaderboard {
   };
 }
 
-export interface YearContainer extends Identified, PeriodContainer {
+export interface YearContainer extends Identified<number>, PeriodContainer {
   month: Record<number, PeriodContainer>,
   week: Record<number, PeriodContainer>,
   points: YearPoints,
@@ -78,11 +78,11 @@ type PeriodSummaryAthleteScoreField = Exclude<KeysMatching<PeriodSummary, Athlet
 
 export interface AthleteScore {
   value: number,
-  athlete: Named,
+  athlete: Named<number>,
 }
 
 export interface RideScore extends AthleteScore {
-  ride: Named,
+  ride: Named<number>,
 }
 
 export interface PeriodPoints {

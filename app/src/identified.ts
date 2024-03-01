@@ -1,17 +1,13 @@
-export interface Identified {
-  id: number,
+export interface Identified<K> {
+  id: K,
 }
 
-export interface Named extends Identified {
-  name: String,
-}
-
-export interface IdentifiedMaybe {
-  id?: number,
+export interface Named<K> extends Identified<K> {
+  name: string,
 }
 
 // Create a map of items keyed by their id.
-export function mapById<T extends Identified>(items: T[]): Map<number, T> {
+export function mapById<K, T extends Identified<K>>(items: T[]): Map<K, T> {
   return items.reduce(function(itemsById, item) {
     itemsById.set(item.id, item);
     return itemsById;

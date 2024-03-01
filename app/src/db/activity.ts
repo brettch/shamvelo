@@ -1,15 +1,15 @@
 import { Firestore, FirestoreDataConverter, QueryDocumentSnapshot, Timestamp, WithFieldValue } from "@google-cloud/firestore";
 import { SlimActivity } from "../strava.js";
-import { Db, Persist, createDb, createDirectConverter } from "./persist.js";
-import { ActivityStats } from "../strava/api.js";
+import { Db, Persist, createDb } from "./persist.js";
 
-export interface ActivityPersist extends Persist<SlimActivity> {
+export interface ActivityPersist extends Persist<number, SlimActivity> {
   getByAthlete(athleteId: number): Promise<SlimActivity[]>;
   deleteByAthlete(athleteId: number): Promise<void>;
 }
 
 export function createActivityPersist(fs: Firestore): ActivityPersist {
-  const db: Db<SlimActivity, SlimActivity> = createDb(fs, 'activities', dataConverter);
+  const db: Db<number, SlimActivity, SlimActivity> =
+    createDb(fs, 'activities', dataConverter, id => id.toString());
 
   function queryByAthlete(athleteId: number) {
     return db.collection

@@ -2,7 +2,7 @@ import { getPeriods } from './athlete-summary-paths.js';
 import { create as createSummary, addActivity as addActivityToSummary, pruneSummary as prunePeriodSummary, PeriodSummary, SummarisableActivity } from './period-summary.js';
 import { Identified } from '../identified.js';
 
-export interface AthleteSummary extends Identified {
+export interface AthleteSummary extends Identified<number> {
   year: Record<string, YearContainer>,
 }
 

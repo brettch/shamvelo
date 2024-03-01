@@ -2,16 +2,16 @@ import { CollectionReference, DocumentData, Firestore, FirestoreDataConverter, Q
 import { appConfig } from '../config.js'
 import { Identified } from '../identified.js';
 
-export interface Persist<T> {
-  get(id: number): Promise<T>;
-  getIfExists(id: number): Promise<T | undefined>
+export interface Persist<K, T> {
+  get(id: K): Promise<T>;
+  getIfExists(id: K): Promise<T | undefined>
   getAll(): Promise<T[]>;
   set(item: T): Promise<void>;
   setAll(items: T[]): Promise<void>;
-  deleteItem(id: number): Promise<void>;
+  deleteItem(id: K): Promise<void>;
 }
 
-export interface Db<AppT extends Identified, DbT extends DocumentData> extends Persist<AppT> {
+export interface Db<K, AppT extends Identified<K>, DbT extends DocumentData> extends Persist<K, AppT> {
   collection: CollectionReference<AppT, DbT>,
 
   runQuery(query: Query<AppT, DbT>): Promise<AppT[]>;
@@ -24,7 +24,12 @@ export function createFirestore() {
   });
 }
 
-export function createDb<AppT extends Identified, DbT extends DocumentData>(fs: Firestore, collectionPath: string, dataConverter: FirestoreDataConverter<AppT, DbT>): Db<AppT, DbT> {
+export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData>(
+  fs: Firestore,
+  collectionPath: string,
+  dataConverter: FirestoreDataConverter<AppT, DbT>,
+  mapToDbKey: (id: K) => string
+): Db<K, AppT, DbT> {
   const collection =
     fs.collection(collectionPath)
       .withConverter(dataConverter);
@@ -38,7 +43,7 @@ export function createDb<AppT extends Identified, DbT extends DocumentData>(fs: 
     return records;
   }
 
-  async function get(id: number): Promise<AppT> {
+  async function get(id: K): Promise<AppT> {
     const item = await getIfExists(id);
 
     if (!item) {
@@ -48,10 +53,10 @@ export function createDb<AppT extends Identified, DbT extends DocumentData>(fs: 
     return item;
   }
 
-  async function getIfExists(id: number): Promise<AppT | undefined> {
+  async function getIfExists(id: K): Promise<AppT | undefined> {
     console.log(`Getting ${collectionPath} with id ${id}`);
     const doc = await collection
-      .doc(id.toString())
+      .doc(mapToDbKey(id))
       .get();
     const item = doc.data();
 
@@ -66,7 +71,7 @@ export function createDb<AppT extends Identified, DbT extends DocumentData>(fs: 
   async function set(item: AppT): Promise<void> {
     console.log(`Setting ${collectionPath} with id ${item.id}`);
     await collection
-        .doc(item.id.toString())
+        .doc(mapToDbKey(item.id))
         .set(item);
   }
 
@@ -85,7 +90,7 @@ export function createDb<AppT extends Identified, DbT extends DocumentData>(fs: 
         const fsBatch = fs.batch();
 
         for (const item of itemsChunk) {
-          fsBatch.set(collection.doc(item.id.toString()), item);
+          fsBatch.set(collection.doc(mapToDbKey(item.id)), item);
         }
 
         yield fsBatch.commit();
@@ -97,11 +102,11 @@ export function createDb<AppT extends Identified, DbT extends DocumentData>(fs: 
     );
   }
 
-  async function deleteItem(id: number): Promise<void> {
+  async function deleteItem(id: K): Promise<void> {
     console.log(`Deleting ${collectionPath} with id ${id}`);
 
     await collection
-      .doc(id.toString())
+      .doc(mapToDbKey(id))
       .delete();
   }
 

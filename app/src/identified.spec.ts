@@ -1,6 +1,6 @@
 import { Identified, mapById } from './identified.js';
 
-interface IdentifiedString extends Identified {
+interface IdentifiedString extends Identified<number> {
   field1: string,
 }
 
