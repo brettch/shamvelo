@@ -2,7 +2,19 @@ import { getPeriods } from './athlete-summary-paths.js';
 import { create as createSummary, addActivity as addActivityToSummary, pruneSummary as prunePeriodSummary, PeriodSummary, SummarisableActivity } from './period-summary.js';
 import { Identified } from '../identified.js';
 
-export interface AthleteSummary extends Identified<number> {
+export interface AthleteSummaryId {
+  athleteId: number,
+  leaderboardCode: string,
+}
+
+export function createAthleteSummaryId(athleteId: number, leaderboardCode: string): AthleteSummaryId {
+  return {
+    athleteId,
+    leaderboardCode,
+  };
+}
+
+export interface AthleteSummary extends Identified<AthleteSummaryId> {
   year: Record<string, YearContainer>,
 }
 
@@ -15,7 +27,7 @@ export interface YearContainer extends PeriodContainer {
   week: Record<number, PeriodContainer>,
 }
 
-export function create(id: number): AthleteSummary {
+export function create(id: AthleteSummaryId): AthleteSummary {
   return {
     id,
     year: {}

@@ -28,7 +28,7 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
   fs: Firestore,
   collectionPath: string,
   dataConverter: FirestoreDataConverter<AppT, DbT>,
-  mapToDbKey: (id: K) => string
+  mapIdToKey: (id: K) => string,
 ): Db<K, AppT, DbT> {
   const collection =
     fs.collection(collectionPath)
@@ -47,16 +47,16 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
     const item = await getIfExists(id);
 
     if (!item) {
-      throw new Error(`Document ${id} from ${collectionPath} does not exist`);
+      throw new Error(`Document ${JSON.stringify(id)} from ${collectionPath} does not exist`);
     }
 
     return item;
   }
 
   async function getIfExists(id: K): Promise<AppT | undefined> {
-    console.log(`Getting ${collectionPath} with id ${id}`);
+    console.log(`Getting ${collectionPath} with id ${JSON.stringify(id)}`);
     const doc = await collection
-      .doc(mapToDbKey(id))
+      .doc(mapIdToKey(id))
       .get();
     const item = doc.data();
 
@@ -69,9 +69,9 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
   }
 
   async function set(item: AppT): Promise<void> {
-    console.log(`Setting ${collectionPath} with id ${item.id}`);
+    console.log(`Setting ${collectionPath} with id ${JSON.stringify(item.id)}`);
     await collection
-        .doc(mapToDbKey(item.id))
+        .doc(mapIdToKey(item.id))
         .set(item);
   }
 
@@ -90,7 +90,7 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
         const fsBatch = fs.batch();
 
         for (const item of itemsChunk) {
-          fsBatch.set(collection.doc(mapToDbKey(item.id)), item);
+          fsBatch.set(collection.doc(mapIdToKey(item.id)), item);
         }
 
         yield fsBatch.commit();
@@ -103,10 +103,10 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
   }
 
   async function deleteItem(id: K): Promise<void> {
-    console.log(`Deleting ${collectionPath} with id ${id}`);
+    console.log(`Deleting ${collectionPath} with id ${JSON.stringify(id)}`);
 
     await collection
-      .doc(mapToDbKey(id))
+      .doc(mapIdToKey(id))
       .delete();
   }
 

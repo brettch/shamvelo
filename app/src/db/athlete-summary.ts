@@ -1,13 +1,13 @@
 import { Firestore } from "@google-cloud/firestore";
 import { Db, Persist, createDb, createDirectConverter } from "./persist.js";
-import { AthleteSummary } from "../leaderboard/athlete-summary.js";
+import { AthleteSummary, AthleteSummaryId } from "../leaderboard/athlete-summary.js";
 
-export interface AthleteSummaryPersist extends Persist<number, AthleteSummary> {
+export interface AthleteSummaryPersist extends Persist<AthleteSummaryId, AthleteSummary> {
 }
 
 export function createAthleteSummaryPersist(fs: Firestore): AthleteSummaryPersist {
-  const db: Db<number, AthleteSummary, AthleteSummary> =
-    createDb(fs, 'athlete-summaries', createDirectConverter(), id => id.toString());
+  const db: Db<AthleteSummaryId, AthleteSummary, AthleteSummary> =
+    createDb(fs, 'athlete-summaries', createDirectConverter(), id => `${id.athleteId}-${id.leaderboardCode}`);
 
   return db;
 }

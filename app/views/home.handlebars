@@ -16,8 +16,12 @@
 </head>
 <body>
 
-<h1>Leaderboard</h1>
-<a href="year">Leaderboard</a><br/>
+<h1>Leaderboards</h1>
+<ul>
+	{{#each leaderboards}}
+	<li><a href="leaderboard/{{this.code}}/year">{{this.name}}</a></li>
+	{{/each}}
+</ul>
 <form action="./refreshallactivities" method="POST">
 	<input type="submit" name="btnRefreshAllActivities" value="Refresh All Activities"/>
 </form>

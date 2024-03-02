@@ -1,16 +1,18 @@
 import {
   create as createAthleteSummary,
   addActivity as addActivityToAthleteSummary,
-  pruneSummary as pruneAthleteSummary
+  pruneSummary as pruneAthleteSummary,
+  createAthleteSummaryId
 } from './athlete-summary.js';
-import { addAthlete as addAthleteSummary, create as createLeaderboard } from './summary.js';
-import filterActivities from './filter-activities.js';
+import { addAthlete as addAthleteSummary, create as createLeaderboard, createYearContainerId } from './summary.js';
 import { mapById } from '../identified.js';
 import { createFirestore } from '../db/persist.js';
 import { createActivityPersist } from '../db/activity.js';
 import { createAthleteSummaryPersist } from '../db/athlete-summary.js';
 import { createAthletePersist } from '../db/athlete.js';
 import { createLeaderboardPersist } from '../db/leaderboard.js';
+import { SlimActivity, SlimAthlete } from '../strava.js';
+import { ActivityType } from '../strava/api.js';
 
 const firestore = createFirestore();
 const activityPersist = createActivityPersist(firestore);
@@ -18,47 +20,72 @@ const athletePersist = createAthletePersist(firestore);
 const athleteSummaryPersist = createAthleteSummaryPersist(firestore);
 const leaderboardPersist = createLeaderboardPersist(firestore);
 
-export interface LeaderboardInterval {
-  year: number,
-  month: number,
-  week: number,
+interface LeaderboardConfig {
+  code: string,
+  name: string,
+  isActivityIncluded: (activity: SlimActivity) => boolean,
 }
 
+export const leaderboardConfigs: LeaderboardConfig[] = [
+  {
+    code: 'reality',
+    name: 'Keeping It Real',
+    isActivityIncluded: activity => activity.type === ActivityType.Ride,
+  },
+  {
+    code: 'virtual',
+    name: 'Virtual Insanity',
+    isActivityIncluded: activity => activity.type === ActivityType.VirtualRide,
+  },
+];
+
 export async function refreshAthleteSummary(athleteId: number): Promise<void> {
-  console.log(`refreshing summary for athlete ${athleteId}`);
-  const activities = filterActivities(
-    await activityPersist.getByAthlete(athleteId),
-  );
-  const summary = activities.reduce(addActivityToAthleteSummary, createAthleteSummary(athleteId));
-  pruneAthleteSummary(summary);
-  await athleteSummaryPersist.set(summary);
-  console.log(`summary refreshed for athlete ${athleteId}`);
+  console.log(`refreshing summaries for athlete ${athleteId}`);
+  const activities = await activityPersist.getByAthlete(athleteId);
+
+  const summaries = leaderboardConfigs
+    .map(leaderboardConfig =>
+      activities
+        .filter(leaderboardConfig.isActivityIncluded)
+        .reduce(addActivityToAthleteSummary, createAthleteSummary(createAthleteSummaryId(athleteId, leaderboardConfig.code)))
+    );
+  summaries.forEach(pruneAthleteSummary);
+
+  await Promise.all(summaries.map(athleteSummaryPersist.set));
+
+  console.log(`summaries refreshed for athlete ${athleteId}`);
 }
 
 export async function refreshLeaderboard(): Promise<void> {
-  console.log('refreshing leaderboard 2');
+  console.log('refreshing leaderboard');
 
   const [athletes, athleteSummaries] = await Promise.all([
     athletePersist.getAll(),
     athleteSummaryPersist.getAll(),
   ]);
-  const athletesById = mapById(athletes);
+  const athletesById: Map<number, SlimAthlete> = mapById(athletes);
 
-  const summary = athleteSummaries.reduce((previousSummary, athleteSummary) => {
-    const athlete = athletesById.get(athleteSummary.id);
-    if (!athlete) {
-      return previousSummary;
-    }
-    return addAthleteSummary(previousSummary, athleteSummary, athlete);
-  }, createLeaderboard());
-  const yearlySummaries = Object.values(summary.year);
+  const yearlySummaries = leaderboardConfigs
+    .map(leaderboardConfig =>
+      athleteSummaries
+        .filter(summary => summary.id.leaderboardCode === leaderboardConfig.code)
+        .reduce((previousSummary, athleteSummary) => {
+          const athlete = athletesById.get(athleteSummary.id.athleteId);
+          if (!athlete) {
+            return previousSummary;
+          }
+          return addAthleteSummary(previousSummary, athleteSummary, athlete);
+        }, createLeaderboard(leaderboardConfig.code))
+    )
+    .flatMap(leaderboard => Object.values(leaderboard.year));
+
   await leaderboardPersist.setAll(yearlySummaries);
 
-  console.log('leaderboard 2 refreshed');
+  console.log('leaderboard refreshed');
 }
 
-export async function getLeaderboard(year: number, month: number, week: number) {
-  const yearRecord = await leaderboardPersist.get(year);
+export async function getLeaderboard(year: number, leaderboardCode: string, month: number, week: number) {
+  const yearRecord = await leaderboardPersist.get(createYearContainerId(year, leaderboardCode));
 
   const points = yearRecord.points;
   const yearSummary = yearRecord.summary;
@@ -72,4 +99,3 @@ export async function getLeaderboard(year: number, month: number, week: number) 
     week: weekSummary
   };
 }
-

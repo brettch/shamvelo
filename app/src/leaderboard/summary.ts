@@ -4,16 +4,30 @@ import { PeriodSummary as AthletePeriodSummary } from './period-summary.js'
 import { SlimAthlete } from '../strava.js';
 
 export interface Leaderboard {
+  code: string,
   year: Record<number, YearContainer>,
 }
 
-export function create(): Leaderboard {
+export function create(code: string): Leaderboard {
   return {
+    code,
     year: {},
   };
 }
 
-export interface YearContainer extends Identified<number>, PeriodContainer {
+export interface YearContainerId {
+  leaderboardCode: string,
+  year: number,
+}
+
+export function createYearContainerId(year: number, leaderboardCode: string): YearContainerId {
+  return {
+    leaderboardCode,
+    year,
+  };
+}
+
+export interface YearContainer extends Identified<YearContainerId>, PeriodContainer {
   month: Record<number, PeriodContainer>,
   week: Record<number, PeriodContainer>,
   points: YearPoints,
@@ -24,10 +38,10 @@ export interface YearPoints {
   week: PeriodPoints,
 }
 
-export function createYearContainer(year: number): YearContainer {
+export function createYearContainer(id: YearContainerId): YearContainer {
   return {
     ...createPeriodContainer(),
-    id: year,
+    id,
     month: {},
     week: {},
     points: {
@@ -123,16 +137,17 @@ function applyYears(leaderboard: Leaderboard, athleteSummary: AthleteSummary, at
   const leaderboardYears = leaderboard.year;
   const athleteYears = athleteSummary.year;
   Object.keys(athleteYears).forEach(year => {
-    applyYear(+year, leaderboardYears, athleteYears, athlete);
+    const yearId = createYearContainerId(+year, leaderboard.code);
+    applyYear(yearId, leaderboardYears, athleteYears, athlete);
   });
 }
 
-function applyYear(year: number, leaderboardYears: Record<number, YearContainer>, athleteYears: Record<number, AthleteYearContainer>, athlete: SlimAthlete) {
-  if (!leaderboardYears[year]) {
-    leaderboardYears[year] = createYearContainer(year);
+function applyYear(id: YearContainerId, leaderboardYears: Record<number, YearContainer>, athleteYears: Record<number, AthleteYearContainer>, athlete: SlimAthlete) {
+  if (!leaderboardYears[id.year]) {
+    leaderboardYears[id.year] = createYearContainer(id);
   }
-  const leaderboardYear = leaderboardYears[year];
-  const athleteYear = athleteYears[year];
+  const leaderboardYear = leaderboardYears[id.year];
+  const athleteYear = athleteYears[id.year];
 
   applyPeriod(leaderboardYear, athleteYear, athlete);
   applySubYears(leaderboardYear.month, athleteYear.month, athlete);

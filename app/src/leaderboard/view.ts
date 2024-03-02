@@ -1,6 +1,6 @@
 import { createLeaderboardPersist } from "../db/leaderboard.js";
 import { createFirestore } from "../db/persist.js";
-import { PeriodPoints, PeriodSummary, YearPoints, createPeriodContainer, createYearContainer } from "./summary.js";
+import { PeriodPoints, PeriodSummary, YearPoints, createPeriodContainer, createYearContainer, createYearContainerId } from "./summary.js";
 import { addWeeks, format, isThisISOWeek, setISOWeek } from 'date-fns';
 
 const firestore = createFirestore();
@@ -17,11 +17,13 @@ interface YearView {
 }
 
 export async function getLatestYearId(): Promise<number> {
-  return (await leaderboardPersist.getLatest()).id;
+  return (await leaderboardPersist.getLatest()).id.year;
 }
 
-export async function getYearView(year: number): Promise<YearView> {
-  const yearContainer = (await leaderboardPersist.getIfExists(year)) || createYearContainer(year);
+export async function getYearView(leaderboardCode: string, year: number): Promise<YearView> {
+  const yearContainer = (
+    await leaderboardPersist.getIfExists(createYearContainerId(year, leaderboardCode))) ||
+    createYearContainer(createYearContainerId(year, leaderboardCode));
   const now = new Date();
   const isActive = year === now.getFullYear();
 
@@ -36,8 +38,8 @@ export async function getYearView(year: number): Promise<YearView> {
   }
 }
 
-export async function getLatestMonthId(year: number): Promise<number> {
-  const yearContainer = await leaderboardPersist.getIfExists(year);
+export async function getLatestMonthId(leaderboardCode: string, year: number): Promise<number> {
+  const yearContainer = await leaderboardPersist.getIfExists(createYearContainerId(year, leaderboardCode));
   if (yearContainer) {
     const monthIds = Object
       .keys(yearContainer.month)
@@ -61,8 +63,10 @@ export interface PeriodView {
   previous: number | undefined;
 }
 
-export async function getMonthView(year: number, month: number): Promise<PeriodView> {
-  const yearContainer = await leaderboardPersist.getIfExists(year) || createYearContainer(year);
+export async function getMonthView(leaderboardCode: string, year: number, month: number): Promise<PeriodView> {
+  const yearContainer =
+    await leaderboardPersist.getIfExists(createYearContainerId(year, leaderboardCode)) ||
+    createYearContainer(createYearContainerId(year, leaderboardCode));
 
   const now = new Date();
   const isActive = now.getFullYear() === year && now.getMonth() === month;
@@ -79,8 +83,8 @@ export async function getMonthView(year: number, month: number): Promise<PeriodV
   };
 }
 
-export async function getLatestWeekId(year: number): Promise<number> {
-  const yearContainer = await leaderboardPersist.getIfExists(year);
+export async function getLatestWeekId(leaderboardCode: string, year: number): Promise<number> {
+  const yearContainer = await leaderboardPersist.getIfExists(createYearContainerId(year, leaderboardCode));
   if (yearContainer) {
     const weekIds = Object
       .keys(yearContainer.week)
@@ -94,8 +98,10 @@ export async function getLatestWeekId(year: number): Promise<number> {
   return 1;
 }
 
-export async function getWeekView(year: number, week: number): Promise<PeriodView> {
-  const yearContainer = await leaderboardPersist.getIfExists(year) || createYearContainer(year);
+export async function getWeekView(leaderboardCode: string, year: number, week: number): Promise<PeriodView> {
+  const yearContainer =
+    await leaderboardPersist.getIfExists(createYearContainerId(year, leaderboardCode)) ||
+    createYearContainer(createYearContainerId(year, leaderboardCode));
 
   const startOfWeek = setISOWeek(new Date(year, 6, 1), week);
   const isActive = isThisISOWeek(startOfWeek);

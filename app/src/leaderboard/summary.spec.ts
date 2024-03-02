@@ -1,6 +1,9 @@
 import { SlimAthlete } from '../strava.js';
-import { AthleteSummary, PeriodContainer, YearContainer as AthleteYearContainer } from './athlete-summary.js';
-import { AthleteScore, Leaderboard, PeriodPoints, PeriodSummary, YearContainer as LeaderboardYearContainer, addAthlete, create } from './summary.js';
+import { AthleteSummary, PeriodContainer, YearContainer as AthleteYearContainer, createAthleteSummaryId } from './athlete-summary.js';
+import { AthleteScore, Leaderboard, PeriodPoints, PeriodSummary, YearContainer as LeaderboardYearContainer, addAthlete, create, createYearContainerId } from './summary.js';
+
+const athleteId = 1;
+const leaderboardCode = 'myCode';
 
 const athletePeriod: PeriodContainer = {
   summary: {
@@ -42,7 +45,7 @@ const athleteYear: AthleteYearContainer = {
 };
 
 const athleteSummary: AthleteSummary = {
-  id: 1,
+  id: createAthleteSummaryId(athleteId, leaderboardCode),
   year: {
     '2019': athleteYear,
     '2020': athleteYear
@@ -64,7 +67,8 @@ const allAthleteRecord: AthleteScore = {
 };
 
 test('merge of single athlete', () => {
-  const summary = addAthlete(create(), athleteSummary, athlete);
+  const code = 'myCode';
+  const summary = addAthlete(create(code), athleteSummary, athlete);
   const expectedAllPeriodSummary: PeriodSummary = {
     distance: [{
       ...allAthleteRecord,
@@ -131,7 +135,7 @@ test('merge of single athlete', () => {
     }]
   };
   const expectedAllYear: LeaderboardYearContainer = {
-    id: 0,
+    id: createYearContainerId(0, leaderboardCode),
     summary: expectedAllPeriodSummary,
     month: {
       '1': {
@@ -155,14 +159,15 @@ test('merge of single athlete', () => {
     }
   };
   const expectedSummary: Leaderboard = {
+    code: leaderboardCode,
     year: {
       '2019': {
         ...expectedAllYear,
-        id: 2019
+        id: createYearContainerId(2019, leaderboardCode),
       },
       '2020': {
         ...expectedAllYear,
-        id: 2020
+        id: createYearContainerId(2020, leaderboardCode),
       }
     }
   };
@@ -182,7 +187,7 @@ test('merge two year summaries', () => {
       lastname: 'AA'
     },
     summary: {
-      id: 2020,
+      id: createAthleteSummaryId(1, leaderboardCode),
       year: {
         '2020': {
           summary: {
@@ -218,7 +223,7 @@ test('merge two year summaries', () => {
       lastname: 'BB'
     },
     summary: {
-      id: 2020,
+      id: createAthleteSummaryId(2, leaderboardCode),
       year: {
         '2020': {
           summary: {
@@ -416,7 +421,7 @@ test('merge two year summaries', () => {
     athlete2Data
   ].reduce(
     (previousSummary, athleteData) => addAthlete(previousSummary, athleteData.summary, athleteData.athlete),
-    create(),
+    create(leaderboardCode),
   );
 
   expect(actualSummary.year['2020'].summary).toEqual(expectedSummary);

@@ -67,7 +67,8 @@ app.use('/static', express.static('static'));
 app.get('/', function (_, res) {
   athletePersist.getAll()
     .then((athletes) => res.render('home.handlebars', {
-      athletes : athletes
+      athletes : athletes,
+      leaderboards : leaderboard.leaderboardConfigs,
     }))
     .catch((err) => sendError(res, err));
 });
@@ -168,7 +169,7 @@ app.get('/refreshallactivities', function(_, res) {
 });
 
 // Determine the latest leaderboard year and redirect to it.
-app.get('/year', function(_, res) {
+app.get('/leaderboard/:code/year', function(req, res) {
   console.log('Getting latest year');
   getLatestYearId()
     .then(year => res.redirect(
@@ -179,20 +180,20 @@ app.get('/year', function(_, res) {
 });
 
 // Display the leaderboard for a specific year.
-app.get('/year/:year', function(req, res) {
+app.get('/leaderboard/:code/year/:year', function(req, res) {
   const year = parseInt(req.params.year);
   console.log(`Displaying details for year ${year}`);
 
-  getYearView(year)
+  getYearView(req.params.code, year)
     .then(yearView => res.render('year.handlebars', yearView))
     .catch((err) => sendError(res, err));
 });
 
 // Determine the latest leaderboard month and redirect to it.
-app.get('/year/:year/month', function(req, res) {
+app.get('/leaderboard/:code/year/:year/month', function(req, res) {
   const year = parseInt(req.params.year);
   console.log(`Getting latest month for year ${year}`);
-  getLatestMonthId(year)
+  getLatestMonthId(req.params.code, year)
     .then(month => res.redirect(
       307,
       `./month/${month}`
@@ -201,21 +202,21 @@ app.get('/year/:year/month', function(req, res) {
 });
 
 // Display the leaderboard for a specific month.
-app.get('/year/:year/month/:month', function(req, res) {
+app.get('/leaderboard/:code/year/:year/month/:month', function(req, res) {
   const year = parseInt(req.params.year);
   const month = parseInt(req.params.month);
   console.log(`Displaying details for year ${year} and month ${month}`);
 
-  getMonthView(year, month)
+  getMonthView(req.params.code, year, month)
     .then(monthView => res.render('period.handlebars', monthView))
     .catch((err) => sendError(res, err));
 });
 
 // Determine the latest leaderboard week and redirect to it.
-app.get('/year/:year/week', function(req, res) {
+app.get('/leaderboard/:code/year/:year/week', function(req, res) {
   const year = parseInt(req.params.year);
   console.log(`Getting latest week for year ${year}`);
-  getLatestWeekId(year)
+  getLatestWeekId(req.params.code, year)
     .then(week => res.redirect(
       307,
       `./week/${week}`
@@ -224,12 +225,12 @@ app.get('/year/:year/week', function(req, res) {
 });
 
 // Display the leaderboard for a specific week.
-app.get('/year/:year/week/:week', function(req, res) {
+app.get('/leaderboard/:code/year/:year/week/:week', function(req, res) {
   const year = parseInt(req.params.year);
   const week = parseInt(req.params.week);
   console.log(`Displaying details for year ${year} and week ${week}`);
 
-  getWeekView(year, week)
+  getWeekView(req.params.code, year, week)
     .then(weekView => res.render('period.handlebars', weekView))
     .catch((err) => sendError(res, err));
 });

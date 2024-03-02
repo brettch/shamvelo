@@ -1,4 +1,4 @@
-import { create, addActivity } from './athlete-summary.js';
+import { create, addActivity, createAthleteSummaryId } from './athlete-summary.js';
 
 const activity = {
   id: 1,
@@ -11,7 +11,7 @@ const activity = {
 };
 
 test('athlete summary has all time period summaries populated', () => {
-  const id = 1;
+  const id = createAthleteSummaryId(1, 'myCode');
   const summary = addActivity(create(id), activity);
   expect(summary.id).toEqual(id);
   expect(summary.year[2020].summary).toBeTruthy();
