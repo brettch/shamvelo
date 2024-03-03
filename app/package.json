@@ -15,7 +15,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "lint": "eslint",
+    "lint": "eslint .",
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest dist",
     "test:watch": "jest --watch",
     "strava:openapi": "mkdir -p openapi && curl https://developers.strava.com/swagger/swagger.json -o openapi/strava.json",
