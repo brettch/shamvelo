@@ -7,8 +7,6 @@ import express from 'express';
 // Add express middleware.
 // Logging
 import morgan from 'morgan';
-// Request body parsing
-import bodyParser from 'body-parser';
 // Handlebars templating engine
 import exphbs from 'express-handlebars';
 
@@ -43,9 +41,9 @@ const app = express();
 // Enable logging.
 app.use(morgan('combined', {}));
 // Parse request bodies with encoding application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded());
 // Parse request bodies with encoding application/json
-app.use(bodyParser.json());
+app.use(express.json());
 
 // Register the handlebars page templating engine.
 const hbs = exphbs.create({
