@@ -131,7 +131,7 @@ export function addAthlete(leaderboard: Leaderboard, athleteSummary: AthleteSumm
   applyYears(leaderboard, athleteSummary, athlete);
 
   return leaderboard;
-};
+}
 
 function applyYears(leaderboard: Leaderboard, athleteSummary: AthleteSummary, athlete: SlimAthlete) {
   const leaderboardYears = leaderboard.year;
@@ -283,8 +283,6 @@ function calculatePoints(periods: Record<number, PeriodContainer>, points: Perio
 }
 
 function calculatePointsForField(fieldName: keyof PeriodSummary, periodSummaries: PeriodSummary[], points: PeriodPoints) {
-  const fieldPoints = points[fieldName];
-
   // Take the field results for each period and take the top score/athlete from each one.
   const allAthleteWins = periodSummaries
     .map(periodSummary => periodSummary[fieldName])

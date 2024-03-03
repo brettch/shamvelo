@@ -1,6 +1,23 @@
 import { ActivitiesApi, AthletesApi, DetailedAthlete, SummaryActivity } from './strava/api.js';
 import { Token, TokenAccess, TokenWithId } from './registration.js';
 
+// See https://developers.strava.com/docs/webhooks/ for details
+export interface StravaWebhookBody {
+  object_type: 'activity' | 'athlete',
+  object_id: number,
+  aspect_type: 'create' | 'update' | 'delete',
+  updates?: {
+    title?: string,
+    type?: string,
+    private?: 'true' | 'false',
+    authorized?: 'true' | 'false',
+  },
+  owner_id: number,
+  subscription_id: number,
+  event_time: number,
+}
+
+
 export type SlimAthlete = Required<Pick<DetailedAthlete, "id" | "firstname" | "lastname" >>;
 
 function pickAthleteFields(athlete: DetailedAthlete): SlimAthlete {

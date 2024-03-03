@@ -72,7 +72,7 @@ export function addActivity(summary: AthleteSummary, activity: SummarisableActiv
   addActivityToSummary(weekContainer.summary, activity);
 
   return summary;
-};
+}
 
 export function pruneSummary(summary: AthleteSummary): void {
   Object

@@ -11,5 +11,5 @@ export function mapById<K, T extends Identified<K>>(items: T[]): Map<K, T> {
   return items.reduce(function(itemsById, item) {
     itemsById.set(item.id, item);
     return itemsById;
-  }, new Map());
+  }, new Map<K, T>());
 }

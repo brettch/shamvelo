@@ -3,8 +3,8 @@ import { RefreshTokenResponse, Strava, default as strava1 } from 'strava-v3';
 // Work around a problem with TypeScript types. The default export implements the Strava
 // interface but the types say it only has a 'default' attribute which in turn implements
 // the Strava interface.
-const strava2: any = strava1;
-const strava: Strava = strava2;
+const strava2: unknown = strava1;
+const strava: Strava = strava2 as Strava;
 
 export type Token = Pick<RefreshTokenResponse, "access_token" | "refresh_token" | "expires_at" | "expires_in" >;
 
@@ -41,7 +41,7 @@ export function start(getToken: (id: number) => Promise<TokenWithId>, saveToken:
 
   async function registerUser(authorizationCode: string): Promise<number> {
     console.log('Getting OAuth token using authorization code ' + authorizationCode);
-    const rawToken = await strava.oauth.getToken(authorizationCode);
+    const rawToken = await strava.oauth.getToken(authorizationCode) as RefreshTokenResponse;
     const slimToken = pickTokenFields(rawToken);
     const id = await getIdForToken(slimToken);
     const tokenWithId = {
@@ -67,11 +67,12 @@ export function start(getToken: (id: number) => Promise<TokenWithId>, saveToken:
 function getOAuthRequestAccessUrl(): string {
   console.log('Generating OAuth request access URL');
   // Force the type to any and then string. The types say the method returns a Promise which is incorrect.
-  const accessUrl: any = strava.oauth.getRequestAccessURL({
+  const accessUrl: unknown = strava.oauth.getRequestAccessURL({
     scope : ['read', 'activity:read']
   });
-  console.log('Access URL: ' + accessUrl);
-  return accessUrl;
+  const accessUrlString = accessUrl as string;
+  console.log('Access URL: ' + accessUrlString);
+  return accessUrlString;
 }
 
 function pickTokenFields(token: RefreshTokenResponse): Token {

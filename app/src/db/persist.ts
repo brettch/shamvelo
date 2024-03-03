@@ -3,10 +3,10 @@ import { appConfig } from '../config.js'
 import { Identified } from '../identified.js';
 
 export interface Persist<K, T> {
-  get(id: K): Promise<T>;
+  get(this: void, id: K): Promise<T>;
   getIfExists(id: K): Promise<T | undefined>
   getAll(): Promise<T[]>;
-  set(item: T): Promise<void>;
+  set(this: void, item: T): Promise<void>;
   setAll(items: T[]): Promise<void>;
   deleteItem(id: K): Promise<void>;
 }
@@ -114,7 +114,7 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
     // Delete in batches of 100.
     const batchQuery = query.limit(100);
 
-    while (true) {
+    for (;;) {
       const querySnapshot = await batchQuery.get();
 
       if (querySnapshot.size <= 0) {

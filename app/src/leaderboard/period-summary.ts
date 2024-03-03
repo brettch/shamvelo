@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import moment from 'moment';
 import { SlimActivity } from '../strava.js';
 
@@ -89,7 +88,7 @@ export function addActivity(summary: PeriodSummary, activity: SummarisableActivi
   );
 
   return summary;
-};
+}
 
 export function pruneSummary(summary: PeriodSummary): void {
   // We don't need active days after derived fields are calculated.

@@ -3,17 +3,19 @@ import { appConfig } from './config.js';
 
 // Base express framework.
 import express from 'express';
+import { Request } from 'express';
 
 // Add express middleware.
 // Logging
 import morgan from 'morgan';
 // Handlebars templating engine
-import exphbs from 'express-handlebars';
+import { create as createHandlebars } from 'express-handlebars';
 
 import * as leaderboard from './leaderboard/index.js';
 import { Response } from 'express-serve-static-core';
 import { athletePersist, deleteActivity, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
 import { getLatestMonthId, getLatestWeekId, getLatestYearId, getMonthView, getWeekView, getYearView } from './leaderboard/view.js';
+import { StravaWebhookBody } from './strava.js';
 
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
@@ -46,7 +48,7 @@ app.use(express.urlencoded());
 app.use(express.json());
 
 // Register the handlebars page templating engine.
-const hbs = exphbs.create({
+const hbs = createHandlebars({
   defaultLayout: 'main',
   helpers: {
     metresAsKilometres: (metres: number) => (metres / 1000).toFixed(1),
@@ -55,7 +57,13 @@ const hbs = exphbs.create({
     metresPerSecondAsKmh: (mps: number) => (mps * 3.6).toFixed(1)
   }
 });
-app.engine('handlebars', hbs.engine);
+app.engine('handlebars', (path, options, callback) => {
+  // We're passing a lambda to app.engine instead of hbs.engine directly
+  // because hbs.engine returns a Promise and eslint complains. The handlebars
+  // docs don't say to wait for it so we have to explicitly show that we want
+  // to ignore it.
+  void hbs.engine(path, options, callback);
+});
 app.set('view engine', 'handlebars');
 
 // Serve static content.
@@ -241,7 +249,7 @@ app.get('/strava-webhook', function(req, res) {
   // We will ignore the `hub.verify_token` parameter because we're doing anything sensitive with the request.
 
   if (hubMode !== 'subscribe') {
-    res.status(400).send({error: `invalid hub.mode: ${hubMode}`});
+    res.status(400).send({error: `invalid hub.mode: ${JSON.stringify(hubMode)}`});
     return;
   }
 
@@ -250,27 +258,27 @@ app.get('/strava-webhook', function(req, res) {
   });
 });
 
-app.post('/strava-webhook', function(req, res) {
+app.post('/strava-webhook', (req: Request<Record<string, never>, Record<string, never>, StravaWebhookBody, Record<string, never>, Record<string, never>>, res) => {
   console.log('received strava notification:', req.body);
   const objectType = req.body.object_type;
   const aspectType = req.body.aspect_type;
   const objectId = req.body.object_id;
   const updates = req.body.updates;
   const ownerId = req.body.owner_id;
-  // Update events may include an authorised=false parameter indicating that this data can no longer
+  // Events may include an authorised=false parameter indicating that this data can no longer
   // be accessed.  In all other cases it should be assumed to be authorised.
-  const authorised = !(aspectType === 'update' && updates.authorized === false);
-  console.log('authorized:', authorised);
+  const authorized = !(updates?.authorized === 'false');
+  console.log('authorized:', authorized);
 
   // We can about activities that are added and removed.
   if (objectType === 'activity') {
 
-    if ((aspectType === 'create' || aspectType === 'update') && authorised) {
+    if ((aspectType === 'create' || aspectType === 'update') && authorized) {
       refreshActivity(objectId, ownerId)
         .then(() => leaderboard.refreshLeaderboard())
         .then(() => console.log('activity refreshed successfully'))
         .catch(err => console.log(err));
-    } else if (aspectType === 'delete' || authorised === false) {
+    } else if (aspectType === 'delete' || authorized === false) {
       deleteActivity(objectId)
         .then(() => leaderboard.refreshLeaderboard())
         .then(() => console.log('activity deleted successfully'))
