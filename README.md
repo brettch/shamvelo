@@ -42,6 +42,22 @@ Access the application from a browser.
 open http://localhost:8080
 ```
 
+## Upgrade dependencies
+
+Find outdated dependencies.
+
+```bash
+npm outdated
+```
+
+Update dependencies in `package.json` based on the above output.
+
+Update dependencies pinned in `package-lock.json`.
+
+```bash
+npm upgrade
+```
+
 ## Deployment
 
 All commands should be run from the `app` folder.
