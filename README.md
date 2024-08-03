@@ -16,11 +16,10 @@ gcloud auth application-default login
 
 All commands should be run from the `app` folder.
 
-Install and activate the correct node version.  This requires [NVM](https://github.com/nvm-sh/nvm) to be installed and configured in your shell.
+Install and activate the correct node version.  This requires [Mise](https://mise.jdx.dev/) to be installed and configured in your shell.
 
 ```bash
-nvm install
-nvm use
+mise install
 ```
 
 Install application dependencies.

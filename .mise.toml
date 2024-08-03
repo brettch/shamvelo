@@ -1,0 +1,5 @@
+[env]
+CLOUDSDK_ACTIVE_CONFIG_NAME = 'shamvelo'
+
+[tools]
+node = "20.16.0"
