@@ -1,7 +1,5 @@
 import './config.js';
 import * as leaderboard from './leaderboard/index.js';
-import { from } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 import { start as startStrava } from './strava.js';
 import { stringify } from './util.js';
 import { Token, start as startRegistration } from './registration.js';
@@ -63,12 +61,16 @@ export async function refreshAthleteActivities(athleteId: number): Promise<void>
 export async function refreshAllAthleteActivities(): Promise<void> {
   console.log('Refreshing all athlete activities');
 
-  const athletes = await athletePersist.getAll();
-  await from(athletes)
-    .pipe(
-      mergeMap((athlete) => from(refreshAthleteActivities(athlete.id)))
-    )
-    .toPromise();
+  // Refresh all athletes in parallel.
+  const refreshPromises = [];
+  for (const athlete of await athletePersist.getAll()) {
+    refreshPromises.push(refreshAthleteActivities(athlete.id));
+  }
+
+  // Wait for all refreshes to complete.
+  for (const refreshPromise of refreshPromises) {
+    await refreshPromise;
+  }
 
   console.log('Completed refreshing all athlete activities');
 }
