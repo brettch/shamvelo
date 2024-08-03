@@ -64,9 +64,15 @@ All commands should be run from the `app` folder.
 
 Deploy the application and cron jobs.
 
-```
+```bash
 gcloud app deploy app.yaml
 gcloud app deploy cron.yaml
+```
+
+Stream application logs
+
+```bash
+gcloud app logs tail -s default
 ```
 
 ## Usage
