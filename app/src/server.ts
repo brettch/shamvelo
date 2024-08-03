@@ -4,6 +4,7 @@ import { appConfig } from './config.js';
 // Base express framework.
 import express from 'express';
 import { Request } from 'express';
+import bodyParser from 'body-parser';
 
 // Add express middleware.
 // Logging
@@ -43,9 +44,12 @@ const app = express();
 // Enable logging.
 app.use(morgan('combined', {}));
 // Parse request bodies with encoding application/x-www-form-urlencoded
-app.use(express.urlencoded());
+app.use(bodyParser.urlencoded({
+  // We may not need extended but it's the default and making it explicit eliminates a startup warning.
+  extended: true,
+}));
 // Parse request bodies with encoding application/json
-app.use(express.json());
+app.use(bodyParser.json());
 
 // Register the handlebars page templating engine.
 const hbs = createHandlebars({
