@@ -35,7 +35,7 @@ test('single summary is initialized correctly', () => {
   expect(singleSummary.averageSpeed).toEqual(10);
   expect(Object.keys(singleSummary.activeDays).length).toEqual(1);
   expect(singleSummary.activeDays['20200101'].distance).toEqual(4000);
-  expect(singleSummary.eddingtonNumber).toEqual(1),
+  expect(singleSummary.eddingtonNumber).toEqual(1);
   expect(singleSummary.longestRide.length).toEqual(1);
   expect(singleSummary.longestRide[0].id).toEqual(activity.id);
   expect(singleSummary.longestRide[0].name).toEqual(activity.name);
