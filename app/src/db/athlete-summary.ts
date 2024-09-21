@@ -2,8 +2,7 @@ import { Firestore } from "@google-cloud/firestore";
 import { Db, Persist, createDb, createDirectConverter } from "./persist.js";
 import { AthleteSummary, AthleteSummaryId } from "../leaderboard/athlete-summary.js";
 
-export interface AthleteSummaryPersist extends Persist<AthleteSummaryId, AthleteSummary> {
-}
+type AthleteSummaryPersist = Persist<AthleteSummaryId, AthleteSummary>;
 
 export function createAthleteSummaryPersist(fs: Firestore): AthleteSummaryPersist {
   const db: Db<AthleteSummaryId, AthleteSummary, AthleteSummary> =
