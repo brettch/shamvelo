@@ -44,13 +44,19 @@ open http://localhost:8080
 
 ## Upgrade dependencies
 
+Find outdated tools. Update `.mise.toml` accordingly. Ensure the Node version remains aligned with the latest version supported by App Engine and update `app.yaml` accordingly.
+
+```bash
+mise outdated --bump
+```
+
 Find outdated dependencies.
 
 ```bash
 npm outdated
 ```
 
-Update dependencies in `package.json` based on the above output.
+Update dependencies in `package.json` based on the above output. Ensure that the `@tsconfig/nodeXXXX` package matches the version of Node being used and that `tsconfig.json` is updated with the path to the correct tsconfig library.
 
 Update dependencies pinned in `package-lock.json`.
 
