@@ -6,6 +6,12 @@ Shamvelo is a simple application for allowing a small group of friends to share 
 
 ## Local setup and development
 
+Install and activate development tooling.  This requires [Mise](https://mise.jdx.dev/) to be installed and configured in your shell.
+
+```bash
+mise install
+```
+
 Setup gcloud user and application credentials to access the Google Cloud Platform.
 
 ```bash
@@ -15,12 +21,6 @@ gcloud auth application-default login
 ```
 
 All commands should be run from the `app` folder.
-
-Install and activate the correct node version.  This requires [Mise](https://mise.jdx.dev/) to be installed and configured in your shell.
-
-```bash
-mise install
-```
 
 Install application dependencies.
 
