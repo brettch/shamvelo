@@ -12,7 +12,7 @@ import { createAthleteSummaryPersist } from '../db/athlete-summary.js';
 import { createAthletePersist } from '../db/athlete.js';
 import { createLeaderboardPersist } from '../db/leaderboard.js';
 import { SlimActivity, SlimAthlete } from '../strava.js';
-import { ActivityType } from '../strava/api.js';
+import { ActivityType } from '../strava/index.js';
 
 const firestore = createFirestore();
 const activityPersist = createActivityPersist(firestore);

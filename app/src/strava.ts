@@ -1,4 +1,4 @@
-import { ActivitiesApi, AthletesApi, DetailedAthlete, SummaryActivity } from './strava/api.js';
+import { ActivitiesApi, AthletesApi, Configuration, DetailedAthlete, SummaryActivity } from './strava/index.js';
 import { Token, TokenAccess, TokenWithId } from './registration.js';
 
 // See https://developers.strava.com/docs/webhooks/ for details
@@ -80,9 +80,8 @@ export function start(tokenAccess: TokenAccess) {
   }
 
   async function getAthleteImpl(token: Token): Promise<SlimAthlete> {
-    const api = new AthletesApi();
-    api.accessToken = token.access_token;
-    const athlete = (await api.getLoggedInAthlete()).body;
+    const api = new AthletesApi(buildApiConfiguration(token));
+    const athlete = (await api.getLoggedInAthlete());
     console.log(`athlete: ${JSON.stringify(athlete, null, 2)}`);
     const slimAthlete = pickAthleteFields(athlete);
     console.log(`slimAthlete: ${JSON.stringify(slimAthlete, null, 2)}`);
@@ -95,10 +94,9 @@ export function start(tokenAccess: TokenAccess) {
       getActivityImpl,
       athleteId
     );
-    async function getActivityImpl(token: TokenWithId) {
-      const api = new ActivitiesApi();
-      api.accessToken = token.access_token;
-      const activity = (await api.getActivityById(activityId)).body;
+    async function getActivityImpl(token: Token) {
+      const api = new ActivitiesApi(buildApiConfiguration(token));
+      const activity = (await api.getActivityById({id: activityId}));
       const slimActivity = pickActivityFields(activity);
       return slimActivity;
     }
@@ -107,16 +105,16 @@ export function start(tokenAccess: TokenAccess) {
   async function* getActivities(athleteId: number): AsyncGenerator<SlimActivity> {
     console.log(`Getting athlete ${athleteId} activities`);
 
-    async function getActivitiesPage(token: TokenWithId, page: number): Promise<SlimActivity[]> {
+    async function getActivitiesPage(token: Token, page: number): Promise<SlimActivity[]> {
       console.log(`Getting athlete ${athleteId} activities page ${page}`);
-      const api = new ActivitiesApi();
-      api.accessToken = token.access_token;
-      const activities = (await api.getLoggedInAthleteActivities(undefined, undefined, page, 100)).body;
+      const api = new ActivitiesApi(buildApiConfiguration(token));
+      api.getLoggedInAthleteActivities({page: page, perPage: 100});
+      const activities = (await api.getLoggedInAthleteActivities({page, perPage: 100}));
       const slimActivities = activities.map(pickActivityFields);
       return slimActivities;
     }
 
-    async function getActivitiesPagesFrom(token: TokenWithId, pageFrom: number, pageCount: number): Promise<SlimActivity[]> {
+    async function getActivitiesPagesFrom(token: Token, pageFrom: number, pageCount: number): Promise<SlimActivity[]> {
       const requests = Array
         .from(Array(pageCount).keys()) // number range from 0
         .map(pageOffset => pageFrom + pageOffset) // add page offset
@@ -147,7 +145,7 @@ export function start(tokenAccess: TokenAccess) {
     }
   }
 
-  async function invokeActionWithTokenRefresh<T>(action: (token: TokenWithId) => Promise<T>, athleteId: number) {
+  async function invokeActionWithTokenRefresh<T>(action: (token: Token) => Promise<T>, athleteId: number) {
     const existingToken = await tokenAccess.get(athleteId);
 
     try {
@@ -159,5 +157,11 @@ export function start(tokenAccess: TokenAccess) {
     // Refresh token and try again.
     const refreshedToken = await tokenAccess.refresh(existingToken);
     return await action(refreshedToken);
+  }
+
+  function buildApiConfiguration(token: Token): Configuration {
+    return new Configuration({
+      accessToken: token.access_token,
+    });
   }
 }
