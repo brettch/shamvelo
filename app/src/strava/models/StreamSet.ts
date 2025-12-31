@@ -12,73 +12,84 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
+import type { DistanceStream } from './DistanceStream.js';
+import {
+    DistanceStreamFromJSON,
+    DistanceStreamFromJSONTyped,
+    DistanceStreamToJSON,
+    DistanceStreamToJSONTyped,
+} from './DistanceStream.js';
+import type { SmoothGradeStream } from './SmoothGradeStream.js';
+import {
+    SmoothGradeStreamFromJSON,
+    SmoothGradeStreamFromJSONTyped,
+    SmoothGradeStreamToJSON,
+    SmoothGradeStreamToJSONTyped,
+} from './SmoothGradeStream.js';
+import type { TemperatureStream } from './TemperatureStream.js';
+import {
+    TemperatureStreamFromJSON,
+    TemperatureStreamFromJSONTyped,
+    TemperatureStreamToJSON,
+    TemperatureStreamToJSONTyped,
+} from './TemperatureStream.js';
+import type { PowerStream } from './PowerStream.js';
+import {
+    PowerStreamFromJSON,
+    PowerStreamFromJSONTyped,
+    PowerStreamToJSON,
+    PowerStreamToJSONTyped,
+} from './PowerStream.js';
 import type { AltitudeStream } from './AltitudeStream.js';
 import {
     AltitudeStreamFromJSON,
     AltitudeStreamFromJSONTyped,
     AltitudeStreamToJSON,
+    AltitudeStreamToJSONTyped,
 } from './AltitudeStream.js';
 import type { CadenceStream } from './CadenceStream.js';
 import {
     CadenceStreamFromJSON,
     CadenceStreamFromJSONTyped,
     CadenceStreamToJSON,
+    CadenceStreamToJSONTyped,
 } from './CadenceStream.js';
-import type { DistanceStream } from './DistanceStream.js';
-import {
-    DistanceStreamFromJSON,
-    DistanceStreamFromJSONTyped,
-    DistanceStreamToJSON,
-} from './DistanceStream.js';
 import type { HeartrateStream } from './HeartrateStream.js';
 import {
     HeartrateStreamFromJSON,
     HeartrateStreamFromJSONTyped,
     HeartrateStreamToJSON,
+    HeartrateStreamToJSONTyped,
 } from './HeartrateStream.js';
+import type { TimeStream } from './TimeStream.js';
+import {
+    TimeStreamFromJSON,
+    TimeStreamFromJSONTyped,
+    TimeStreamToJSON,
+    TimeStreamToJSONTyped,
+} from './TimeStream.js';
+import type { SmoothVelocityStream } from './SmoothVelocityStream.js';
+import {
+    SmoothVelocityStreamFromJSON,
+    SmoothVelocityStreamFromJSONTyped,
+    SmoothVelocityStreamToJSON,
+    SmoothVelocityStreamToJSONTyped,
+} from './SmoothVelocityStream.js';
 import type { LatLngStream } from './LatLngStream.js';
 import {
     LatLngStreamFromJSON,
     LatLngStreamFromJSONTyped,
     LatLngStreamToJSON,
+    LatLngStreamToJSONTyped,
 } from './LatLngStream.js';
 import type { MovingStream } from './MovingStream.js';
 import {
     MovingStreamFromJSON,
     MovingStreamFromJSONTyped,
     MovingStreamToJSON,
+    MovingStreamToJSONTyped,
 } from './MovingStream.js';
-import type { PowerStream } from './PowerStream.js';
-import {
-    PowerStreamFromJSON,
-    PowerStreamFromJSONTyped,
-    PowerStreamToJSON,
-} from './PowerStream.js';
-import type { SmoothGradeStream } from './SmoothGradeStream.js';
-import {
-    SmoothGradeStreamFromJSON,
-    SmoothGradeStreamFromJSONTyped,
-    SmoothGradeStreamToJSON,
-} from './SmoothGradeStream.js';
-import type { SmoothVelocityStream } from './SmoothVelocityStream.js';
-import {
-    SmoothVelocityStreamFromJSON,
-    SmoothVelocityStreamFromJSONTyped,
-    SmoothVelocityStreamToJSON,
-} from './SmoothVelocityStream.js';
-import type { TemperatureStream } from './TemperatureStream.js';
-import {
-    TemperatureStreamFromJSON,
-    TemperatureStreamFromJSONTyped,
-    TemperatureStreamToJSON,
-} from './TemperatureStream.js';
-import type { TimeStream } from './TimeStream.js';
-import {
-    TimeStreamFromJSON,
-    TimeStreamFromJSONTyped,
-    TimeStreamToJSON,
-} from './TimeStream.js';
 
 /**
  * 
@@ -157,10 +168,8 @@ export interface StreamSet {
 /**
  * Check if a given object implements the StreamSet interface.
  */
-export function instanceOfStreamSet(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfStreamSet(value: object): value is StreamSet {
+    return true;
 }
 
 export function StreamSetFromJSON(json: any): StreamSet {
@@ -168,45 +177,47 @@ export function StreamSetFromJSON(json: any): StreamSet {
 }
 
 export function StreamSetFromJSONTyped(json: any, ignoreDiscriminator: boolean): StreamSet {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'time': !exists(json, 'time') ? undefined : TimeStreamFromJSON(json['time']),
-        'distance': !exists(json, 'distance') ? undefined : DistanceStreamFromJSON(json['distance']),
-        'latlng': !exists(json, 'latlng') ? undefined : LatLngStreamFromJSON(json['latlng']),
-        'altitude': !exists(json, 'altitude') ? undefined : AltitudeStreamFromJSON(json['altitude']),
-        'velocitySmooth': !exists(json, 'velocity_smooth') ? undefined : SmoothVelocityStreamFromJSON(json['velocity_smooth']),
-        'heartrate': !exists(json, 'heartrate') ? undefined : HeartrateStreamFromJSON(json['heartrate']),
-        'cadence': !exists(json, 'cadence') ? undefined : CadenceStreamFromJSON(json['cadence']),
-        'watts': !exists(json, 'watts') ? undefined : PowerStreamFromJSON(json['watts']),
-        'temp': !exists(json, 'temp') ? undefined : TemperatureStreamFromJSON(json['temp']),
-        'moving': !exists(json, 'moving') ? undefined : MovingStreamFromJSON(json['moving']),
-        'gradeSmooth': !exists(json, 'grade_smooth') ? undefined : SmoothGradeStreamFromJSON(json['grade_smooth']),
+        'time': json['time'] == null ? undefined : TimeStreamFromJSON(json['time']),
+        'distance': json['distance'] == null ? undefined : DistanceStreamFromJSON(json['distance']),
+        'latlng': json['latlng'] == null ? undefined : LatLngStreamFromJSON(json['latlng']),
+        'altitude': json['altitude'] == null ? undefined : AltitudeStreamFromJSON(json['altitude']),
+        'velocitySmooth': json['velocity_smooth'] == null ? undefined : SmoothVelocityStreamFromJSON(json['velocity_smooth']),
+        'heartrate': json['heartrate'] == null ? undefined : HeartrateStreamFromJSON(json['heartrate']),
+        'cadence': json['cadence'] == null ? undefined : CadenceStreamFromJSON(json['cadence']),
+        'watts': json['watts'] == null ? undefined : PowerStreamFromJSON(json['watts']),
+        'temp': json['temp'] == null ? undefined : TemperatureStreamFromJSON(json['temp']),
+        'moving': json['moving'] == null ? undefined : MovingStreamFromJSON(json['moving']),
+        'gradeSmooth': json['grade_smooth'] == null ? undefined : SmoothGradeStreamFromJSON(json['grade_smooth']),
     };
 }
 
-export function StreamSetToJSON(value?: StreamSet | null): any {
-    if (value === undefined) {
-        return undefined;
+export function StreamSetToJSON(json: any): StreamSet {
+    return StreamSetToJSONTyped(json, false);
+}
+
+export function StreamSetToJSONTyped(value?: StreamSet | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'time': TimeStreamToJSON(value.time),
-        'distance': DistanceStreamToJSON(value.distance),
-        'latlng': LatLngStreamToJSON(value.latlng),
-        'altitude': AltitudeStreamToJSON(value.altitude),
-        'velocity_smooth': SmoothVelocityStreamToJSON(value.velocitySmooth),
-        'heartrate': HeartrateStreamToJSON(value.heartrate),
-        'cadence': CadenceStreamToJSON(value.cadence),
-        'watts': PowerStreamToJSON(value.watts),
-        'temp': TemperatureStreamToJSON(value.temp),
-        'moving': MovingStreamToJSON(value.moving),
-        'grade_smooth': SmoothGradeStreamToJSON(value.gradeSmooth),
+        'time': TimeStreamToJSON(value['time']),
+        'distance': DistanceStreamToJSON(value['distance']),
+        'latlng': LatLngStreamToJSON(value['latlng']),
+        'altitude': AltitudeStreamToJSON(value['altitude']),
+        'velocity_smooth': SmoothVelocityStreamToJSON(value['velocitySmooth']),
+        'heartrate': HeartrateStreamToJSON(value['heartrate']),
+        'cadence': CadenceStreamToJSON(value['cadence']),
+        'watts': PowerStreamToJSON(value['watts']),
+        'temp': TemperatureStreamToJSON(value['temp']),
+        'moving': MovingStreamToJSON(value['moving']),
+        'grade_smooth': SmoothGradeStreamToJSON(value['gradeSmooth']),
     };
 }
 

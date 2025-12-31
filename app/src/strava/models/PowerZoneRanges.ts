@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { ZoneRange } from './ZoneRange.js';
 import {
     ZoneRangeFromJSON,
     ZoneRangeFromJSONTyped,
     ZoneRangeToJSON,
+    ZoneRangeToJSONTyped,
 } from './ZoneRange.js';
 
 /**
@@ -37,10 +38,8 @@ export interface PowerZoneRanges {
 /**
  * Check if a given object implements the PowerZoneRanges interface.
  */
-export function instanceOfPowerZoneRanges(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfPowerZoneRanges(value: object): value is PowerZoneRanges {
+    return true;
 }
 
 export function PowerZoneRangesFromJSON(json: any): PowerZoneRanges {
@@ -48,25 +47,27 @@ export function PowerZoneRangesFromJSON(json: any): PowerZoneRanges {
 }
 
 export function PowerZoneRangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): PowerZoneRanges {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'zones': !exists(json, 'zones') ? undefined : ((json['zones'] as Array<any>).map(ZoneRangeFromJSON)),
+        'zones': json['zones'] == null ? undefined : ((json['zones'] as Array<any>).map(ZoneRangeFromJSON)),
     };
 }
 
-export function PowerZoneRangesToJSON(value?: PowerZoneRanges | null): any {
-    if (value === undefined) {
-        return undefined;
+export function PowerZoneRangesToJSON(json: any): PowerZoneRanges {
+    return PowerZoneRangesToJSONTyped(json, false);
+}
+
+export function PowerZoneRangesToJSONTyped(value?: PowerZoneRanges | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'zones': value.zones === undefined ? undefined : ((value.zones as Array<any>).map(ZoneRangeToJSON)),
+        'zones': value['zones'] == null ? undefined : ((value['zones'] as Array<any>).map(ZoneRangeToJSON)),
     };
 }
 

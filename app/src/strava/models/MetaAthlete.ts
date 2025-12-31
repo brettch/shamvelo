@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -30,10 +30,8 @@ export interface MetaAthlete {
 /**
  * Check if a given object implements the MetaAthlete interface.
  */
-export function instanceOfMetaAthlete(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfMetaAthlete(value: object): value is MetaAthlete {
+    return true;
 }
 
 export function MetaAthleteFromJSON(json: any): MetaAthlete {
@@ -41,25 +39,27 @@ export function MetaAthleteFromJSON(json: any): MetaAthlete {
 }
 
 export function MetaAthleteFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetaAthlete {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
+        'id': json['id'] == null ? undefined : json['id'],
     };
 }
 
-export function MetaAthleteToJSON(value?: MetaAthlete | null): any {
-    if (value === undefined) {
-        return undefined;
+export function MetaAthleteToJSON(json: any): MetaAthlete {
+    return MetaAthleteToJSONTyped(json, false);
+}
+
+export function MetaAthleteToJSONTyped(value?: MetaAthlete | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
+        'id': value['id'],
     };
 }
 

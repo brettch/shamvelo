@@ -12,18 +12,20 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { MetaActivity } from './MetaActivity.js';
 import {
     MetaActivityFromJSON,
     MetaActivityFromJSONTyped,
     MetaActivityToJSON,
+    MetaActivityToJSONTyped,
 } from './MetaActivity.js';
 import type { MetaAthlete } from './MetaAthlete.js';
 import {
     MetaAthleteFromJSON,
     MetaAthleteFromJSONTyped,
     MetaAthleteToJSON,
+    MetaAthleteToJSONTyped,
 } from './MetaAthlete.js';
 
 /**
@@ -145,10 +147,8 @@ export interface Lap {
 /**
  * Check if a given object implements the Lap interface.
  */
-export function instanceOfLap(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfLap(value: object): value is Lap {
+    return true;
 }
 
 export function LapFromJSON(json: any): Lap {
@@ -156,59 +156,61 @@ export function LapFromJSON(json: any): Lap {
 }
 
 export function LapFromJSONTyped(json: any, ignoreDiscriminator: boolean): Lap {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'activity': !exists(json, 'activity') ? undefined : MetaActivityFromJSON(json['activity']),
-        'athlete': !exists(json, 'athlete') ? undefined : MetaAthleteFromJSON(json['athlete']),
-        'averageCadence': !exists(json, 'average_cadence') ? undefined : json['average_cadence'],
-        'averageSpeed': !exists(json, 'average_speed') ? undefined : json['average_speed'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'startIndex': !exists(json, 'start_index') ? undefined : json['start_index'],
-        'endIndex': !exists(json, 'end_index') ? undefined : json['end_index'],
-        'lapIndex': !exists(json, 'lap_index') ? undefined : json['lap_index'],
-        'maxSpeed': !exists(json, 'max_speed') ? undefined : json['max_speed'],
-        'movingTime': !exists(json, 'moving_time') ? undefined : json['moving_time'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'paceZone': !exists(json, 'pace_zone') ? undefined : json['pace_zone'],
-        'split': !exists(json, 'split') ? undefined : json['split'],
-        'startDate': !exists(json, 'start_date') ? undefined : (new Date(json['start_date'])),
-        'startDateLocal': !exists(json, 'start_date_local') ? undefined : (new Date(json['start_date_local'])),
-        'totalElevationGain': !exists(json, 'total_elevation_gain') ? undefined : json['total_elevation_gain'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'activity': json['activity'] == null ? undefined : MetaActivityFromJSON(json['activity']),
+        'athlete': json['athlete'] == null ? undefined : MetaAthleteFromJSON(json['athlete']),
+        'averageCadence': json['average_cadence'] == null ? undefined : json['average_cadence'],
+        'averageSpeed': json['average_speed'] == null ? undefined : json['average_speed'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'startIndex': json['start_index'] == null ? undefined : json['start_index'],
+        'endIndex': json['end_index'] == null ? undefined : json['end_index'],
+        'lapIndex': json['lap_index'] == null ? undefined : json['lap_index'],
+        'maxSpeed': json['max_speed'] == null ? undefined : json['max_speed'],
+        'movingTime': json['moving_time'] == null ? undefined : json['moving_time'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'paceZone': json['pace_zone'] == null ? undefined : json['pace_zone'],
+        'split': json['split'] == null ? undefined : json['split'],
+        'startDate': json['start_date'] == null ? undefined : (new Date(json['start_date'])),
+        'startDateLocal': json['start_date_local'] == null ? undefined : (new Date(json['start_date_local'])),
+        'totalElevationGain': json['total_elevation_gain'] == null ? undefined : json['total_elevation_gain'],
     };
 }
 
-export function LapToJSON(value?: Lap | null): any {
-    if (value === undefined) {
-        return undefined;
+export function LapToJSON(json: any): Lap {
+    return LapToJSONTyped(json, false);
+}
+
+export function LapToJSONTyped(value?: Lap | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'activity': MetaActivityToJSON(value.activity),
-        'athlete': MetaAthleteToJSON(value.athlete),
-        'average_cadence': value.averageCadence,
-        'average_speed': value.averageSpeed,
-        'distance': value.distance,
-        'elapsed_time': value.elapsedTime,
-        'start_index': value.startIndex,
-        'end_index': value.endIndex,
-        'lap_index': value.lapIndex,
-        'max_speed': value.maxSpeed,
-        'moving_time': value.movingTime,
-        'name': value.name,
-        'pace_zone': value.paceZone,
-        'split': value.split,
-        'start_date': value.startDate === undefined ? undefined : (value.startDate.toISOString()),
-        'start_date_local': value.startDateLocal === undefined ? undefined : (value.startDateLocal.toISOString()),
-        'total_elevation_gain': value.totalElevationGain,
+        'id': value['id'],
+        'activity': MetaActivityToJSON(value['activity']),
+        'athlete': MetaAthleteToJSON(value['athlete']),
+        'average_cadence': value['averageCadence'],
+        'average_speed': value['averageSpeed'],
+        'distance': value['distance'],
+        'elapsed_time': value['elapsedTime'],
+        'start_index': value['startIndex'],
+        'end_index': value['endIndex'],
+        'lap_index': value['lapIndex'],
+        'max_speed': value['maxSpeed'],
+        'moving_time': value['movingTime'],
+        'name': value['name'],
+        'pace_zone': value['paceZone'],
+        'split': value['split'],
+        'start_date': value['startDate'] == null ? value['startDate'] : value['startDate'].toISOString(),
+        'start_date_local': value['startDateLocal'] == null ? value['startDateLocal'] : value['startDateLocal'].toISOString(),
+        'total_elevation_gain': value['totalElevationGain'],
     };
 }
 

@@ -12,19 +12,21 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
-import type { ActivityType } from './ActivityType.js';
-import {
-    ActivityTypeFromJSON,
-    ActivityTypeFromJSONTyped,
-    ActivityTypeToJSON,
-} from './ActivityType.js';
+import { mapValues } from '../runtime.js';
 import type { SportType } from './SportType.js';
 import {
     SportTypeFromJSON,
     SportTypeFromJSONTyped,
     SportTypeToJSON,
+    SportTypeToJSONTyped,
 } from './SportType.js';
+import type { ActivityType } from './ActivityType.js';
+import {
+    ActivityTypeFromJSON,
+    ActivityTypeFromJSONTyped,
+    ActivityTypeToJSON,
+    ActivityTypeToJSONTyped,
+} from './ActivityType.js';
 
 /**
  * 
@@ -82,13 +84,13 @@ export interface UpdatableActivity {
     gearId?: string;
 }
 
+
+
 /**
  * Check if a given object implements the UpdatableActivity interface.
  */
-export function instanceOfUpdatableActivity(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfUpdatableActivity(value: object): value is UpdatableActivity {
+    return true;
 }
 
 export function UpdatableActivityFromJSON(json: any): UpdatableActivity {
@@ -96,39 +98,41 @@ export function UpdatableActivityFromJSON(json: any): UpdatableActivity {
 }
 
 export function UpdatableActivityFromJSONTyped(json: any, ignoreDiscriminator: boolean): UpdatableActivity {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'commute': !exists(json, 'commute') ? undefined : json['commute'],
-        'trainer': !exists(json, 'trainer') ? undefined : json['trainer'],
-        'hideFromHome': !exists(json, 'hide_from_home') ? undefined : json['hide_from_home'],
-        'description': !exists(json, 'description') ? undefined : json['description'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'type': !exists(json, 'type') ? undefined : ActivityTypeFromJSON(json['type']),
-        'sportType': !exists(json, 'sport_type') ? undefined : SportTypeFromJSON(json['sport_type']),
-        'gearId': !exists(json, 'gear_id') ? undefined : json['gear_id'],
+        'commute': json['commute'] == null ? undefined : json['commute'],
+        'trainer': json['trainer'] == null ? undefined : json['trainer'],
+        'hideFromHome': json['hide_from_home'] == null ? undefined : json['hide_from_home'],
+        'description': json['description'] == null ? undefined : json['description'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'type': json['type'] == null ? undefined : ActivityTypeFromJSON(json['type']),
+        'sportType': json['sport_type'] == null ? undefined : SportTypeFromJSON(json['sport_type']),
+        'gearId': json['gear_id'] == null ? undefined : json['gear_id'],
     };
 }
 
-export function UpdatableActivityToJSON(value?: UpdatableActivity | null): any {
-    if (value === undefined) {
-        return undefined;
+export function UpdatableActivityToJSON(json: any): UpdatableActivity {
+    return UpdatableActivityToJSONTyped(json, false);
+}
+
+export function UpdatableActivityToJSONTyped(value?: UpdatableActivity | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'commute': value.commute,
-        'trainer': value.trainer,
-        'hide_from_home': value.hideFromHome,
-        'description': value.description,
-        'name': value.name,
-        'type': ActivityTypeToJSON(value.type),
-        'sport_type': SportTypeToJSON(value.sportType),
-        'gear_id': value.gearId,
+        'commute': value['commute'],
+        'trainer': value['trainer'],
+        'hide_from_home': value['hideFromHome'],
+        'description': value['description'],
+        'name': value['name'],
+        'type': ActivityTypeToJSON(value['type']),
+        'sport_type': SportTypeToJSON(value['sportType']),
+        'gear_id': value['gearId'],
     };
 }
 

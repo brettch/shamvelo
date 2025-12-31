@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -54,10 +54,8 @@ export interface SummaryGear {
 /**
  * Check if a given object implements the SummaryGear interface.
  */
-export function instanceOfSummaryGear(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfSummaryGear(value: object): value is SummaryGear {
+    return true;
 }
 
 export function SummaryGearFromJSON(json: any): SummaryGear {
@@ -65,33 +63,35 @@ export function SummaryGearFromJSON(json: any): SummaryGear {
 }
 
 export function SummaryGearFromJSONTyped(json: any, ignoreDiscriminator: boolean): SummaryGear {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'resourceState': !exists(json, 'resource_state') ? undefined : json['resource_state'],
-        'primary': !exists(json, 'primary') ? undefined : json['primary'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'resourceState': json['resource_state'] == null ? undefined : json['resource_state'],
+        'primary': json['primary'] == null ? undefined : json['primary'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
     };
 }
 
-export function SummaryGearToJSON(value?: SummaryGear | null): any {
-    if (value === undefined) {
-        return undefined;
+export function SummaryGearToJSON(json: any): SummaryGear {
+    return SummaryGearToJSONTyped(json, false);
+}
+
+export function SummaryGearToJSONTyped(value?: SummaryGear | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'resource_state': value.resourceState,
-        'primary': value.primary,
-        'name': value.name,
-        'distance': value.distance,
+        'id': value['id'],
+        'resource_state': value['resourceState'],
+        'primary': value['primary'],
+        'name': value['name'],
+        'distance': value['distance'],
     };
 }
 

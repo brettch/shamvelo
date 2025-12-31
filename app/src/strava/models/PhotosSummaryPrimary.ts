@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -48,10 +48,8 @@ export interface PhotosSummaryPrimary {
 /**
  * Check if a given object implements the PhotosSummaryPrimary interface.
  */
-export function instanceOfPhotosSummaryPrimary(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfPhotosSummaryPrimary(value: object): value is PhotosSummaryPrimary {
+    return true;
 }
 
 export function PhotosSummaryPrimaryFromJSON(json: any): PhotosSummaryPrimary {
@@ -59,31 +57,33 @@ export function PhotosSummaryPrimaryFromJSON(json: any): PhotosSummaryPrimary {
 }
 
 export function PhotosSummaryPrimaryFromJSONTyped(json: any, ignoreDiscriminator: boolean): PhotosSummaryPrimary {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'source': !exists(json, 'source') ? undefined : json['source'],
-        'uniqueId': !exists(json, 'unique_id') ? undefined : json['unique_id'],
-        'urls': !exists(json, 'urls') ? undefined : json['urls'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'source': json['source'] == null ? undefined : json['source'],
+        'uniqueId': json['unique_id'] == null ? undefined : json['unique_id'],
+        'urls': json['urls'] == null ? undefined : json['urls'],
     };
 }
 
-export function PhotosSummaryPrimaryToJSON(value?: PhotosSummaryPrimary | null): any {
-    if (value === undefined) {
-        return undefined;
+export function PhotosSummaryPrimaryToJSON(json: any): PhotosSummaryPrimary {
+    return PhotosSummaryPrimaryToJSONTyped(json, false);
+}
+
+export function PhotosSummaryPrimaryToJSONTyped(value?: PhotosSummaryPrimary | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'source': value.source,
-        'unique_id': value.uniqueId,
-        'urls': value.urls,
+        'id': value['id'],
+        'source': value['source'],
+        'unique_id': value['uniqueId'],
+        'urls': value['urls'],
     };
 }
 

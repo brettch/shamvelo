@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -78,10 +78,8 @@ export interface DetailedGear {
 /**
  * Check if a given object implements the DetailedGear interface.
  */
-export function instanceOfDetailedGear(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfDetailedGear(value: object): value is DetailedGear {
+    return true;
 }
 
 export function DetailedGearFromJSON(json: any): DetailedGear {
@@ -89,41 +87,43 @@ export function DetailedGearFromJSON(json: any): DetailedGear {
 }
 
 export function DetailedGearFromJSONTyped(json: any, ignoreDiscriminator: boolean): DetailedGear {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'resourceState': !exists(json, 'resource_state') ? undefined : json['resource_state'],
-        'primary': !exists(json, 'primary') ? undefined : json['primary'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'brandName': !exists(json, 'brand_name') ? undefined : json['brand_name'],
-        'modelName': !exists(json, 'model_name') ? undefined : json['model_name'],
-        'frameType': !exists(json, 'frame_type') ? undefined : json['frame_type'],
-        'description': !exists(json, 'description') ? undefined : json['description'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'resourceState': json['resource_state'] == null ? undefined : json['resource_state'],
+        'primary': json['primary'] == null ? undefined : json['primary'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'brandName': json['brand_name'] == null ? undefined : json['brand_name'],
+        'modelName': json['model_name'] == null ? undefined : json['model_name'],
+        'frameType': json['frame_type'] == null ? undefined : json['frame_type'],
+        'description': json['description'] == null ? undefined : json['description'],
     };
 }
 
-export function DetailedGearToJSON(value?: DetailedGear | null): any {
-    if (value === undefined) {
-        return undefined;
+export function DetailedGearToJSON(json: any): DetailedGear {
+    return DetailedGearToJSONTyped(json, false);
+}
+
+export function DetailedGearToJSONTyped(value?: DetailedGear | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'resource_state': value.resourceState,
-        'primary': value.primary,
-        'name': value.name,
-        'distance': value.distance,
-        'brand_name': value.brandName,
-        'model_name': value.modelName,
-        'frame_type': value.frameType,
-        'description': value.description,
+        'id': value['id'],
+        'resource_state': value['resourceState'],
+        'primary': value['primary'],
+        'name': value['name'],
+        'distance': value['distance'],
+        'brand_name': value['brandName'],
+        'model_name': value['modelName'],
+        'frame_type': value['frameType'],
+        'description': value['description'],
     };
 }
 

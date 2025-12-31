@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -42,10 +42,8 @@ export interface MetaClub {
 /**
  * Check if a given object implements the MetaClub interface.
  */
-export function instanceOfMetaClub(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfMetaClub(value: object): value is MetaClub {
+    return true;
 }
 
 export function MetaClubFromJSON(json: any): MetaClub {
@@ -53,29 +51,31 @@ export function MetaClubFromJSON(json: any): MetaClub {
 }
 
 export function MetaClubFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetaClub {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'resourceState': !exists(json, 'resource_state') ? undefined : json['resource_state'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'resourceState': json['resource_state'] == null ? undefined : json['resource_state'],
+        'name': json['name'] == null ? undefined : json['name'],
     };
 }
 
-export function MetaClubToJSON(value?: MetaClub | null): any {
-    if (value === undefined) {
-        return undefined;
+export function MetaClubToJSON(json: any): MetaClub {
+    return MetaClubToJSONTyped(json, false);
+}
+
+export function MetaClubToJSONTyped(value?: MetaClub | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'resource_state': value.resourceState,
-        'name': value.name,
+        'id': value['id'],
+        'resource_state': value['resourceState'],
+        'name': value['name'],
     };
 }
 

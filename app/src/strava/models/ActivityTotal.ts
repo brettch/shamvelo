@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * A roll-up of metrics pertaining to a set of activities. Values are in seconds and meters.
  * @export
@@ -60,10 +60,8 @@ export interface ActivityTotal {
 /**
  * Check if a given object implements the ActivityTotal interface.
  */
-export function instanceOfActivityTotal(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfActivityTotal(value: object): value is ActivityTotal {
+    return true;
 }
 
 export function ActivityTotalFromJSON(json: any): ActivityTotal {
@@ -71,35 +69,37 @@ export function ActivityTotalFromJSON(json: any): ActivityTotal {
 }
 
 export function ActivityTotalFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityTotal {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'count': !exists(json, 'count') ? undefined : json['count'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'movingTime': !exists(json, 'moving_time') ? undefined : json['moving_time'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'elevationGain': !exists(json, 'elevation_gain') ? undefined : json['elevation_gain'],
-        'achievementCount': !exists(json, 'achievement_count') ? undefined : json['achievement_count'],
+        'count': json['count'] == null ? undefined : json['count'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'movingTime': json['moving_time'] == null ? undefined : json['moving_time'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'elevationGain': json['elevation_gain'] == null ? undefined : json['elevation_gain'],
+        'achievementCount': json['achievement_count'] == null ? undefined : json['achievement_count'],
     };
 }
 
-export function ActivityTotalToJSON(value?: ActivityTotal | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ActivityTotalToJSON(json: any): ActivityTotal {
+    return ActivityTotalToJSONTyped(json, false);
+}
+
+export function ActivityTotalToJSONTyped(value?: ActivityTotal | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'count': value.count,
-        'distance': value.distance,
-        'moving_time': value.movingTime,
-        'elapsed_time': value.elapsedTime,
-        'elevation_gain': value.elevationGain,
-        'achievement_count': value.achievementCount,
+        'count': value['count'],
+        'distance': value['distance'],
+        'moving_time': value['movingTime'],
+        'elapsed_time': value['elapsedTime'],
+        'elevation_gain': value['elevationGain'],
+        'achievement_count': value['achievementCount'],
     };
 }
 

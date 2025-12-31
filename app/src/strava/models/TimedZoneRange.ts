@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * A union type representing the time spent in a given zone.
  * @export
@@ -42,10 +42,8 @@ export interface TimedZoneRange {
 /**
  * Check if a given object implements the TimedZoneRange interface.
  */
-export function instanceOfTimedZoneRange(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfTimedZoneRange(value: object): value is TimedZoneRange {
+    return true;
 }
 
 export function TimedZoneRangeFromJSON(json: any): TimedZoneRange {
@@ -53,29 +51,31 @@ export function TimedZoneRangeFromJSON(json: any): TimedZoneRange {
 }
 
 export function TimedZoneRangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): TimedZoneRange {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'min': !exists(json, 'min') ? undefined : json['min'],
-        'max': !exists(json, 'max') ? undefined : json['max'],
-        'time': !exists(json, 'time') ? undefined : json['time'],
+        'min': json['min'] == null ? undefined : json['min'],
+        'max': json['max'] == null ? undefined : json['max'],
+        'time': json['time'] == null ? undefined : json['time'],
     };
 }
 
-export function TimedZoneRangeToJSON(value?: TimedZoneRange | null): any {
-    if (value === undefined) {
-        return undefined;
+export function TimedZoneRangeToJSON(json: any): TimedZoneRange {
+    return TimedZoneRangeToJSONTyped(json, false);
+}
+
+export function TimedZoneRangeToJSONTyped(value?: TimedZoneRange | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'min': value.min,
-        'max': value.max,
-        'time': value.time,
+        'min': value['min'],
+        'max': value['max'],
+        'time': value['time'],
     };
 }
 

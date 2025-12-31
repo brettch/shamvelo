@@ -57,26 +57,35 @@ export class StreamsApi extends runtime.BaseAPI {
      * Get Activity Streams
      */
     async getActivityStreamsRaw(requestParameters: GetActivityStreamsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StreamSet>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getActivityStreams.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getActivityStreams().'
+            );
         }
 
-        if (requestParameters.keys === null || requestParameters.keys === undefined) {
-            throw new runtime.RequiredError('keys','Required parameter requestParameters.keys was null or undefined when calling getActivityStreams.');
+        if (requestParameters['keys'] == null) {
+            throw new runtime.RequiredError(
+                'keys',
+                'Required parameter "keys" was null or undefined when calling getActivityStreams().'
+            );
         }
 
-        if (requestParameters.keyByType === null || requestParameters.keyByType === undefined) {
-            throw new runtime.RequiredError('keyByType','Required parameter requestParameters.keyByType was null or undefined when calling getActivityStreams.');
+        if (requestParameters['keyByType'] == null) {
+            throw new runtime.RequiredError(
+                'keyByType',
+                'Required parameter "keyByType" was null or undefined when calling getActivityStreams().'
+            );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.keys) {
-            queryParameters['keys'] = requestParameters.keys.join(runtime.COLLECTION_FORMATS["csv"]);
+        if (requestParameters['keys'] != null) {
+            queryParameters['keys'] = requestParameters['keys']!.join(runtime.COLLECTION_FORMATS["csv"]);
         }
 
-        if (requestParameters.keyByType !== undefined) {
-            queryParameters['key_by_type'] = requestParameters.keyByType;
+        if (requestParameters['keyByType'] != null) {
+            queryParameters['key_by_type'] = requestParameters['keyByType'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -86,8 +95,12 @@ export class StreamsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/activities/{id}/streams`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/activities/{id}/streams`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -110,8 +123,11 @@ export class StreamsApi extends runtime.BaseAPI {
      * Get Route Streams
      */
     async getRouteStreamsRaw(requestParameters: GetRouteStreamsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StreamSet>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getRouteStreams.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getRouteStreams().'
+            );
         }
 
         const queryParameters: any = {};
@@ -123,8 +139,12 @@ export class StreamsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/routes/{id}/streams`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/routes/{id}/streams`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -147,26 +167,35 @@ export class StreamsApi extends runtime.BaseAPI {
      * Get Segment Effort Streams
      */
     async getSegmentEffortStreamsRaw(requestParameters: GetSegmentEffortStreamsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StreamSet>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getSegmentEffortStreams.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getSegmentEffortStreams().'
+            );
         }
 
-        if (requestParameters.keys === null || requestParameters.keys === undefined) {
-            throw new runtime.RequiredError('keys','Required parameter requestParameters.keys was null or undefined when calling getSegmentEffortStreams.');
+        if (requestParameters['keys'] == null) {
+            throw new runtime.RequiredError(
+                'keys',
+                'Required parameter "keys" was null or undefined when calling getSegmentEffortStreams().'
+            );
         }
 
-        if (requestParameters.keyByType === null || requestParameters.keyByType === undefined) {
-            throw new runtime.RequiredError('keyByType','Required parameter requestParameters.keyByType was null or undefined when calling getSegmentEffortStreams.');
+        if (requestParameters['keyByType'] == null) {
+            throw new runtime.RequiredError(
+                'keyByType',
+                'Required parameter "keyByType" was null or undefined when calling getSegmentEffortStreams().'
+            );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.keys) {
-            queryParameters['keys'] = requestParameters.keys.join(runtime.COLLECTION_FORMATS["csv"]);
+        if (requestParameters['keys'] != null) {
+            queryParameters['keys'] = requestParameters['keys']!.join(runtime.COLLECTION_FORMATS["csv"]);
         }
 
-        if (requestParameters.keyByType !== undefined) {
-            queryParameters['key_by_type'] = requestParameters.keyByType;
+        if (requestParameters['keyByType'] != null) {
+            queryParameters['key_by_type'] = requestParameters['keyByType'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -176,8 +205,12 @@ export class StreamsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/segment_efforts/{id}/streams`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/segment_efforts/{id}/streams`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -200,26 +233,35 @@ export class StreamsApi extends runtime.BaseAPI {
      * Get Segment Streams
      */
     async getSegmentStreamsRaw(requestParameters: GetSegmentStreamsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StreamSet>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getSegmentStreams.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getSegmentStreams().'
+            );
         }
 
-        if (requestParameters.keys === null || requestParameters.keys === undefined) {
-            throw new runtime.RequiredError('keys','Required parameter requestParameters.keys was null or undefined when calling getSegmentStreams.');
+        if (requestParameters['keys'] == null) {
+            throw new runtime.RequiredError(
+                'keys',
+                'Required parameter "keys" was null or undefined when calling getSegmentStreams().'
+            );
         }
 
-        if (requestParameters.keyByType === null || requestParameters.keyByType === undefined) {
-            throw new runtime.RequiredError('keyByType','Required parameter requestParameters.keyByType was null or undefined when calling getSegmentStreams.');
+        if (requestParameters['keyByType'] == null) {
+            throw new runtime.RequiredError(
+                'keyByType',
+                'Required parameter "keyByType" was null or undefined when calling getSegmentStreams().'
+            );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.keys) {
-            queryParameters['keys'] = requestParameters.keys.join(runtime.COLLECTION_FORMATS["csv"]);
+        if (requestParameters['keys'] != null) {
+            queryParameters['keys'] = requestParameters['keys']!.join(runtime.COLLECTION_FORMATS["csv"]);
         }
 
-        if (requestParameters.keyByType !== undefined) {
-            queryParameters['key_by_type'] = requestParameters.keyByType;
+        if (requestParameters['keyByType'] != null) {
+            queryParameters['key_by_type'] = requestParameters['keyByType'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -229,8 +271,12 @@ export class StreamsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/segments/{id}/streams`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/segments/{id}/streams`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

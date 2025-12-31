@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -66,10 +66,8 @@ export interface Split {
 /**
  * Check if a given object implements the Split interface.
  */
-export function instanceOfSplit(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfSplit(value: object): value is Split {
+    return true;
 }
 
 export function SplitFromJSON(json: any): Split {
@@ -77,37 +75,39 @@ export function SplitFromJSON(json: any): Split {
 }
 
 export function SplitFromJSONTyped(json: any, ignoreDiscriminator: boolean): Split {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'averageSpeed': !exists(json, 'average_speed') ? undefined : json['average_speed'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'elevationDifference': !exists(json, 'elevation_difference') ? undefined : json['elevation_difference'],
-        'paceZone': !exists(json, 'pace_zone') ? undefined : json['pace_zone'],
-        'movingTime': !exists(json, 'moving_time') ? undefined : json['moving_time'],
-        'split': !exists(json, 'split') ? undefined : json['split'],
+        'averageSpeed': json['average_speed'] == null ? undefined : json['average_speed'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'elevationDifference': json['elevation_difference'] == null ? undefined : json['elevation_difference'],
+        'paceZone': json['pace_zone'] == null ? undefined : json['pace_zone'],
+        'movingTime': json['moving_time'] == null ? undefined : json['moving_time'],
+        'split': json['split'] == null ? undefined : json['split'],
     };
 }
 
-export function SplitToJSON(value?: Split | null): any {
-    if (value === undefined) {
-        return undefined;
+export function SplitToJSON(json: any): Split {
+    return SplitToJSONTyped(json, false);
+}
+
+export function SplitToJSONTyped(value?: Split | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'average_speed': value.averageSpeed,
-        'distance': value.distance,
-        'elapsed_time': value.elapsedTime,
-        'elevation_difference': value.elevationDifference,
-        'pace_zone': value.paceZone,
-        'moving_time': value.movingTime,
-        'split': value.split,
+        'average_speed': value['averageSpeed'],
+        'distance': value['distance'],
+        'elapsed_time': value['elapsedTime'],
+        'elevation_difference': value['elevationDifference'],
+        'pace_zone': value['paceZone'],
+        'moving_time': value['movingTime'],
+        'split': value['split'],
     };
 }
 

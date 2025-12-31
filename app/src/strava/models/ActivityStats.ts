@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { ActivityTotal } from './ActivityTotal.js';
 import {
     ActivityTotalFromJSON,
     ActivityTotalFromJSONTyped,
     ActivityTotalToJSON,
+    ActivityTotalToJSONTyped,
 } from './ActivityTotal.js';
 
 /**
@@ -97,10 +98,8 @@ export interface ActivityStats {
 /**
  * Check if a given object implements the ActivityStats interface.
  */
-export function instanceOfActivityStats(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfActivityStats(value: object): value is ActivityStats {
+    return true;
 }
 
 export function ActivityStatsFromJSON(json: any): ActivityStats {
@@ -108,45 +107,47 @@ export function ActivityStatsFromJSON(json: any): ActivityStats {
 }
 
 export function ActivityStatsFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityStats {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'biggestRideDistance': !exists(json, 'biggest_ride_distance') ? undefined : json['biggest_ride_distance'],
-        'biggestClimbElevationGain': !exists(json, 'biggest_climb_elevation_gain') ? undefined : json['biggest_climb_elevation_gain'],
-        'recentRideTotals': !exists(json, 'recent_ride_totals') ? undefined : ActivityTotalFromJSON(json['recent_ride_totals']),
-        'recentRunTotals': !exists(json, 'recent_run_totals') ? undefined : ActivityTotalFromJSON(json['recent_run_totals']),
-        'recentSwimTotals': !exists(json, 'recent_swim_totals') ? undefined : ActivityTotalFromJSON(json['recent_swim_totals']),
-        'ytdRideTotals': !exists(json, 'ytd_ride_totals') ? undefined : ActivityTotalFromJSON(json['ytd_ride_totals']),
-        'ytdRunTotals': !exists(json, 'ytd_run_totals') ? undefined : ActivityTotalFromJSON(json['ytd_run_totals']),
-        'ytdSwimTotals': !exists(json, 'ytd_swim_totals') ? undefined : ActivityTotalFromJSON(json['ytd_swim_totals']),
-        'allRideTotals': !exists(json, 'all_ride_totals') ? undefined : ActivityTotalFromJSON(json['all_ride_totals']),
-        'allRunTotals': !exists(json, 'all_run_totals') ? undefined : ActivityTotalFromJSON(json['all_run_totals']),
-        'allSwimTotals': !exists(json, 'all_swim_totals') ? undefined : ActivityTotalFromJSON(json['all_swim_totals']),
+        'biggestRideDistance': json['biggest_ride_distance'] == null ? undefined : json['biggest_ride_distance'],
+        'biggestClimbElevationGain': json['biggest_climb_elevation_gain'] == null ? undefined : json['biggest_climb_elevation_gain'],
+        'recentRideTotals': json['recent_ride_totals'] == null ? undefined : ActivityTotalFromJSON(json['recent_ride_totals']),
+        'recentRunTotals': json['recent_run_totals'] == null ? undefined : ActivityTotalFromJSON(json['recent_run_totals']),
+        'recentSwimTotals': json['recent_swim_totals'] == null ? undefined : ActivityTotalFromJSON(json['recent_swim_totals']),
+        'ytdRideTotals': json['ytd_ride_totals'] == null ? undefined : ActivityTotalFromJSON(json['ytd_ride_totals']),
+        'ytdRunTotals': json['ytd_run_totals'] == null ? undefined : ActivityTotalFromJSON(json['ytd_run_totals']),
+        'ytdSwimTotals': json['ytd_swim_totals'] == null ? undefined : ActivityTotalFromJSON(json['ytd_swim_totals']),
+        'allRideTotals': json['all_ride_totals'] == null ? undefined : ActivityTotalFromJSON(json['all_ride_totals']),
+        'allRunTotals': json['all_run_totals'] == null ? undefined : ActivityTotalFromJSON(json['all_run_totals']),
+        'allSwimTotals': json['all_swim_totals'] == null ? undefined : ActivityTotalFromJSON(json['all_swim_totals']),
     };
 }
 
-export function ActivityStatsToJSON(value?: ActivityStats | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ActivityStatsToJSON(json: any): ActivityStats {
+    return ActivityStatsToJSONTyped(json, false);
+}
+
+export function ActivityStatsToJSONTyped(value?: ActivityStats | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'biggest_ride_distance': value.biggestRideDistance,
-        'biggest_climb_elevation_gain': value.biggestClimbElevationGain,
-        'recent_ride_totals': ActivityTotalToJSON(value.recentRideTotals),
-        'recent_run_totals': ActivityTotalToJSON(value.recentRunTotals),
-        'recent_swim_totals': ActivityTotalToJSON(value.recentSwimTotals),
-        'ytd_ride_totals': ActivityTotalToJSON(value.ytdRideTotals),
-        'ytd_run_totals': ActivityTotalToJSON(value.ytdRunTotals),
-        'ytd_swim_totals': ActivityTotalToJSON(value.ytdSwimTotals),
-        'all_ride_totals': ActivityTotalToJSON(value.allRideTotals),
-        'all_run_totals': ActivityTotalToJSON(value.allRunTotals),
-        'all_swim_totals': ActivityTotalToJSON(value.allSwimTotals),
+        'biggest_ride_distance': value['biggestRideDistance'],
+        'biggest_climb_elevation_gain': value['biggestClimbElevationGain'],
+        'recent_ride_totals': ActivityTotalToJSON(value['recentRideTotals']),
+        'recent_run_totals': ActivityTotalToJSON(value['recentRunTotals']),
+        'recent_swim_totals': ActivityTotalToJSON(value['recentSwimTotals']),
+        'ytd_ride_totals': ActivityTotalToJSON(value['ytdRideTotals']),
+        'ytd_run_totals': ActivityTotalToJSON(value['ytdRunTotals']),
+        'ytd_swim_totals': ActivityTotalToJSON(value['ytdSwimTotals']),
+        'all_ride_totals': ActivityTotalToJSON(value['allRideTotals']),
+        'all_run_totals': ActivityTotalToJSON(value['allRunTotals']),
+        'all_swim_totals': ActivityTotalToJSON(value['allSwimTotals']),
     };
 }
 

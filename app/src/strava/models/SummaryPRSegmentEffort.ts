@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -48,10 +48,8 @@ export interface SummaryPRSegmentEffort {
 /**
  * Check if a given object implements the SummaryPRSegmentEffort interface.
  */
-export function instanceOfSummaryPRSegmentEffort(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfSummaryPRSegmentEffort(value: object): value is SummaryPRSegmentEffort {
+    return true;
 }
 
 export function SummaryPRSegmentEffortFromJSON(json: any): SummaryPRSegmentEffort {
@@ -59,31 +57,33 @@ export function SummaryPRSegmentEffortFromJSON(json: any): SummaryPRSegmentEffor
 }
 
 export function SummaryPRSegmentEffortFromJSONTyped(json: any, ignoreDiscriminator: boolean): SummaryPRSegmentEffort {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'prActivityId': !exists(json, 'pr_activity_id') ? undefined : json['pr_activity_id'],
-        'prElapsedTime': !exists(json, 'pr_elapsed_time') ? undefined : json['pr_elapsed_time'],
-        'prDate': !exists(json, 'pr_date') ? undefined : (new Date(json['pr_date'])),
-        'effortCount': !exists(json, 'effort_count') ? undefined : json['effort_count'],
+        'prActivityId': json['pr_activity_id'] == null ? undefined : json['pr_activity_id'],
+        'prElapsedTime': json['pr_elapsed_time'] == null ? undefined : json['pr_elapsed_time'],
+        'prDate': json['pr_date'] == null ? undefined : (new Date(json['pr_date'])),
+        'effortCount': json['effort_count'] == null ? undefined : json['effort_count'],
     };
 }
 
-export function SummaryPRSegmentEffortToJSON(value?: SummaryPRSegmentEffort | null): any {
-    if (value === undefined) {
-        return undefined;
+export function SummaryPRSegmentEffortToJSON(json: any): SummaryPRSegmentEffort {
+    return SummaryPRSegmentEffortToJSONTyped(json, false);
+}
+
+export function SummaryPRSegmentEffortToJSONTyped(value?: SummaryPRSegmentEffort | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'pr_activity_id': value.prActivityId,
-        'pr_elapsed_time': value.prElapsedTime,
-        'pr_date': value.prDate === undefined ? undefined : (value.prDate.toISOString()),
-        'effort_count': value.effortCount,
+        'pr_activity_id': value['prActivityId'],
+        'pr_elapsed_time': value['prElapsedTime'],
+        'pr_date': value['prDate'] == null ? value['prDate'] : value['prDate'].toISOString(),
+        'effort_count': value['effortCount'],
     };
 }
 

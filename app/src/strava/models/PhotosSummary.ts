@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { PhotosSummaryPrimary } from './PhotosSummaryPrimary.js';
 import {
     PhotosSummaryPrimaryFromJSON,
     PhotosSummaryPrimaryFromJSONTyped,
     PhotosSummaryPrimaryToJSON,
+    PhotosSummaryPrimaryToJSONTyped,
 } from './PhotosSummaryPrimary.js';
 
 /**
@@ -43,10 +44,8 @@ export interface PhotosSummary {
 /**
  * Check if a given object implements the PhotosSummary interface.
  */
-export function instanceOfPhotosSummary(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfPhotosSummary(value: object): value is PhotosSummary {
+    return true;
 }
 
 export function PhotosSummaryFromJSON(json: any): PhotosSummary {
@@ -54,27 +53,29 @@ export function PhotosSummaryFromJSON(json: any): PhotosSummary {
 }
 
 export function PhotosSummaryFromJSONTyped(json: any, ignoreDiscriminator: boolean): PhotosSummary {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'count': !exists(json, 'count') ? undefined : json['count'],
-        'primary': !exists(json, 'primary') ? undefined : PhotosSummaryPrimaryFromJSON(json['primary']),
+        'count': json['count'] == null ? undefined : json['count'],
+        'primary': json['primary'] == null ? undefined : PhotosSummaryPrimaryFromJSON(json['primary']),
     };
 }
 
-export function PhotosSummaryToJSON(value?: PhotosSummary | null): any {
-    if (value === undefined) {
-        return undefined;
+export function PhotosSummaryToJSON(json: any): PhotosSummary {
+    return PhotosSummaryToJSONTyped(json, false);
+}
+
+export function PhotosSummaryToJSONTyped(value?: PhotosSummary | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'count': value.count,
-        'primary': PhotosSummaryPrimaryToJSON(value.primary),
+        'count': value['count'],
+        'primary': PhotosSummaryPrimaryToJSON(value['primary']),
     };
 }
 

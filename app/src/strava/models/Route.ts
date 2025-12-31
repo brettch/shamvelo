@@ -12,31 +12,35 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
-import type { PolylineMap } from './PolylineMap.js';
-import {
-    PolylineMapFromJSON,
-    PolylineMapFromJSONTyped,
-    PolylineMapToJSON,
-} from './PolylineMap.js';
+import { mapValues } from '../runtime.js';
 import type { SummaryAthlete } from './SummaryAthlete.js';
 import {
     SummaryAthleteFromJSON,
     SummaryAthleteFromJSONTyped,
     SummaryAthleteToJSON,
+    SummaryAthleteToJSONTyped,
 } from './SummaryAthlete.js';
-import type { SummarySegment } from './SummarySegment.js';
-import {
-    SummarySegmentFromJSON,
-    SummarySegmentFromJSONTyped,
-    SummarySegmentToJSON,
-} from './SummarySegment.js';
 import type { Waypoint } from './Waypoint.js';
 import {
     WaypointFromJSON,
     WaypointFromJSONTyped,
     WaypointToJSON,
+    WaypointToJSONTyped,
 } from './Waypoint.js';
+import type { PolylineMap } from './PolylineMap.js';
+import {
+    PolylineMapFromJSON,
+    PolylineMapFromJSONTyped,
+    PolylineMapToJSON,
+    PolylineMapToJSONTyped,
+} from './PolylineMap.js';
+import type { SummarySegment } from './SummarySegment.js';
+import {
+    SummarySegmentFromJSON,
+    SummarySegmentFromJSONTyped,
+    SummarySegmentToJSON,
+    SummarySegmentToJSONTyped,
+} from './SummarySegment.js';
 
 /**
  * 
@@ -157,10 +161,8 @@ export interface Route {
 /**
  * Check if a given object implements the Route interface.
  */
-export function instanceOfRoute(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfRoute(value: object): value is Route {
+    return true;
 }
 
 export function RouteFromJSON(json: any): Route {
@@ -168,59 +170,61 @@ export function RouteFromJSON(json: any): Route {
 }
 
 export function RouteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Route {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'athlete': !exists(json, 'athlete') ? undefined : SummaryAthleteFromJSON(json['athlete']),
-        'description': !exists(json, 'description') ? undefined : json['description'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'elevationGain': !exists(json, 'elevation_gain') ? undefined : json['elevation_gain'],
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'idStr': !exists(json, 'id_str') ? undefined : json['id_str'],
-        'map': !exists(json, 'map') ? undefined : PolylineMapFromJSON(json['map']),
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        '_private': !exists(json, 'private') ? undefined : json['private'],
-        'starred': !exists(json, 'starred') ? undefined : json['starred'],
-        'timestamp': !exists(json, 'timestamp') ? undefined : json['timestamp'],
-        'type': !exists(json, 'type') ? undefined : json['type'],
-        'subType': !exists(json, 'sub_type') ? undefined : json['sub_type'],
-        'createdAt': !exists(json, 'created_at') ? undefined : (new Date(json['created_at'])),
-        'updatedAt': !exists(json, 'updated_at') ? undefined : (new Date(json['updated_at'])),
-        'estimatedMovingTime': !exists(json, 'estimated_moving_time') ? undefined : json['estimated_moving_time'],
-        'segments': !exists(json, 'segments') ? undefined : ((json['segments'] as Array<any>).map(SummarySegmentFromJSON)),
-        'waypoints': !exists(json, 'waypoints') ? undefined : ((json['waypoints'] as Array<any>).map(WaypointFromJSON)),
+        'athlete': json['athlete'] == null ? undefined : SummaryAthleteFromJSON(json['athlete']),
+        'description': json['description'] == null ? undefined : json['description'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'elevationGain': json['elevation_gain'] == null ? undefined : json['elevation_gain'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'idStr': json['id_str'] == null ? undefined : json['id_str'],
+        'map': json['map'] == null ? undefined : PolylineMapFromJSON(json['map']),
+        'name': json['name'] == null ? undefined : json['name'],
+        '_private': json['private'] == null ? undefined : json['private'],
+        'starred': json['starred'] == null ? undefined : json['starred'],
+        'timestamp': json['timestamp'] == null ? undefined : json['timestamp'],
+        'type': json['type'] == null ? undefined : json['type'],
+        'subType': json['sub_type'] == null ? undefined : json['sub_type'],
+        'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
+        'updatedAt': json['updated_at'] == null ? undefined : (new Date(json['updated_at'])),
+        'estimatedMovingTime': json['estimated_moving_time'] == null ? undefined : json['estimated_moving_time'],
+        'segments': json['segments'] == null ? undefined : ((json['segments'] as Array<any>).map(SummarySegmentFromJSON)),
+        'waypoints': json['waypoints'] == null ? undefined : ((json['waypoints'] as Array<any>).map(WaypointFromJSON)),
     };
 }
 
-export function RouteToJSON(value?: Route | null): any {
-    if (value === undefined) {
-        return undefined;
+export function RouteToJSON(json: any): Route {
+    return RouteToJSONTyped(json, false);
+}
+
+export function RouteToJSONTyped(value?: Route | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'athlete': SummaryAthleteToJSON(value.athlete),
-        'description': value.description,
-        'distance': value.distance,
-        'elevation_gain': value.elevationGain,
-        'id': value.id,
-        'id_str': value.idStr,
-        'map': PolylineMapToJSON(value.map),
-        'name': value.name,
-        'private': value._private,
-        'starred': value.starred,
-        'timestamp': value.timestamp,
-        'type': value.type,
-        'sub_type': value.subType,
-        'created_at': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
-        'updated_at': value.updatedAt === undefined ? undefined : (value.updatedAt.toISOString()),
-        'estimated_moving_time': value.estimatedMovingTime,
-        'segments': value.segments === undefined ? undefined : ((value.segments as Array<any>).map(SummarySegmentToJSON)),
-        'waypoints': value.waypoints === undefined ? undefined : ((value.waypoints as Array<any>).map(WaypointToJSON)),
+        'athlete': SummaryAthleteToJSON(value['athlete']),
+        'description': value['description'],
+        'distance': value['distance'],
+        'elevation_gain': value['elevationGain'],
+        'id': value['id'],
+        'id_str': value['idStr'],
+        'map': PolylineMapToJSON(value['map']),
+        'name': value['name'],
+        'private': value['_private'],
+        'starred': value['starred'],
+        'timestamp': value['timestamp'],
+        'type': value['type'],
+        'sub_type': value['subType'],
+        'created_at': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
+        'updated_at': value['updatedAt'] == null ? value['updatedAt'] : value['updatedAt'].toISOString(),
+        'estimated_moving_time': value['estimatedMovingTime'],
+        'segments': value['segments'] == null ? undefined : ((value['segments'] as Array<any>).map(SummarySegmentToJSON)),
+        'waypoints': value['waypoints'] == null ? undefined : ((value['waypoints'] as Array<any>).map(WaypointToJSON)),
     };
 }
 

@@ -52,8 +52,11 @@ export class RoutesApi extends runtime.BaseAPI {
      * Export Route GPX
      */
     async getRouteAsGPXRaw(requestParameters: GetRouteAsGPXRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getRouteAsGPX.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getRouteAsGPX().'
+            );
         }
 
         const queryParameters: any = {};
@@ -65,8 +68,12 @@ export class RoutesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/routes/{id}/export_gpx`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/routes/{id}/export_gpx`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -88,8 +95,11 @@ export class RoutesApi extends runtime.BaseAPI {
      * Export Route TCX
      */
     async getRouteAsTCXRaw(requestParameters: GetRouteAsTCXRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getRouteAsTCX.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getRouteAsTCX().'
+            );
         }
 
         const queryParameters: any = {};
@@ -101,8 +111,12 @@ export class RoutesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/routes/{id}/export_tcx`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/routes/{id}/export_tcx`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -124,8 +138,11 @@ export class RoutesApi extends runtime.BaseAPI {
      * Get Route
      */
     async getRouteByIdRaw(requestParameters: GetRouteByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Route>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getRouteById.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getRouteById().'
+            );
         }
 
         const queryParameters: any = {};
@@ -137,8 +154,12 @@ export class RoutesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/routes/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/routes/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -163,12 +184,12 @@ export class RoutesApi extends runtime.BaseAPI {
     async getRoutesByAthleteIdRaw(requestParameters: GetRoutesByAthleteIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<Route>>> {
         const queryParameters: any = {};
 
-        if (requestParameters.page !== undefined) {
-            queryParameters['page'] = requestParameters.page;
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
         }
 
-        if (requestParameters.perPage !== undefined) {
-            queryParameters['per_page'] = requestParameters.perPage;
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -178,8 +199,11 @@ export class RoutesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/athletes/{id}/routes`;
+
         const response = await this.request({
-            path: `/athletes/{id}/routes`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

@@ -12,60 +12,69 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
-import type { ActivityType } from './ActivityType.js';
-import {
-    ActivityTypeFromJSON,
-    ActivityTypeFromJSONTyped,
-    ActivityTypeToJSON,
-} from './ActivityType.js';
-import type { DetailedSegmentEffort } from './DetailedSegmentEffort.js';
-import {
-    DetailedSegmentEffortFromJSON,
-    DetailedSegmentEffortFromJSONTyped,
-    DetailedSegmentEffortToJSON,
-} from './DetailedSegmentEffort.js';
-import type { Lap } from './Lap.js';
-import {
-    LapFromJSON,
-    LapFromJSONTyped,
-    LapToJSON,
-} from './Lap.js';
+import { mapValues } from '../runtime.js';
 import type { MetaAthlete } from './MetaAthlete.js';
 import {
     MetaAthleteFromJSON,
     MetaAthleteFromJSONTyped,
     MetaAthleteToJSON,
+    MetaAthleteToJSONTyped,
 } from './MetaAthlete.js';
+import type { SportType } from './SportType.js';
+import {
+    SportTypeFromJSON,
+    SportTypeFromJSONTyped,
+    SportTypeToJSON,
+    SportTypeToJSONTyped,
+} from './SportType.js';
 import type { PhotosSummary } from './PhotosSummary.js';
 import {
     PhotosSummaryFromJSON,
     PhotosSummaryFromJSONTyped,
     PhotosSummaryToJSON,
+    PhotosSummaryToJSONTyped,
 } from './PhotosSummary.js';
+import type { DetailedSegmentEffort } from './DetailedSegmentEffort.js';
+import {
+    DetailedSegmentEffortFromJSON,
+    DetailedSegmentEffortFromJSONTyped,
+    DetailedSegmentEffortToJSON,
+    DetailedSegmentEffortToJSONTyped,
+} from './DetailedSegmentEffort.js';
+import type { ActivityType } from './ActivityType.js';
+import {
+    ActivityTypeFromJSON,
+    ActivityTypeFromJSONTyped,
+    ActivityTypeToJSON,
+    ActivityTypeToJSONTyped,
+} from './ActivityType.js';
+import type { Lap } from './Lap.js';
+import {
+    LapFromJSON,
+    LapFromJSONTyped,
+    LapToJSON,
+    LapToJSONTyped,
+} from './Lap.js';
 import type { PolylineMap } from './PolylineMap.js';
 import {
     PolylineMapFromJSON,
     PolylineMapFromJSONTyped,
     PolylineMapToJSON,
+    PolylineMapToJSONTyped,
 } from './PolylineMap.js';
 import type { Split } from './Split.js';
 import {
     SplitFromJSON,
     SplitFromJSONTyped,
     SplitToJSON,
+    SplitToJSONTyped,
 } from './Split.js';
-import type { SportType } from './SportType.js';
-import {
-    SportTypeFromJSON,
-    SportTypeFromJSONTyped,
-    SportTypeToJSON,
-} from './SportType.js';
 import type { SummaryGear } from './SummaryGear.js';
 import {
     SummaryGearFromJSON,
     SummaryGearFromJSONTyped,
     SummaryGearToJSON,
+    SummaryGearToJSONTyped,
 } from './SummaryGear.js';
 
 /**
@@ -394,13 +403,13 @@ export interface DetailedActivity {
     bestEfforts?: Array<DetailedSegmentEffort>;
 }
 
+
+
 /**
  * Check if a given object implements the DetailedActivity interface.
  */
-export function instanceOfDetailedActivity(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfDetailedActivity(value: object): value is DetailedActivity {
+    return true;
 }
 
 export function DetailedActivityFromJSON(json: any): DetailedActivity {
@@ -408,129 +417,131 @@ export function DetailedActivityFromJSON(json: any): DetailedActivity {
 }
 
 export function DetailedActivityFromJSONTyped(json: any, ignoreDiscriminator: boolean): DetailedActivity {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'externalId': !exists(json, 'external_id') ? undefined : json['external_id'],
-        'uploadId': !exists(json, 'upload_id') ? undefined : json['upload_id'],
-        'athlete': !exists(json, 'athlete') ? undefined : MetaAthleteFromJSON(json['athlete']),
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'movingTime': !exists(json, 'moving_time') ? undefined : json['moving_time'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'totalElevationGain': !exists(json, 'total_elevation_gain') ? undefined : json['total_elevation_gain'],
-        'elevHigh': !exists(json, 'elev_high') ? undefined : json['elev_high'],
-        'elevLow': !exists(json, 'elev_low') ? undefined : json['elev_low'],
-        'type': !exists(json, 'type') ? undefined : ActivityTypeFromJSON(json['type']),
-        'sportType': !exists(json, 'sport_type') ? undefined : SportTypeFromJSON(json['sport_type']),
-        'startDate': !exists(json, 'start_date') ? undefined : (new Date(json['start_date'])),
-        'startDateLocal': !exists(json, 'start_date_local') ? undefined : (new Date(json['start_date_local'])),
-        'timezone': !exists(json, 'timezone') ? undefined : json['timezone'],
-        'startLatlng': !exists(json, 'start_latlng') ? undefined : json['start_latlng'],
-        'endLatlng': !exists(json, 'end_latlng') ? undefined : json['end_latlng'],
-        'achievementCount': !exists(json, 'achievement_count') ? undefined : json['achievement_count'],
-        'kudosCount': !exists(json, 'kudos_count') ? undefined : json['kudos_count'],
-        'commentCount': !exists(json, 'comment_count') ? undefined : json['comment_count'],
-        'athleteCount': !exists(json, 'athlete_count') ? undefined : json['athlete_count'],
-        'photoCount': !exists(json, 'photo_count') ? undefined : json['photo_count'],
-        'totalPhotoCount': !exists(json, 'total_photo_count') ? undefined : json['total_photo_count'],
-        'map': !exists(json, 'map') ? undefined : PolylineMapFromJSON(json['map']),
-        'deviceName': !exists(json, 'device_name') ? undefined : json['device_name'],
-        'trainer': !exists(json, 'trainer') ? undefined : json['trainer'],
-        'commute': !exists(json, 'commute') ? undefined : json['commute'],
-        'manual': !exists(json, 'manual') ? undefined : json['manual'],
-        '_private': !exists(json, 'private') ? undefined : json['private'],
-        'flagged': !exists(json, 'flagged') ? undefined : json['flagged'],
-        'workoutType': !exists(json, 'workout_type') ? undefined : json['workout_type'],
-        'uploadIdStr': !exists(json, 'upload_id_str') ? undefined : json['upload_id_str'],
-        'averageSpeed': !exists(json, 'average_speed') ? undefined : json['average_speed'],
-        'maxSpeed': !exists(json, 'max_speed') ? undefined : json['max_speed'],
-        'hasKudoed': !exists(json, 'has_kudoed') ? undefined : json['has_kudoed'],
-        'hideFromHome': !exists(json, 'hide_from_home') ? undefined : json['hide_from_home'],
-        'gearId': !exists(json, 'gear_id') ? undefined : json['gear_id'],
-        'kilojoules': !exists(json, 'kilojoules') ? undefined : json['kilojoules'],
-        'averageWatts': !exists(json, 'average_watts') ? undefined : json['average_watts'],
-        'deviceWatts': !exists(json, 'device_watts') ? undefined : json['device_watts'],
-        'maxWatts': !exists(json, 'max_watts') ? undefined : json['max_watts'],
-        'weightedAverageWatts': !exists(json, 'weighted_average_watts') ? undefined : json['weighted_average_watts'],
-        'description': !exists(json, 'description') ? undefined : json['description'],
-        'photos': !exists(json, 'photos') ? undefined : PhotosSummaryFromJSON(json['photos']),
-        'gear': !exists(json, 'gear') ? undefined : SummaryGearFromJSON(json['gear']),
-        'calories': !exists(json, 'calories') ? undefined : json['calories'],
-        'segmentEfforts': !exists(json, 'segment_efforts') ? undefined : ((json['segment_efforts'] as Array<any>).map(DetailedSegmentEffortFromJSON)),
-        'embedToken': !exists(json, 'embed_token') ? undefined : json['embed_token'],
-        'splitsMetric': !exists(json, 'splits_metric') ? undefined : ((json['splits_metric'] as Array<any>).map(SplitFromJSON)),
-        'splitsStandard': !exists(json, 'splits_standard') ? undefined : ((json['splits_standard'] as Array<any>).map(SplitFromJSON)),
-        'laps': !exists(json, 'laps') ? undefined : ((json['laps'] as Array<any>).map(LapFromJSON)),
-        'bestEfforts': !exists(json, 'best_efforts') ? undefined : ((json['best_efforts'] as Array<any>).map(DetailedSegmentEffortFromJSON)),
+        'id': json['id'] == null ? undefined : json['id'],
+        'externalId': json['external_id'] == null ? undefined : json['external_id'],
+        'uploadId': json['upload_id'] == null ? undefined : json['upload_id'],
+        'athlete': json['athlete'] == null ? undefined : MetaAthleteFromJSON(json['athlete']),
+        'name': json['name'] == null ? undefined : json['name'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'movingTime': json['moving_time'] == null ? undefined : json['moving_time'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'totalElevationGain': json['total_elevation_gain'] == null ? undefined : json['total_elevation_gain'],
+        'elevHigh': json['elev_high'] == null ? undefined : json['elev_high'],
+        'elevLow': json['elev_low'] == null ? undefined : json['elev_low'],
+        'type': json['type'] == null ? undefined : ActivityTypeFromJSON(json['type']),
+        'sportType': json['sport_type'] == null ? undefined : SportTypeFromJSON(json['sport_type']),
+        'startDate': json['start_date'] == null ? undefined : (new Date(json['start_date'])),
+        'startDateLocal': json['start_date_local'] == null ? undefined : (new Date(json['start_date_local'])),
+        'timezone': json['timezone'] == null ? undefined : json['timezone'],
+        'startLatlng': json['start_latlng'] == null ? undefined : json['start_latlng'],
+        'endLatlng': json['end_latlng'] == null ? undefined : json['end_latlng'],
+        'achievementCount': json['achievement_count'] == null ? undefined : json['achievement_count'],
+        'kudosCount': json['kudos_count'] == null ? undefined : json['kudos_count'],
+        'commentCount': json['comment_count'] == null ? undefined : json['comment_count'],
+        'athleteCount': json['athlete_count'] == null ? undefined : json['athlete_count'],
+        'photoCount': json['photo_count'] == null ? undefined : json['photo_count'],
+        'totalPhotoCount': json['total_photo_count'] == null ? undefined : json['total_photo_count'],
+        'map': json['map'] == null ? undefined : PolylineMapFromJSON(json['map']),
+        'deviceName': json['device_name'] == null ? undefined : json['device_name'],
+        'trainer': json['trainer'] == null ? undefined : json['trainer'],
+        'commute': json['commute'] == null ? undefined : json['commute'],
+        'manual': json['manual'] == null ? undefined : json['manual'],
+        '_private': json['private'] == null ? undefined : json['private'],
+        'flagged': json['flagged'] == null ? undefined : json['flagged'],
+        'workoutType': json['workout_type'] == null ? undefined : json['workout_type'],
+        'uploadIdStr': json['upload_id_str'] == null ? undefined : json['upload_id_str'],
+        'averageSpeed': json['average_speed'] == null ? undefined : json['average_speed'],
+        'maxSpeed': json['max_speed'] == null ? undefined : json['max_speed'],
+        'hasKudoed': json['has_kudoed'] == null ? undefined : json['has_kudoed'],
+        'hideFromHome': json['hide_from_home'] == null ? undefined : json['hide_from_home'],
+        'gearId': json['gear_id'] == null ? undefined : json['gear_id'],
+        'kilojoules': json['kilojoules'] == null ? undefined : json['kilojoules'],
+        'averageWatts': json['average_watts'] == null ? undefined : json['average_watts'],
+        'deviceWatts': json['device_watts'] == null ? undefined : json['device_watts'],
+        'maxWatts': json['max_watts'] == null ? undefined : json['max_watts'],
+        'weightedAverageWatts': json['weighted_average_watts'] == null ? undefined : json['weighted_average_watts'],
+        'description': json['description'] == null ? undefined : json['description'],
+        'photos': json['photos'] == null ? undefined : PhotosSummaryFromJSON(json['photos']),
+        'gear': json['gear'] == null ? undefined : SummaryGearFromJSON(json['gear']),
+        'calories': json['calories'] == null ? undefined : json['calories'],
+        'segmentEfforts': json['segment_efforts'] == null ? undefined : ((json['segment_efforts'] as Array<any>).map(DetailedSegmentEffortFromJSON)),
+        'embedToken': json['embed_token'] == null ? undefined : json['embed_token'],
+        'splitsMetric': json['splits_metric'] == null ? undefined : ((json['splits_metric'] as Array<any>).map(SplitFromJSON)),
+        'splitsStandard': json['splits_standard'] == null ? undefined : ((json['splits_standard'] as Array<any>).map(SplitFromJSON)),
+        'laps': json['laps'] == null ? undefined : ((json['laps'] as Array<any>).map(LapFromJSON)),
+        'bestEfforts': json['best_efforts'] == null ? undefined : ((json['best_efforts'] as Array<any>).map(DetailedSegmentEffortFromJSON)),
     };
 }
 
-export function DetailedActivityToJSON(value?: DetailedActivity | null): any {
-    if (value === undefined) {
-        return undefined;
+export function DetailedActivityToJSON(json: any): DetailedActivity {
+    return DetailedActivityToJSONTyped(json, false);
+}
+
+export function DetailedActivityToJSONTyped(value?: DetailedActivity | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'external_id': value.externalId,
-        'upload_id': value.uploadId,
-        'athlete': MetaAthleteToJSON(value.athlete),
-        'name': value.name,
-        'distance': value.distance,
-        'moving_time': value.movingTime,
-        'elapsed_time': value.elapsedTime,
-        'total_elevation_gain': value.totalElevationGain,
-        'elev_high': value.elevHigh,
-        'elev_low': value.elevLow,
-        'type': ActivityTypeToJSON(value.type),
-        'sport_type': SportTypeToJSON(value.sportType),
-        'start_date': value.startDate === undefined ? undefined : (value.startDate.toISOString()),
-        'start_date_local': value.startDateLocal === undefined ? undefined : (value.startDateLocal.toISOString()),
-        'timezone': value.timezone,
-        'start_latlng': value.startLatlng,
-        'end_latlng': value.endLatlng,
-        'achievement_count': value.achievementCount,
-        'kudos_count': value.kudosCount,
-        'comment_count': value.commentCount,
-        'athlete_count': value.athleteCount,
-        'photo_count': value.photoCount,
-        'total_photo_count': value.totalPhotoCount,
-        'map': PolylineMapToJSON(value.map),
-        'device_name': value.deviceName,
-        'trainer': value.trainer,
-        'commute': value.commute,
-        'manual': value.manual,
-        'private': value._private,
-        'flagged': value.flagged,
-        'workout_type': value.workoutType,
-        'upload_id_str': value.uploadIdStr,
-        'average_speed': value.averageSpeed,
-        'max_speed': value.maxSpeed,
-        'has_kudoed': value.hasKudoed,
-        'hide_from_home': value.hideFromHome,
-        'gear_id': value.gearId,
-        'kilojoules': value.kilojoules,
-        'average_watts': value.averageWatts,
-        'device_watts': value.deviceWatts,
-        'max_watts': value.maxWatts,
-        'weighted_average_watts': value.weightedAverageWatts,
-        'description': value.description,
-        'photos': PhotosSummaryToJSON(value.photos),
-        'gear': SummaryGearToJSON(value.gear),
-        'calories': value.calories,
-        'segment_efforts': value.segmentEfforts === undefined ? undefined : ((value.segmentEfforts as Array<any>).map(DetailedSegmentEffortToJSON)),
-        'embed_token': value.embedToken,
-        'splits_metric': value.splitsMetric === undefined ? undefined : ((value.splitsMetric as Array<any>).map(SplitToJSON)),
-        'splits_standard': value.splitsStandard === undefined ? undefined : ((value.splitsStandard as Array<any>).map(SplitToJSON)),
-        'laps': value.laps === undefined ? undefined : ((value.laps as Array<any>).map(LapToJSON)),
-        'best_efforts': value.bestEfforts === undefined ? undefined : ((value.bestEfforts as Array<any>).map(DetailedSegmentEffortToJSON)),
+        'id': value['id'],
+        'external_id': value['externalId'],
+        'upload_id': value['uploadId'],
+        'athlete': MetaAthleteToJSON(value['athlete']),
+        'name': value['name'],
+        'distance': value['distance'],
+        'moving_time': value['movingTime'],
+        'elapsed_time': value['elapsedTime'],
+        'total_elevation_gain': value['totalElevationGain'],
+        'elev_high': value['elevHigh'],
+        'elev_low': value['elevLow'],
+        'type': ActivityTypeToJSON(value['type']),
+        'sport_type': SportTypeToJSON(value['sportType']),
+        'start_date': value['startDate'] == null ? value['startDate'] : value['startDate'].toISOString(),
+        'start_date_local': value['startDateLocal'] == null ? value['startDateLocal'] : value['startDateLocal'].toISOString(),
+        'timezone': value['timezone'],
+        'start_latlng': value['startLatlng'],
+        'end_latlng': value['endLatlng'],
+        'achievement_count': value['achievementCount'],
+        'kudos_count': value['kudosCount'],
+        'comment_count': value['commentCount'],
+        'athlete_count': value['athleteCount'],
+        'photo_count': value['photoCount'],
+        'total_photo_count': value['totalPhotoCount'],
+        'map': PolylineMapToJSON(value['map']),
+        'device_name': value['deviceName'],
+        'trainer': value['trainer'],
+        'commute': value['commute'],
+        'manual': value['manual'],
+        'private': value['_private'],
+        'flagged': value['flagged'],
+        'workout_type': value['workoutType'],
+        'upload_id_str': value['uploadIdStr'],
+        'average_speed': value['averageSpeed'],
+        'max_speed': value['maxSpeed'],
+        'has_kudoed': value['hasKudoed'],
+        'hide_from_home': value['hideFromHome'],
+        'gear_id': value['gearId'],
+        'kilojoules': value['kilojoules'],
+        'average_watts': value['averageWatts'],
+        'device_watts': value['deviceWatts'],
+        'max_watts': value['maxWatts'],
+        'weighted_average_watts': value['weightedAverageWatts'],
+        'description': value['description'],
+        'photos': PhotosSummaryToJSON(value['photos']),
+        'gear': SummaryGearToJSON(value['gear']),
+        'calories': value['calories'],
+        'segment_efforts': value['segmentEfforts'] == null ? undefined : ((value['segmentEfforts'] as Array<any>).map(DetailedSegmentEffortToJSON)),
+        'embed_token': value['embedToken'],
+        'splits_metric': value['splitsMetric'] == null ? undefined : ((value['splitsMetric'] as Array<any>).map(SplitToJSON)),
+        'splits_standard': value['splitsStandard'] == null ? undefined : ((value['splitsStandard'] as Array<any>).map(SplitToJSON)),
+        'laps': value['laps'] == null ? undefined : ((value['laps'] as Array<any>).map(LapToJSON)),
+        'best_efforts': value['bestEfforts'] == null ? undefined : ((value['bestEfforts'] as Array<any>).map(DetailedSegmentEffortToJSON)),
     };
 }
 

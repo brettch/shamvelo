@@ -74,18 +74,21 @@ export class ClubsApi extends runtime.BaseAPI {
      * List Club Activities
      */
     async getClubActivitiesByIdRaw(requestParameters: GetClubActivitiesByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ClubActivity>>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getClubActivitiesById.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getClubActivitiesById().'
+            );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.page !== undefined) {
-            queryParameters['page'] = requestParameters.page;
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
         }
 
-        if (requestParameters.perPage !== undefined) {
-            queryParameters['per_page'] = requestParameters.perPage;
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -95,8 +98,12 @@ export class ClubsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/clubs/{id}/activities`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/clubs/{id}/activities`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -119,18 +126,21 @@ export class ClubsApi extends runtime.BaseAPI {
      * List Club Administrators
      */
     async getClubAdminsByIdRaw(requestParameters: GetClubAdminsByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SummaryAthlete>>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getClubAdminsById.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getClubAdminsById().'
+            );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.page !== undefined) {
-            queryParameters['page'] = requestParameters.page;
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
         }
 
-        if (requestParameters.perPage !== undefined) {
-            queryParameters['per_page'] = requestParameters.perPage;
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -140,8 +150,12 @@ export class ClubsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/clubs/{id}/admins`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/clubs/{id}/admins`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -164,8 +178,11 @@ export class ClubsApi extends runtime.BaseAPI {
      * Get Club
      */
     async getClubByIdRaw(requestParameters: GetClubByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DetailedClub>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getClubById.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getClubById().'
+            );
         }
 
         const queryParameters: any = {};
@@ -177,8 +194,12 @@ export class ClubsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/clubs/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/clubs/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -201,18 +222,21 @@ export class ClubsApi extends runtime.BaseAPI {
      * List Club Members
      */
     async getClubMembersByIdRaw(requestParameters: GetClubMembersByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ClubAthlete>>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getClubMembersById.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getClubMembersById().'
+            );
         }
 
         const queryParameters: any = {};
 
-        if (requestParameters.page !== undefined) {
-            queryParameters['page'] = requestParameters.page;
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
         }
 
-        if (requestParameters.perPage !== undefined) {
-            queryParameters['per_page'] = requestParameters.perPage;
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -222,8 +246,12 @@ export class ClubsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/clubs/{id}/members`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/clubs/{id}/members`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -248,12 +276,12 @@ export class ClubsApi extends runtime.BaseAPI {
     async getLoggedInAthleteClubsRaw(requestParameters: GetLoggedInAthleteClubsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<SummaryClub>>> {
         const queryParameters: any = {};
 
-        if (requestParameters.page !== undefined) {
-            queryParameters['page'] = requestParameters.page;
+        if (requestParameters['page'] != null) {
+            queryParameters['page'] = requestParameters['page'];
         }
 
-        if (requestParameters.perPage !== undefined) {
-            queryParameters['per_page'] = requestParameters.perPage;
+        if (requestParameters['perPage'] != null) {
+            queryParameters['per_page'] = requestParameters['perPage'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -263,8 +291,11 @@ export class ClubsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/athlete/clubs`;
+
         const response = await this.request({
-            path: `/athlete/clubs`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

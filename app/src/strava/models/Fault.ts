@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * Encapsulates the errors that may be returned from the API.
  * @export
@@ -36,10 +36,8 @@ export interface Fault {
 /**
  * Check if a given object implements the Fault interface.
  */
-export function instanceOfFault(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfFault(value: object): value is Fault {
+    return true;
 }
 
 export function FaultFromJSON(json: any): Fault {
@@ -47,27 +45,29 @@ export function FaultFromJSON(json: any): Fault {
 }
 
 export function FaultFromJSONTyped(json: any, ignoreDiscriminator: boolean): Fault {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'errors': !exists(json, 'errors') ? undefined : json['errors'],
-        'message': !exists(json, 'message') ? undefined : json['message'],
+        'errors': json['errors'] == null ? undefined : json['errors'],
+        'message': json['message'] == null ? undefined : json['message'],
     };
 }
 
-export function FaultToJSON(value?: Fault | null): any {
-    if (value === undefined) {
-        return undefined;
+export function FaultToJSON(json: any): Fault {
+    return FaultToJSONTyped(json, false);
+}
+
+export function FaultToJSONTyped(value?: Fault | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'errors': value.errors,
-        'message': value.message,
+        'errors': value['errors'],
+        'message': value['message'],
     };
 }
 

@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -99,10 +99,8 @@ export type ExplorerSegmentClimbCategoryDescEnum = typeof ExplorerSegmentClimbCa
 /**
  * Check if a given object implements the ExplorerSegment interface.
  */
-export function instanceOfExplorerSegment(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfExplorerSegment(value: object): value is ExplorerSegment {
+    return true;
 }
 
 export function ExplorerSegmentFromJSON(json: any): ExplorerSegment {
@@ -110,43 +108,45 @@ export function ExplorerSegmentFromJSON(json: any): ExplorerSegment {
 }
 
 export function ExplorerSegmentFromJSONTyped(json: any, ignoreDiscriminator: boolean): ExplorerSegment {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'climbCategory': !exists(json, 'climb_category') ? undefined : json['climb_category'],
-        'climbCategoryDesc': !exists(json, 'climb_category_desc') ? undefined : json['climb_category_desc'],
-        'avgGrade': !exists(json, 'avg_grade') ? undefined : json['avg_grade'],
-        'startLatlng': !exists(json, 'start_latlng') ? undefined : json['start_latlng'],
-        'endLatlng': !exists(json, 'end_latlng') ? undefined : json['end_latlng'],
-        'elevDifference': !exists(json, 'elev_difference') ? undefined : json['elev_difference'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'points': !exists(json, 'points') ? undefined : json['points'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'climbCategory': json['climb_category'] == null ? undefined : json['climb_category'],
+        'climbCategoryDesc': json['climb_category_desc'] == null ? undefined : json['climb_category_desc'],
+        'avgGrade': json['avg_grade'] == null ? undefined : json['avg_grade'],
+        'startLatlng': json['start_latlng'] == null ? undefined : json['start_latlng'],
+        'endLatlng': json['end_latlng'] == null ? undefined : json['end_latlng'],
+        'elevDifference': json['elev_difference'] == null ? undefined : json['elev_difference'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'points': json['points'] == null ? undefined : json['points'],
     };
 }
 
-export function ExplorerSegmentToJSON(value?: ExplorerSegment | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ExplorerSegmentToJSON(json: any): ExplorerSegment {
+    return ExplorerSegmentToJSONTyped(json, false);
+}
+
+export function ExplorerSegmentToJSONTyped(value?: ExplorerSegment | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'name': value.name,
-        'climb_category': value.climbCategory,
-        'climb_category_desc': value.climbCategoryDesc,
-        'avg_grade': value.avgGrade,
-        'start_latlng': value.startLatlng,
-        'end_latlng': value.endLatlng,
-        'elev_difference': value.elevDifference,
-        'distance': value.distance,
-        'points': value.points,
+        'id': value['id'],
+        'name': value['name'],
+        'climb_category': value['climbCategory'],
+        'climb_category_desc': value['climbCategoryDesc'],
+        'avg_grade': value['avgGrade'],
+        'start_latlng': value['startLatlng'],
+        'end_latlng': value['endLatlng'],
+        'elev_difference': value['elevDifference'],
+        'distance': value['distance'],
+        'points': value['points'],
     };
 }
 

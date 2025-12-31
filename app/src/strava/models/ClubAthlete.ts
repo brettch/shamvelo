@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -60,10 +60,8 @@ export interface ClubAthlete {
 /**
  * Check if a given object implements the ClubAthlete interface.
  */
-export function instanceOfClubAthlete(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfClubAthlete(value: object): value is ClubAthlete {
+    return true;
 }
 
 export function ClubAthleteFromJSON(json: any): ClubAthlete {
@@ -71,35 +69,37 @@ export function ClubAthleteFromJSON(json: any): ClubAthlete {
 }
 
 export function ClubAthleteFromJSONTyped(json: any, ignoreDiscriminator: boolean): ClubAthlete {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'resourceState': !exists(json, 'resource_state') ? undefined : json['resource_state'],
-        'firstname': !exists(json, 'firstname') ? undefined : json['firstname'],
-        'lastname': !exists(json, 'lastname') ? undefined : json['lastname'],
-        'member': !exists(json, 'member') ? undefined : json['member'],
-        'admin': !exists(json, 'admin') ? undefined : json['admin'],
-        'owner': !exists(json, 'owner') ? undefined : json['owner'],
+        'resourceState': json['resource_state'] == null ? undefined : json['resource_state'],
+        'firstname': json['firstname'] == null ? undefined : json['firstname'],
+        'lastname': json['lastname'] == null ? undefined : json['lastname'],
+        'member': json['member'] == null ? undefined : json['member'],
+        'admin': json['admin'] == null ? undefined : json['admin'],
+        'owner': json['owner'] == null ? undefined : json['owner'],
     };
 }
 
-export function ClubAthleteToJSON(value?: ClubAthlete | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ClubAthleteToJSON(json: any): ClubAthlete {
+    return ClubAthleteToJSONTyped(json, false);
+}
+
+export function ClubAthleteToJSONTyped(value?: ClubAthlete | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'resource_state': value.resourceState,
-        'firstname': value.firstname,
-        'lastname': value.lastname,
-        'member': value.member,
-        'admin': value.admin,
-        'owner': value.owner,
+        'resource_state': value['resourceState'],
+        'firstname': value['firstname'],
+        'lastname': value['lastname'],
+        'member': value['member'],
+        'admin': value['admin'],
+        'owner': value['owner'],
     };
 }
 

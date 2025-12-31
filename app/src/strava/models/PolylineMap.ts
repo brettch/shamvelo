@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -42,10 +42,8 @@ export interface PolylineMap {
 /**
  * Check if a given object implements the PolylineMap interface.
  */
-export function instanceOfPolylineMap(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfPolylineMap(value: object): value is PolylineMap {
+    return true;
 }
 
 export function PolylineMapFromJSON(json: any): PolylineMap {
@@ -53,29 +51,31 @@ export function PolylineMapFromJSON(json: any): PolylineMap {
 }
 
 export function PolylineMapFromJSONTyped(json: any, ignoreDiscriminator: boolean): PolylineMap {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'polyline': !exists(json, 'polyline') ? undefined : json['polyline'],
-        'summaryPolyline': !exists(json, 'summary_polyline') ? undefined : json['summary_polyline'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'polyline': json['polyline'] == null ? undefined : json['polyline'],
+        'summaryPolyline': json['summary_polyline'] == null ? undefined : json['summary_polyline'],
     };
 }
 
-export function PolylineMapToJSON(value?: PolylineMap | null): any {
-    if (value === undefined) {
-        return undefined;
+export function PolylineMapToJSON(json: any): PolylineMap {
+    return PolylineMapToJSONTyped(json, false);
+}
+
+export function PolylineMapToJSONTyped(value?: PolylineMap | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'polyline': value.polyline,
-        'summary_polyline': value.summaryPolyline,
+        'id': value['id'],
+        'polyline': value['polyline'],
+        'summary_polyline': value['summaryPolyline'],
     };
 }
 

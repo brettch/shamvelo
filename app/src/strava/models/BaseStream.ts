@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -63,10 +63,8 @@ export type BaseStreamSeriesTypeEnum = typeof BaseStreamSeriesTypeEnum[keyof typ
 /**
  * Check if a given object implements the BaseStream interface.
  */
-export function instanceOfBaseStream(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfBaseStream(value: object): value is BaseStream {
+    return true;
 }
 
 export function BaseStreamFromJSON(json: any): BaseStream {
@@ -74,29 +72,31 @@ export function BaseStreamFromJSON(json: any): BaseStream {
 }
 
 export function BaseStreamFromJSONTyped(json: any, ignoreDiscriminator: boolean): BaseStream {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'originalSize': !exists(json, 'original_size') ? undefined : json['original_size'],
-        'resolution': !exists(json, 'resolution') ? undefined : json['resolution'],
-        'seriesType': !exists(json, 'series_type') ? undefined : json['series_type'],
+        'originalSize': json['original_size'] == null ? undefined : json['original_size'],
+        'resolution': json['resolution'] == null ? undefined : json['resolution'],
+        'seriesType': json['series_type'] == null ? undefined : json['series_type'],
     };
 }
 
-export function BaseStreamToJSON(value?: BaseStream | null): any {
-    if (value === undefined) {
-        return undefined;
+export function BaseStreamToJSON(json: any): BaseStream {
+    return BaseStreamToJSONTyped(json, false);
+}
+
+export function BaseStreamToJSONTyped(value?: BaseStream | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'original_size': value.originalSize,
-        'resolution': value.resolution,
-        'series_type': value.seriesType,
+        'original_size': value['originalSize'],
+        'resolution': value['resolution'],
+        'series_type': value['seriesType'],
     };
 }
 

@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -66,10 +66,8 @@ export interface SummarySegmentEffort {
 /**
  * Check if a given object implements the SummarySegmentEffort interface.
  */
-export function instanceOfSummarySegmentEffort(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfSummarySegmentEffort(value: object): value is SummarySegmentEffort {
+    return true;
 }
 
 export function SummarySegmentEffortFromJSON(json: any): SummarySegmentEffort {
@@ -77,37 +75,39 @@ export function SummarySegmentEffortFromJSON(json: any): SummarySegmentEffort {
 }
 
 export function SummarySegmentEffortFromJSONTyped(json: any, ignoreDiscriminator: boolean): SummarySegmentEffort {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'activityId': !exists(json, 'activity_id') ? undefined : json['activity_id'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'startDate': !exists(json, 'start_date') ? undefined : (new Date(json['start_date'])),
-        'startDateLocal': !exists(json, 'start_date_local') ? undefined : (new Date(json['start_date_local'])),
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'isKom': !exists(json, 'is_kom') ? undefined : json['is_kom'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'activityId': json['activity_id'] == null ? undefined : json['activity_id'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'startDate': json['start_date'] == null ? undefined : (new Date(json['start_date'])),
+        'startDateLocal': json['start_date_local'] == null ? undefined : (new Date(json['start_date_local'])),
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'isKom': json['is_kom'] == null ? undefined : json['is_kom'],
     };
 }
 
-export function SummarySegmentEffortToJSON(value?: SummarySegmentEffort | null): any {
-    if (value === undefined) {
-        return undefined;
+export function SummarySegmentEffortToJSON(json: any): SummarySegmentEffort {
+    return SummarySegmentEffortToJSONTyped(json, false);
+}
+
+export function SummarySegmentEffortToJSONTyped(value?: SummarySegmentEffort | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'activity_id': value.activityId,
-        'elapsed_time': value.elapsedTime,
-        'start_date': value.startDate === undefined ? undefined : (value.startDate.toISOString()),
-        'start_date_local': value.startDateLocal === undefined ? undefined : (value.startDateLocal.toISOString()),
-        'distance': value.distance,
-        'is_kom': value.isKom,
+        'id': value['id'],
+        'activity_id': value['activityId'],
+        'elapsed_time': value['elapsedTime'],
+        'start_date': value['startDate'] == null ? value['startDate'] : value['startDate'].toISOString(),
+        'start_date_local': value['startDateLocal'] == null ? value['startDateLocal'] : value['startDateLocal'].toISOString(),
+        'distance': value['distance'],
+        'is_kom': value['isKom'],
     };
 }
 

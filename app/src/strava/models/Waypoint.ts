@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -60,10 +60,8 @@ export interface Waypoint {
 /**
  * Check if a given object implements the Waypoint interface.
  */
-export function instanceOfWaypoint(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfWaypoint(value: object): value is Waypoint {
+    return true;
 }
 
 export function WaypointFromJSON(json: any): Waypoint {
@@ -71,35 +69,37 @@ export function WaypointFromJSON(json: any): Waypoint {
 }
 
 export function WaypointFromJSONTyped(json: any, ignoreDiscriminator: boolean): Waypoint {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'latlng': !exists(json, 'latlng') ? undefined : json['latlng'],
-        'targetLatlng': !exists(json, 'target_latlng') ? undefined : json['target_latlng'],
-        'categories': !exists(json, 'categories') ? undefined : json['categories'],
-        'title': !exists(json, 'title') ? undefined : json['title'],
-        'description': !exists(json, 'description') ? undefined : json['description'],
-        'distanceIntoRoute': !exists(json, 'distance_into_route') ? undefined : json['distance_into_route'],
+        'latlng': json['latlng'] == null ? undefined : json['latlng'],
+        'targetLatlng': json['target_latlng'] == null ? undefined : json['target_latlng'],
+        'categories': json['categories'] == null ? undefined : json['categories'],
+        'title': json['title'] == null ? undefined : json['title'],
+        'description': json['description'] == null ? undefined : json['description'],
+        'distanceIntoRoute': json['distance_into_route'] == null ? undefined : json['distance_into_route'],
     };
 }
 
-export function WaypointToJSON(value?: Waypoint | null): any {
-    if (value === undefined) {
-        return undefined;
+export function WaypointToJSON(json: any): Waypoint {
+    return WaypointToJSONTyped(json, false);
+}
+
+export function WaypointToJSONTyped(value?: Waypoint | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'latlng': value.latlng,
-        'target_latlng': value.targetLatlng,
-        'categories': value.categories,
-        'title': value.title,
-        'description': value.description,
-        'distance_into_route': value.distanceIntoRoute,
+        'latlng': value['latlng'],
+        'target_latlng': value['targetLatlng'],
+        'categories': value['categories'],
+        'title': value['title'],
+        'description': value['description'],
+        'distance_into_route': value['distanceIntoRoute'],
     };
 }
 

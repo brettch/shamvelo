@@ -12,18 +12,20 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { SummaryClub } from './SummaryClub.js';
 import {
     SummaryClubFromJSON,
     SummaryClubFromJSONTyped,
     SummaryClubToJSON,
+    SummaryClubToJSONTyped,
 } from './SummaryClub.js';
 import type { SummaryGear } from './SummaryGear.js';
 import {
     SummaryGearFromJSON,
     SummaryGearFromJSONTyped,
     SummaryGearToJSON,
+    SummaryGearToJSONTyped,
 } from './SummaryGear.js';
 
 /**
@@ -189,10 +191,8 @@ export type DetailedAthleteMeasurementPreferenceEnum = typeof DetailedAthleteMea
 /**
  * Check if a given object implements the DetailedAthlete interface.
  */
-export function instanceOfDetailedAthlete(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfDetailedAthlete(value: object): value is DetailedAthlete {
+    return true;
 }
 
 export function DetailedAthleteFromJSON(json: any): DetailedAthlete {
@@ -200,67 +200,69 @@ export function DetailedAthleteFromJSON(json: any): DetailedAthlete {
 }
 
 export function DetailedAthleteFromJSONTyped(json: any, ignoreDiscriminator: boolean): DetailedAthlete {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'resourceState': !exists(json, 'resource_state') ? undefined : json['resource_state'],
-        'firstname': !exists(json, 'firstname') ? undefined : json['firstname'],
-        'lastname': !exists(json, 'lastname') ? undefined : json['lastname'],
-        'profileMedium': !exists(json, 'profile_medium') ? undefined : json['profile_medium'],
-        'profile': !exists(json, 'profile') ? undefined : json['profile'],
-        'city': !exists(json, 'city') ? undefined : json['city'],
-        'state': !exists(json, 'state') ? undefined : json['state'],
-        'country': !exists(json, 'country') ? undefined : json['country'],
-        'sex': !exists(json, 'sex') ? undefined : json['sex'],
-        'premium': !exists(json, 'premium') ? undefined : json['premium'],
-        'summit': !exists(json, 'summit') ? undefined : json['summit'],
-        'createdAt': !exists(json, 'created_at') ? undefined : (new Date(json['created_at'])),
-        'updatedAt': !exists(json, 'updated_at') ? undefined : (new Date(json['updated_at'])),
-        'followerCount': !exists(json, 'follower_count') ? undefined : json['follower_count'],
-        'friendCount': !exists(json, 'friend_count') ? undefined : json['friend_count'],
-        'measurementPreference': !exists(json, 'measurement_preference') ? undefined : json['measurement_preference'],
-        'ftp': !exists(json, 'ftp') ? undefined : json['ftp'],
-        'weight': !exists(json, 'weight') ? undefined : json['weight'],
-        'clubs': !exists(json, 'clubs') ? undefined : ((json['clubs'] as Array<any>).map(SummaryClubFromJSON)),
-        'bikes': !exists(json, 'bikes') ? undefined : ((json['bikes'] as Array<any>).map(SummaryGearFromJSON)),
-        'shoes': !exists(json, 'shoes') ? undefined : ((json['shoes'] as Array<any>).map(SummaryGearFromJSON)),
+        'id': json['id'] == null ? undefined : json['id'],
+        'resourceState': json['resource_state'] == null ? undefined : json['resource_state'],
+        'firstname': json['firstname'] == null ? undefined : json['firstname'],
+        'lastname': json['lastname'] == null ? undefined : json['lastname'],
+        'profileMedium': json['profile_medium'] == null ? undefined : json['profile_medium'],
+        'profile': json['profile'] == null ? undefined : json['profile'],
+        'city': json['city'] == null ? undefined : json['city'],
+        'state': json['state'] == null ? undefined : json['state'],
+        'country': json['country'] == null ? undefined : json['country'],
+        'sex': json['sex'] == null ? undefined : json['sex'],
+        'premium': json['premium'] == null ? undefined : json['premium'],
+        'summit': json['summit'] == null ? undefined : json['summit'],
+        'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
+        'updatedAt': json['updated_at'] == null ? undefined : (new Date(json['updated_at'])),
+        'followerCount': json['follower_count'] == null ? undefined : json['follower_count'],
+        'friendCount': json['friend_count'] == null ? undefined : json['friend_count'],
+        'measurementPreference': json['measurement_preference'] == null ? undefined : json['measurement_preference'],
+        'ftp': json['ftp'] == null ? undefined : json['ftp'],
+        'weight': json['weight'] == null ? undefined : json['weight'],
+        'clubs': json['clubs'] == null ? undefined : ((json['clubs'] as Array<any>).map(SummaryClubFromJSON)),
+        'bikes': json['bikes'] == null ? undefined : ((json['bikes'] as Array<any>).map(SummaryGearFromJSON)),
+        'shoes': json['shoes'] == null ? undefined : ((json['shoes'] as Array<any>).map(SummaryGearFromJSON)),
     };
 }
 
-export function DetailedAthleteToJSON(value?: DetailedAthlete | null): any {
-    if (value === undefined) {
-        return undefined;
+export function DetailedAthleteToJSON(json: any): DetailedAthlete {
+    return DetailedAthleteToJSONTyped(json, false);
+}
+
+export function DetailedAthleteToJSONTyped(value?: DetailedAthlete | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'resource_state': value.resourceState,
-        'firstname': value.firstname,
-        'lastname': value.lastname,
-        'profile_medium': value.profileMedium,
-        'profile': value.profile,
-        'city': value.city,
-        'state': value.state,
-        'country': value.country,
-        'sex': value.sex,
-        'premium': value.premium,
-        'summit': value.summit,
-        'created_at': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
-        'updated_at': value.updatedAt === undefined ? undefined : (value.updatedAt.toISOString()),
-        'follower_count': value.followerCount,
-        'friend_count': value.friendCount,
-        'measurement_preference': value.measurementPreference,
-        'ftp': value.ftp,
-        'weight': value.weight,
-        'clubs': value.clubs === undefined ? undefined : ((value.clubs as Array<any>).map(SummaryClubToJSON)),
-        'bikes': value.bikes === undefined ? undefined : ((value.bikes as Array<any>).map(SummaryGearToJSON)),
-        'shoes': value.shoes === undefined ? undefined : ((value.shoes as Array<any>).map(SummaryGearToJSON)),
+        'id': value['id'],
+        'resource_state': value['resourceState'],
+        'firstname': value['firstname'],
+        'lastname': value['lastname'],
+        'profile_medium': value['profileMedium'],
+        'profile': value['profile'],
+        'city': value['city'],
+        'state': value['state'],
+        'country': value['country'],
+        'sex': value['sex'],
+        'premium': value['premium'],
+        'summit': value['summit'],
+        'created_at': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
+        'updated_at': value['updatedAt'] == null ? value['updatedAt'] : value['updatedAt'].toISOString(),
+        'follower_count': value['followerCount'],
+        'friend_count': value['friendCount'],
+        'measurement_preference': value['measurementPreference'],
+        'ftp': value['ftp'],
+        'weight': value['weight'],
+        'clubs': value['clubs'] == null ? undefined : ((value['clubs'] as Array<any>).map(SummaryClubToJSON)),
+        'bikes': value['bikes'] == null ? undefined : ((value['bikes'] as Array<any>).map(SummaryGearToJSON)),
+        'shoes': value['shoes'] == null ? undefined : ((value['shoes'] as Array<any>).map(SummaryGearToJSON)),
     };
 }
 

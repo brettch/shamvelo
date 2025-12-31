@@ -74,36 +74,39 @@ export class UploadsApi extends runtime.BaseAPI {
             formParams = new URLSearchParams();
         }
 
-        if (requestParameters.file !== undefined) {
-            formParams.append('file', requestParameters.file as any);
+        if (requestParameters['file'] != null) {
+            formParams.append('file', requestParameters['file'] as any);
         }
 
-        if (requestParameters.name !== undefined) {
-            formParams.append('name', requestParameters.name as any);
+        if (requestParameters['name'] != null) {
+            formParams.append('name', requestParameters['name'] as any);
         }
 
-        if (requestParameters.description !== undefined) {
-            formParams.append('description', requestParameters.description as any);
+        if (requestParameters['description'] != null) {
+            formParams.append('description', requestParameters['description'] as any);
         }
 
-        if (requestParameters.trainer !== undefined) {
-            formParams.append('trainer', requestParameters.trainer as any);
+        if (requestParameters['trainer'] != null) {
+            formParams.append('trainer', requestParameters['trainer'] as any);
         }
 
-        if (requestParameters.commute !== undefined) {
-            formParams.append('commute', requestParameters.commute as any);
+        if (requestParameters['commute'] != null) {
+            formParams.append('commute', requestParameters['commute'] as any);
         }
 
-        if (requestParameters.dataType !== undefined) {
-            formParams.append('data_type', requestParameters.dataType as any);
+        if (requestParameters['dataType'] != null) {
+            formParams.append('data_type', requestParameters['dataType'] as any);
         }
 
-        if (requestParameters.externalId !== undefined) {
-            formParams.append('external_id', requestParameters.externalId as any);
+        if (requestParameters['externalId'] != null) {
+            formParams.append('external_id', requestParameters['externalId'] as any);
         }
+
+
+        let urlPath = `/uploads`;
 
         const response = await this.request({
-            path: `/uploads`,
+            path: urlPath,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -127,8 +130,11 @@ export class UploadsApi extends runtime.BaseAPI {
      * Get Upload
      */
     async getUploadByIdRaw(requestParameters: GetUploadByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Upload>> {
-        if (requestParameters.uploadId === null || requestParameters.uploadId === undefined) {
-            throw new runtime.RequiredError('uploadId','Required parameter requestParameters.uploadId was null or undefined when calling getUploadById.');
+        if (requestParameters['uploadId'] == null) {
+            throw new runtime.RequiredError(
+                'uploadId',
+                'Required parameter "uploadId" was null or undefined when calling getUploadById().'
+            );
         }
 
         const queryParameters: any = {};
@@ -140,8 +146,12 @@ export class UploadsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/uploads/{uploadId}`;
+        urlPath = urlPath.replace(`{${"uploadId"}}`, encodeURIComponent(String(requestParameters['uploadId'])));
+
         const response = await this.request({
-            path: `/uploads/{uploadId}`.replace(`{${"uploadId"}}`, encodeURIComponent(String(requestParameters.uploadId))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

@@ -39,8 +39,11 @@ export class GearsApi extends runtime.BaseAPI {
      * Get Equipment
      */
     async getGearByIdRaw(requestParameters: GetGearByIdRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DetailedGear>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getGearById.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getGearById().'
+            );
         }
 
         const queryParameters: any = {};
@@ -52,8 +55,12 @@ export class GearsApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/gear/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/gear/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,

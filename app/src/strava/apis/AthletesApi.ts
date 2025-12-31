@@ -58,8 +58,11 @@ export class AthletesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/athlete`;
+
         const response = await this.request({
-            path: `/athlete`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -91,8 +94,11 @@ export class AthletesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/athlete/zones`;
+
         const response = await this.request({
-            path: `/athlete/zones`,
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -115,8 +121,11 @@ export class AthletesApi extends runtime.BaseAPI {
      * Get Athlete Stats
      */
     async getStatsRaw(requestParameters: GetStatsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ActivityStats>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getStats.');
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling getStats().'
+            );
         }
 
         const queryParameters: any = {};
@@ -128,8 +137,12 @@ export class AthletesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/athletes/{id}/stats`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
         const response = await this.request({
-            path: `/athletes/{id}/stats`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: urlPath,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -152,8 +165,11 @@ export class AthletesApi extends runtime.BaseAPI {
      * Update Athlete
      */
     async updateLoggedInAthleteRaw(requestParameters: UpdateLoggedInAthleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<DetailedAthlete>> {
-        if (requestParameters.weight === null || requestParameters.weight === undefined) {
-            throw new runtime.RequiredError('weight','Required parameter requestParameters.weight was null or undefined when calling updateLoggedInAthlete.');
+        if (requestParameters['weight'] == null) {
+            throw new runtime.RequiredError(
+                'weight',
+                'Required parameter "weight" was null or undefined when calling updateLoggedInAthlete().'
+            );
         }
 
         const queryParameters: any = {};
@@ -165,8 +181,12 @@ export class AthletesApi extends runtime.BaseAPI {
             headerParameters["Authorization"] = await this.configuration.accessToken("strava_oauth", []);
         }
 
+
+        let urlPath = `/athlete`;
+        urlPath = urlPath.replace(`{${"weight"}}`, encodeURIComponent(String(requestParameters['weight'])));
+
         const response = await this.request({
-            path: `/athlete`.replace(`{${"weight"}}`, encodeURIComponent(String(requestParameters.weight))),
+            path: urlPath,
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,

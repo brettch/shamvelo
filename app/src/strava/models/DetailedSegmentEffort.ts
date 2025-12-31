@@ -12,24 +12,27 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { MetaActivity } from './MetaActivity.js';
 import {
     MetaActivityFromJSON,
     MetaActivityFromJSONTyped,
     MetaActivityToJSON,
+    MetaActivityToJSONTyped,
 } from './MetaActivity.js';
 import type { MetaAthlete } from './MetaAthlete.js';
 import {
     MetaAthleteFromJSON,
     MetaAthleteFromJSONTyped,
     MetaAthleteToJSON,
+    MetaAthleteToJSONTyped,
 } from './MetaAthlete.js';
 import type { SummarySegment } from './SummarySegment.js';
 import {
     SummarySegmentFromJSON,
     SummarySegmentFromJSONTyped,
     SummarySegmentToJSON,
+    SummarySegmentToJSONTyped,
 } from './SummarySegment.js';
 
 /**
@@ -175,10 +178,8 @@ export interface DetailedSegmentEffort {
 /**
  * Check if a given object implements the DetailedSegmentEffort interface.
  */
-export function instanceOfDetailedSegmentEffort(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfDetailedSegmentEffort(value: object): value is DetailedSegmentEffort {
+    return true;
 }
 
 export function DetailedSegmentEffortFromJSON(json: any): DetailedSegmentEffort {
@@ -186,67 +187,69 @@ export function DetailedSegmentEffortFromJSON(json: any): DetailedSegmentEffort 
 }
 
 export function DetailedSegmentEffortFromJSONTyped(json: any, ignoreDiscriminator: boolean): DetailedSegmentEffort {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'activityId': !exists(json, 'activity_id') ? undefined : json['activity_id'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'startDate': !exists(json, 'start_date') ? undefined : (new Date(json['start_date'])),
-        'startDateLocal': !exists(json, 'start_date_local') ? undefined : (new Date(json['start_date_local'])),
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'isKom': !exists(json, 'is_kom') ? undefined : json['is_kom'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'activity': !exists(json, 'activity') ? undefined : MetaActivityFromJSON(json['activity']),
-        'athlete': !exists(json, 'athlete') ? undefined : MetaAthleteFromJSON(json['athlete']),
-        'movingTime': !exists(json, 'moving_time') ? undefined : json['moving_time'],
-        'startIndex': !exists(json, 'start_index') ? undefined : json['start_index'],
-        'endIndex': !exists(json, 'end_index') ? undefined : json['end_index'],
-        'averageCadence': !exists(json, 'average_cadence') ? undefined : json['average_cadence'],
-        'averageWatts': !exists(json, 'average_watts') ? undefined : json['average_watts'],
-        'deviceWatts': !exists(json, 'device_watts') ? undefined : json['device_watts'],
-        'averageHeartrate': !exists(json, 'average_heartrate') ? undefined : json['average_heartrate'],
-        'maxHeartrate': !exists(json, 'max_heartrate') ? undefined : json['max_heartrate'],
-        'segment': !exists(json, 'segment') ? undefined : SummarySegmentFromJSON(json['segment']),
-        'komRank': !exists(json, 'kom_rank') ? undefined : json['kom_rank'],
-        'prRank': !exists(json, 'pr_rank') ? undefined : json['pr_rank'],
-        'hidden': !exists(json, 'hidden') ? undefined : json['hidden'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'activityId': json['activity_id'] == null ? undefined : json['activity_id'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'startDate': json['start_date'] == null ? undefined : (new Date(json['start_date'])),
+        'startDateLocal': json['start_date_local'] == null ? undefined : (new Date(json['start_date_local'])),
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'isKom': json['is_kom'] == null ? undefined : json['is_kom'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'activity': json['activity'] == null ? undefined : MetaActivityFromJSON(json['activity']),
+        'athlete': json['athlete'] == null ? undefined : MetaAthleteFromJSON(json['athlete']),
+        'movingTime': json['moving_time'] == null ? undefined : json['moving_time'],
+        'startIndex': json['start_index'] == null ? undefined : json['start_index'],
+        'endIndex': json['end_index'] == null ? undefined : json['end_index'],
+        'averageCadence': json['average_cadence'] == null ? undefined : json['average_cadence'],
+        'averageWatts': json['average_watts'] == null ? undefined : json['average_watts'],
+        'deviceWatts': json['device_watts'] == null ? undefined : json['device_watts'],
+        'averageHeartrate': json['average_heartrate'] == null ? undefined : json['average_heartrate'],
+        'maxHeartrate': json['max_heartrate'] == null ? undefined : json['max_heartrate'],
+        'segment': json['segment'] == null ? undefined : SummarySegmentFromJSON(json['segment']),
+        'komRank': json['kom_rank'] == null ? undefined : json['kom_rank'],
+        'prRank': json['pr_rank'] == null ? undefined : json['pr_rank'],
+        'hidden': json['hidden'] == null ? undefined : json['hidden'],
     };
 }
 
-export function DetailedSegmentEffortToJSON(value?: DetailedSegmentEffort | null): any {
-    if (value === undefined) {
-        return undefined;
+export function DetailedSegmentEffortToJSON(json: any): DetailedSegmentEffort {
+    return DetailedSegmentEffortToJSONTyped(json, false);
+}
+
+export function DetailedSegmentEffortToJSONTyped(value?: DetailedSegmentEffort | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'activity_id': value.activityId,
-        'elapsed_time': value.elapsedTime,
-        'start_date': value.startDate === undefined ? undefined : (value.startDate.toISOString()),
-        'start_date_local': value.startDateLocal === undefined ? undefined : (value.startDateLocal.toISOString()),
-        'distance': value.distance,
-        'is_kom': value.isKom,
-        'name': value.name,
-        'activity': MetaActivityToJSON(value.activity),
-        'athlete': MetaAthleteToJSON(value.athlete),
-        'moving_time': value.movingTime,
-        'start_index': value.startIndex,
-        'end_index': value.endIndex,
-        'average_cadence': value.averageCadence,
-        'average_watts': value.averageWatts,
-        'device_watts': value.deviceWatts,
-        'average_heartrate': value.averageHeartrate,
-        'max_heartrate': value.maxHeartrate,
-        'segment': SummarySegmentToJSON(value.segment),
-        'kom_rank': value.komRank,
-        'pr_rank': value.prRank,
-        'hidden': value.hidden,
+        'id': value['id'],
+        'activity_id': value['activityId'],
+        'elapsed_time': value['elapsedTime'],
+        'start_date': value['startDate'] == null ? value['startDate'] : value['startDate'].toISOString(),
+        'start_date_local': value['startDateLocal'] == null ? value['startDateLocal'] : value['startDateLocal'].toISOString(),
+        'distance': value['distance'],
+        'is_kom': value['isKom'],
+        'name': value['name'],
+        'activity': MetaActivityToJSON(value['activity']),
+        'athlete': MetaAthleteToJSON(value['athlete']),
+        'moving_time': value['movingTime'],
+        'start_index': value['startIndex'],
+        'end_index': value['endIndex'],
+        'average_cadence': value['averageCadence'],
+        'average_watts': value['averageWatts'],
+        'device_watts': value['deviceWatts'],
+        'average_heartrate': value['averageHeartrate'],
+        'max_heartrate': value['maxHeartrate'],
+        'segment': SummarySegmentToJSON(value['segment']),
+        'kom_rank': value['komRank'],
+        'pr_rank': value['prRank'],
+        'hidden': value['hidden'],
     };
 }
 

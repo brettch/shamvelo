@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { ZoneRange } from './ZoneRange.js';
 import {
     ZoneRangeFromJSON,
     ZoneRangeFromJSONTyped,
     ZoneRangeToJSON,
+    ZoneRangeToJSONTyped,
 } from './ZoneRange.js';
 
 /**
@@ -43,10 +44,8 @@ export interface HeartRateZoneRanges {
 /**
  * Check if a given object implements the HeartRateZoneRanges interface.
  */
-export function instanceOfHeartRateZoneRanges(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfHeartRateZoneRanges(value: object): value is HeartRateZoneRanges {
+    return true;
 }
 
 export function HeartRateZoneRangesFromJSON(json: any): HeartRateZoneRanges {
@@ -54,27 +53,29 @@ export function HeartRateZoneRangesFromJSON(json: any): HeartRateZoneRanges {
 }
 
 export function HeartRateZoneRangesFromJSONTyped(json: any, ignoreDiscriminator: boolean): HeartRateZoneRanges {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'customZones': !exists(json, 'custom_zones') ? undefined : json['custom_zones'],
-        'zones': !exists(json, 'zones') ? undefined : ((json['zones'] as Array<any>).map(ZoneRangeFromJSON)),
+        'customZones': json['custom_zones'] == null ? undefined : json['custom_zones'],
+        'zones': json['zones'] == null ? undefined : ((json['zones'] as Array<any>).map(ZoneRangeFromJSON)),
     };
 }
 
-export function HeartRateZoneRangesToJSON(value?: HeartRateZoneRanges | null): any {
-    if (value === undefined) {
-        return undefined;
+export function HeartRateZoneRangesToJSON(json: any): HeartRateZoneRanges {
+    return HeartRateZoneRangesToJSONTyped(json, false);
+}
+
+export function HeartRateZoneRangesToJSONTyped(value?: HeartRateZoneRanges | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'custom_zones': value.customZones,
-        'zones': value.zones === undefined ? undefined : ((value.zones as Array<any>).map(ZoneRangeToJSON)),
+        'custom_zones': value['customZones'],
+        'zones': value['zones'] == null ? undefined : ((value['zones'] as Array<any>).map(ZoneRangeToJSON)),
     };
 }
 

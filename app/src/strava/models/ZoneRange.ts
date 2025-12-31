@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -36,10 +36,8 @@ export interface ZoneRange {
 /**
  * Check if a given object implements the ZoneRange interface.
  */
-export function instanceOfZoneRange(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfZoneRange(value: object): value is ZoneRange {
+    return true;
 }
 
 export function ZoneRangeFromJSON(json: any): ZoneRange {
@@ -47,27 +45,29 @@ export function ZoneRangeFromJSON(json: any): ZoneRange {
 }
 
 export function ZoneRangeFromJSONTyped(json: any, ignoreDiscriminator: boolean): ZoneRange {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'min': !exists(json, 'min') ? undefined : json['min'],
-        'max': !exists(json, 'max') ? undefined : json['max'],
+        'min': json['min'] == null ? undefined : json['min'],
+        'max': json['max'] == null ? undefined : json['max'],
     };
 }
 
-export function ZoneRangeToJSON(value?: ZoneRange | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ZoneRangeToJSON(json: any): ZoneRange {
+    return ZoneRangeToJSONTyped(json, false);
+}
+
+export function ZoneRangeToJSONTyped(value?: ZoneRange | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'min': value.min,
-        'max': value.max,
+        'min': value['min'],
+        'max': value['max'],
     };
 }
 

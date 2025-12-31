@@ -12,18 +12,20 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { HeartRateZoneRanges } from './HeartRateZoneRanges.js';
 import {
     HeartRateZoneRangesFromJSON,
     HeartRateZoneRangesFromJSONTyped,
     HeartRateZoneRangesToJSON,
+    HeartRateZoneRangesToJSONTyped,
 } from './HeartRateZoneRanges.js';
 import type { PowerZoneRanges } from './PowerZoneRanges.js';
 import {
     PowerZoneRangesFromJSON,
     PowerZoneRangesFromJSONTyped,
     PowerZoneRangesToJSON,
+    PowerZoneRangesToJSONTyped,
 } from './PowerZoneRanges.js';
 
 /**
@@ -49,10 +51,8 @@ export interface Zones {
 /**
  * Check if a given object implements the Zones interface.
  */
-export function instanceOfZones(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfZones(value: object): value is Zones {
+    return true;
 }
 
 export function ZonesFromJSON(json: any): Zones {
@@ -60,27 +60,29 @@ export function ZonesFromJSON(json: any): Zones {
 }
 
 export function ZonesFromJSONTyped(json: any, ignoreDiscriminator: boolean): Zones {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'heartRate': !exists(json, 'heart_rate') ? undefined : HeartRateZoneRangesFromJSON(json['heart_rate']),
-        'power': !exists(json, 'power') ? undefined : PowerZoneRangesFromJSON(json['power']),
+        'heartRate': json['heart_rate'] == null ? undefined : HeartRateZoneRangesFromJSON(json['heart_rate']),
+        'power': json['power'] == null ? undefined : PowerZoneRangesFromJSON(json['power']),
     };
 }
 
-export function ZonesToJSON(value?: Zones | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ZonesToJSON(json: any): Zones {
+    return ZonesToJSONTyped(json, false);
+}
+
+export function ZonesToJSONTyped(value?: Zones | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'heart_rate': HeartRateZoneRangesToJSON(value.heartRate),
-        'power': PowerZoneRangesToJSON(value.power),
+        'heart_rate': HeartRateZoneRangesToJSON(value['heartRate']),
+        'power': PowerZoneRangesToJSON(value['power']),
     };
 }
 

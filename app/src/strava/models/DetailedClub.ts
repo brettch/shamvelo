@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { ActivityType } from './ActivityType.js';
 import {
     ActivityTypeFromJSON,
     ActivityTypeFromJSONTyped,
     ActivityTypeToJSON,
+    ActivityTypeToJSONTyped,
 } from './ActivityType.js';
 
 /**
@@ -173,10 +174,8 @@ export type DetailedClubMembershipEnum = typeof DetailedClubMembershipEnum[keyof
 /**
  * Check if a given object implements the DetailedClub interface.
  */
-export function instanceOfDetailedClub(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfDetailedClub(value: object): value is DetailedClub {
+    return true;
 }
 
 export function DetailedClubFromJSON(json: any): DetailedClub {
@@ -184,63 +183,65 @@ export function DetailedClubFromJSON(json: any): DetailedClub {
 }
 
 export function DetailedClubFromJSONTyped(json: any, ignoreDiscriminator: boolean): DetailedClub {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'resourceState': !exists(json, 'resource_state') ? undefined : json['resource_state'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'profileMedium': !exists(json, 'profile_medium') ? undefined : json['profile_medium'],
-        'coverPhoto': !exists(json, 'cover_photo') ? undefined : json['cover_photo'],
-        'coverPhotoSmall': !exists(json, 'cover_photo_small') ? undefined : json['cover_photo_small'],
-        'sportType': !exists(json, 'sport_type') ? undefined : json['sport_type'],
-        'activityTypes': !exists(json, 'activity_types') ? undefined : ((json['activity_types'] as Array<any>).map(ActivityTypeFromJSON)),
-        'city': !exists(json, 'city') ? undefined : json['city'],
-        'state': !exists(json, 'state') ? undefined : json['state'],
-        'country': !exists(json, 'country') ? undefined : json['country'],
-        '_private': !exists(json, 'private') ? undefined : json['private'],
-        'memberCount': !exists(json, 'member_count') ? undefined : json['member_count'],
-        'featured': !exists(json, 'featured') ? undefined : json['featured'],
-        'verified': !exists(json, 'verified') ? undefined : json['verified'],
-        'url': !exists(json, 'url') ? undefined : json['url'],
-        'membership': !exists(json, 'membership') ? undefined : json['membership'],
-        'admin': !exists(json, 'admin') ? undefined : json['admin'],
-        'owner': !exists(json, 'owner') ? undefined : json['owner'],
-        'followingCount': !exists(json, 'following_count') ? undefined : json['following_count'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'resourceState': json['resource_state'] == null ? undefined : json['resource_state'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'profileMedium': json['profile_medium'] == null ? undefined : json['profile_medium'],
+        'coverPhoto': json['cover_photo'] == null ? undefined : json['cover_photo'],
+        'coverPhotoSmall': json['cover_photo_small'] == null ? undefined : json['cover_photo_small'],
+        'sportType': json['sport_type'] == null ? undefined : json['sport_type'],
+        'activityTypes': json['activity_types'] == null ? undefined : ((json['activity_types'] as Array<any>).map(ActivityTypeFromJSON)),
+        'city': json['city'] == null ? undefined : json['city'],
+        'state': json['state'] == null ? undefined : json['state'],
+        'country': json['country'] == null ? undefined : json['country'],
+        '_private': json['private'] == null ? undefined : json['private'],
+        'memberCount': json['member_count'] == null ? undefined : json['member_count'],
+        'featured': json['featured'] == null ? undefined : json['featured'],
+        'verified': json['verified'] == null ? undefined : json['verified'],
+        'url': json['url'] == null ? undefined : json['url'],
+        'membership': json['membership'] == null ? undefined : json['membership'],
+        'admin': json['admin'] == null ? undefined : json['admin'],
+        'owner': json['owner'] == null ? undefined : json['owner'],
+        'followingCount': json['following_count'] == null ? undefined : json['following_count'],
     };
 }
 
-export function DetailedClubToJSON(value?: DetailedClub | null): any {
-    if (value === undefined) {
-        return undefined;
+export function DetailedClubToJSON(json: any): DetailedClub {
+    return DetailedClubToJSONTyped(json, false);
+}
+
+export function DetailedClubToJSONTyped(value?: DetailedClub | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'resource_state': value.resourceState,
-        'name': value.name,
-        'profile_medium': value.profileMedium,
-        'cover_photo': value.coverPhoto,
-        'cover_photo_small': value.coverPhotoSmall,
-        'sport_type': value.sportType,
-        'activity_types': value.activityTypes === undefined ? undefined : ((value.activityTypes as Array<any>).map(ActivityTypeToJSON)),
-        'city': value.city,
-        'state': value.state,
-        'country': value.country,
-        'private': value._private,
-        'member_count': value.memberCount,
-        'featured': value.featured,
-        'verified': value.verified,
-        'url': value.url,
-        'membership': value.membership,
-        'admin': value.admin,
-        'owner': value.owner,
-        'following_count': value.followingCount,
+        'id': value['id'],
+        'resource_state': value['resourceState'],
+        'name': value['name'],
+        'profile_medium': value['profileMedium'],
+        'cover_photo': value['coverPhoto'],
+        'cover_photo_small': value['coverPhotoSmall'],
+        'sport_type': value['sportType'],
+        'activity_types': value['activityTypes'] == null ? undefined : ((value['activityTypes'] as Array<any>).map(ActivityTypeToJSON)),
+        'city': value['city'],
+        'state': value['state'],
+        'country': value['country'],
+        'private': value['_private'],
+        'member_count': value['memberCount'],
+        'featured': value['featured'],
+        'verified': value['verified'],
+        'url': value['url'],
+        'membership': value['membership'],
+        'admin': value['admin'],
+        'owner': value['owner'],
+        'following_count': value['followingCount'],
     };
 }
 

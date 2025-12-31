@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -69,10 +69,8 @@ export type LatLngStreamSeriesTypeEnum = typeof LatLngStreamSeriesTypeEnum[keyof
 /**
  * Check if a given object implements the LatLngStream interface.
  */
-export function instanceOfLatLngStream(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfLatLngStream(value: object): value is LatLngStream {
+    return true;
 }
 
 export function LatLngStreamFromJSON(json: any): LatLngStream {
@@ -80,31 +78,33 @@ export function LatLngStreamFromJSON(json: any): LatLngStream {
 }
 
 export function LatLngStreamFromJSONTyped(json: any, ignoreDiscriminator: boolean): LatLngStream {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'originalSize': !exists(json, 'original_size') ? undefined : json['original_size'],
-        'resolution': !exists(json, 'resolution') ? undefined : json['resolution'],
-        'seriesType': !exists(json, 'series_type') ? undefined : json['series_type'],
-        'data': !exists(json, 'data') ? undefined : json['data'],
+        'originalSize': json['original_size'] == null ? undefined : json['original_size'],
+        'resolution': json['resolution'] == null ? undefined : json['resolution'],
+        'seriesType': json['series_type'] == null ? undefined : json['series_type'],
+        'data': json['data'] == null ? undefined : json['data'],
     };
 }
 
-export function LatLngStreamToJSON(value?: LatLngStream | null): any {
-    if (value === undefined) {
-        return undefined;
+export function LatLngStreamToJSON(json: any): LatLngStream {
+    return LatLngStreamToJSONTyped(json, false);
+}
+
+export function LatLngStreamToJSONTyped(value?: LatLngStream | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'original_size': value.originalSize,
-        'resolution': value.resolution,
-        'series_type': value.seriesType,
-        'data': value.data,
+        'original_size': value['originalSize'],
+        'resolution': value['resolution'],
+        'series_type': value['seriesType'],
+        'data': value['data'],
     };
 }
 

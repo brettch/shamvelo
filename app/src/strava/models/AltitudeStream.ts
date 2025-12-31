@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -69,10 +69,8 @@ export type AltitudeStreamSeriesTypeEnum = typeof AltitudeStreamSeriesTypeEnum[k
 /**
  * Check if a given object implements the AltitudeStream interface.
  */
-export function instanceOfAltitudeStream(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfAltitudeStream(value: object): value is AltitudeStream {
+    return true;
 }
 
 export function AltitudeStreamFromJSON(json: any): AltitudeStream {
@@ -80,31 +78,33 @@ export function AltitudeStreamFromJSON(json: any): AltitudeStream {
 }
 
 export function AltitudeStreamFromJSONTyped(json: any, ignoreDiscriminator: boolean): AltitudeStream {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'originalSize': !exists(json, 'original_size') ? undefined : json['original_size'],
-        'resolution': !exists(json, 'resolution') ? undefined : json['resolution'],
-        'seriesType': !exists(json, 'series_type') ? undefined : json['series_type'],
-        'data': !exists(json, 'data') ? undefined : json['data'],
+        'originalSize': json['original_size'] == null ? undefined : json['original_size'],
+        'resolution': json['resolution'] == null ? undefined : json['resolution'],
+        'seriesType': json['series_type'] == null ? undefined : json['series_type'],
+        'data': json['data'] == null ? undefined : json['data'],
     };
 }
 
-export function AltitudeStreamToJSON(value?: AltitudeStream | null): any {
-    if (value === undefined) {
-        return undefined;
+export function AltitudeStreamToJSON(json: any): AltitudeStream {
+    return AltitudeStreamToJSONTyped(json, false);
+}
+
+export function AltitudeStreamToJSONTyped(value?: AltitudeStream | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'original_size': value.originalSize,
-        'resolution': value.resolution,
-        'series_type': value.seriesType,
-        'data': value.data,
+        'original_size': value['originalSize'],
+        'resolution': value['resolution'],
+        'series_type': value['seriesType'],
+        'data': value['data'],
     };
 }
 

@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -60,10 +60,8 @@ export interface Upload {
 /**
  * Check if a given object implements the Upload interface.
  */
-export function instanceOfUpload(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfUpload(value: object): value is Upload {
+    return true;
 }
 
 export function UploadFromJSON(json: any): Upload {
@@ -71,35 +69,37 @@ export function UploadFromJSON(json: any): Upload {
 }
 
 export function UploadFromJSONTyped(json: any, ignoreDiscriminator: boolean): Upload {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'idStr': !exists(json, 'id_str') ? undefined : json['id_str'],
-        'externalId': !exists(json, 'external_id') ? undefined : json['external_id'],
-        'error': !exists(json, 'error') ? undefined : json['error'],
-        'status': !exists(json, 'status') ? undefined : json['status'],
-        'activityId': !exists(json, 'activity_id') ? undefined : json['activity_id'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'idStr': json['id_str'] == null ? undefined : json['id_str'],
+        'externalId': json['external_id'] == null ? undefined : json['external_id'],
+        'error': json['error'] == null ? undefined : json['error'],
+        'status': json['status'] == null ? undefined : json['status'],
+        'activityId': json['activity_id'] == null ? undefined : json['activity_id'],
     };
 }
 
-export function UploadToJSON(value?: Upload | null): any {
-    if (value === undefined) {
-        return undefined;
+export function UploadToJSON(json: any): Upload {
+    return UploadToJSONTyped(json, false);
+}
+
+export function UploadToJSONTyped(value?: Upload | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'id_str': value.idStr,
-        'external_id': value.externalId,
-        'error': value.error,
-        'status': value.status,
-        'activity_id': value.activityId,
+        'id': value['id'],
+        'id_str': value['idStr'],
+        'external_id': value['externalId'],
+        'error': value['error'],
+        'status': value['status'],
+        'activity_id': value['activityId'],
     };
 }
 

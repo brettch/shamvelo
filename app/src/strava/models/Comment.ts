@@ -12,12 +12,13 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 import type { SummaryAthlete } from './SummaryAthlete.js';
 import {
     SummaryAthleteFromJSON,
     SummaryAthleteFromJSONTyped,
     SummaryAthleteToJSON,
+    SummaryAthleteToJSONTyped,
 } from './SummaryAthlete.js';
 
 /**
@@ -61,10 +62,8 @@ export interface Comment {
 /**
  * Check if a given object implements the Comment interface.
  */
-export function instanceOfComment(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfComment(value: object): value is Comment {
+    return true;
 }
 
 export function CommentFromJSON(json: any): Comment {
@@ -72,33 +71,35 @@ export function CommentFromJSON(json: any): Comment {
 }
 
 export function CommentFromJSONTyped(json: any, ignoreDiscriminator: boolean): Comment {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'activityId': !exists(json, 'activity_id') ? undefined : json['activity_id'],
-        'text': !exists(json, 'text') ? undefined : json['text'],
-        'athlete': !exists(json, 'athlete') ? undefined : SummaryAthleteFromJSON(json['athlete']),
-        'createdAt': !exists(json, 'created_at') ? undefined : (new Date(json['created_at'])),
+        'id': json['id'] == null ? undefined : json['id'],
+        'activityId': json['activity_id'] == null ? undefined : json['activity_id'],
+        'text': json['text'] == null ? undefined : json['text'],
+        'athlete': json['athlete'] == null ? undefined : SummaryAthleteFromJSON(json['athlete']),
+        'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
     };
 }
 
-export function CommentToJSON(value?: Comment | null): any {
-    if (value === undefined) {
-        return undefined;
+export function CommentToJSON(json: any): Comment {
+    return CommentToJSONTyped(json, false);
+}
+
+export function CommentToJSONTyped(value?: Comment | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'activity_id': value.activityId,
-        'text': value.text,
-        'athlete': SummaryAthleteToJSON(value.athlete),
-        'created_at': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
+        'id': value['id'],
+        'activity_id': value['activityId'],
+        'text': value['text'],
+        'athlete': SummaryAthleteToJSON(value['athlete']),
+        'created_at': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
     };
 }
 

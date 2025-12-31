@@ -12,25 +12,28 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
-import type { ActivityType } from './ActivityType.js';
-import {
-    ActivityTypeFromJSON,
-    ActivityTypeFromJSONTyped,
-    ActivityTypeToJSON,
-} from './ActivityType.js';
+import { mapValues } from '../runtime.js';
 import type { MetaAthlete } from './MetaAthlete.js';
 import {
     MetaAthleteFromJSON,
     MetaAthleteFromJSONTyped,
     MetaAthleteToJSON,
+    MetaAthleteToJSONTyped,
 } from './MetaAthlete.js';
 import type { SportType } from './SportType.js';
 import {
     SportTypeFromJSON,
     SportTypeFromJSONTyped,
     SportTypeToJSON,
+    SportTypeToJSONTyped,
 } from './SportType.js';
+import type { ActivityType } from './ActivityType.js';
+import {
+    ActivityTypeFromJSON,
+    ActivityTypeFromJSONTyped,
+    ActivityTypeToJSON,
+    ActivityTypeToJSONTyped,
+} from './ActivityType.js';
 
 /**
  * 
@@ -94,13 +97,13 @@ export interface ClubActivity {
     workoutType?: number;
 }
 
+
+
 /**
  * Check if a given object implements the ClubActivity interface.
  */
-export function instanceOfClubActivity(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfClubActivity(value: object): value is ClubActivity {
+    return true;
 }
 
 export function ClubActivityFromJSON(json: any): ClubActivity {
@@ -108,41 +111,43 @@ export function ClubActivityFromJSON(json: any): ClubActivity {
 }
 
 export function ClubActivityFromJSONTyped(json: any, ignoreDiscriminator: boolean): ClubActivity {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'athlete': !exists(json, 'athlete') ? undefined : MetaAthleteFromJSON(json['athlete']),
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'movingTime': !exists(json, 'moving_time') ? undefined : json['moving_time'],
-        'elapsedTime': !exists(json, 'elapsed_time') ? undefined : json['elapsed_time'],
-        'totalElevationGain': !exists(json, 'total_elevation_gain') ? undefined : json['total_elevation_gain'],
-        'type': !exists(json, 'type') ? undefined : ActivityTypeFromJSON(json['type']),
-        'sportType': !exists(json, 'sport_type') ? undefined : SportTypeFromJSON(json['sport_type']),
-        'workoutType': !exists(json, 'workout_type') ? undefined : json['workout_type'],
+        'athlete': json['athlete'] == null ? undefined : MetaAthleteFromJSON(json['athlete']),
+        'name': json['name'] == null ? undefined : json['name'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'movingTime': json['moving_time'] == null ? undefined : json['moving_time'],
+        'elapsedTime': json['elapsed_time'] == null ? undefined : json['elapsed_time'],
+        'totalElevationGain': json['total_elevation_gain'] == null ? undefined : json['total_elevation_gain'],
+        'type': json['type'] == null ? undefined : ActivityTypeFromJSON(json['type']),
+        'sportType': json['sport_type'] == null ? undefined : SportTypeFromJSON(json['sport_type']),
+        'workoutType': json['workout_type'] == null ? undefined : json['workout_type'],
     };
 }
 
-export function ClubActivityToJSON(value?: ClubActivity | null): any {
-    if (value === undefined) {
-        return undefined;
+export function ClubActivityToJSON(json: any): ClubActivity {
+    return ClubActivityToJSONTyped(json, false);
+}
+
+export function ClubActivityToJSONTyped(value?: ClubActivity | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'athlete': MetaAthleteToJSON(value.athlete),
-        'name': value.name,
-        'distance': value.distance,
-        'moving_time': value.movingTime,
-        'elapsed_time': value.elapsedTime,
-        'total_elevation_gain': value.totalElevationGain,
-        'type': ActivityTypeToJSON(value.type),
-        'sport_type': SportTypeToJSON(value.sportType),
-        'workout_type': value.workoutType,
+        'athlete': MetaAthleteToJSON(value['athlete']),
+        'name': value['name'],
+        'distance': value['distance'],
+        'moving_time': value['movingTime'],
+        'elapsed_time': value['elapsedTime'],
+        'total_elevation_gain': value['totalElevationGain'],
+        'type': ActivityTypeToJSON(value['type']),
+        'sport_type': SportTypeToJSON(value['sportType']),
+        'workout_type': value['workoutType'],
     };
 }
 

@@ -12,25 +12,28 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
+import type { SummarySegmentEffort } from './SummarySegmentEffort.js';
+import {
+    SummarySegmentEffortFromJSON,
+    SummarySegmentEffortFromJSONTyped,
+    SummarySegmentEffortToJSON,
+    SummarySegmentEffortToJSONTyped,
+} from './SummarySegmentEffort.js';
 import type { PolylineMap } from './PolylineMap.js';
 import {
     PolylineMapFromJSON,
     PolylineMapFromJSONTyped,
     PolylineMapToJSON,
+    PolylineMapToJSONTyped,
 } from './PolylineMap.js';
 import type { SummaryPRSegmentEffort } from './SummaryPRSegmentEffort.js';
 import {
     SummaryPRSegmentEffortFromJSON,
     SummaryPRSegmentEffortFromJSONTyped,
     SummaryPRSegmentEffortToJSON,
+    SummaryPRSegmentEffortToJSONTyped,
 } from './SummaryPRSegmentEffort.js';
-import type { SummarySegmentEffort } from './SummarySegmentEffort.js';
-import {
-    SummarySegmentEffortFromJSON,
-    SummarySegmentEffortFromJSONTyped,
-    SummarySegmentEffortToJSON,
-} from './SummarySegmentEffort.js';
 
 /**
  * 
@@ -204,10 +207,8 @@ export type DetailedSegmentActivityTypeEnum = typeof DetailedSegmentActivityType
 /**
  * Check if a given object implements the DetailedSegment interface.
  */
-export function instanceOfDetailedSegment(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfDetailedSegment(value: object): value is DetailedSegment {
+    return true;
 }
 
 export function DetailedSegmentFromJSON(json: any): DetailedSegment {
@@ -215,73 +216,75 @@ export function DetailedSegmentFromJSON(json: any): DetailedSegment {
 }
 
 export function DetailedSegmentFromJSONTyped(json: any, ignoreDiscriminator: boolean): DetailedSegment {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'activityType': !exists(json, 'activity_type') ? undefined : json['activity_type'],
-        'distance': !exists(json, 'distance') ? undefined : json['distance'],
-        'averageGrade': !exists(json, 'average_grade') ? undefined : json['average_grade'],
-        'maximumGrade': !exists(json, 'maximum_grade') ? undefined : json['maximum_grade'],
-        'elevationHigh': !exists(json, 'elevation_high') ? undefined : json['elevation_high'],
-        'elevationLow': !exists(json, 'elevation_low') ? undefined : json['elevation_low'],
-        'startLatlng': !exists(json, 'start_latlng') ? undefined : json['start_latlng'],
-        'endLatlng': !exists(json, 'end_latlng') ? undefined : json['end_latlng'],
-        'climbCategory': !exists(json, 'climb_category') ? undefined : json['climb_category'],
-        'city': !exists(json, 'city') ? undefined : json['city'],
-        'state': !exists(json, 'state') ? undefined : json['state'],
-        'country': !exists(json, 'country') ? undefined : json['country'],
-        '_private': !exists(json, 'private') ? undefined : json['private'],
-        'athletePrEffort': !exists(json, 'athlete_pr_effort') ? undefined : SummaryPRSegmentEffortFromJSON(json['athlete_pr_effort']),
-        'athleteSegmentStats': !exists(json, 'athlete_segment_stats') ? undefined : SummarySegmentEffortFromJSON(json['athlete_segment_stats']),
-        'createdAt': !exists(json, 'created_at') ? undefined : (new Date(json['created_at'])),
-        'updatedAt': !exists(json, 'updated_at') ? undefined : (new Date(json['updated_at'])),
-        'totalElevationGain': !exists(json, 'total_elevation_gain') ? undefined : json['total_elevation_gain'],
-        'map': !exists(json, 'map') ? undefined : PolylineMapFromJSON(json['map']),
-        'effortCount': !exists(json, 'effort_count') ? undefined : json['effort_count'],
-        'athleteCount': !exists(json, 'athlete_count') ? undefined : json['athlete_count'],
-        'hazardous': !exists(json, 'hazardous') ? undefined : json['hazardous'],
-        'starCount': !exists(json, 'star_count') ? undefined : json['star_count'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'name': json['name'] == null ? undefined : json['name'],
+        'activityType': json['activity_type'] == null ? undefined : json['activity_type'],
+        'distance': json['distance'] == null ? undefined : json['distance'],
+        'averageGrade': json['average_grade'] == null ? undefined : json['average_grade'],
+        'maximumGrade': json['maximum_grade'] == null ? undefined : json['maximum_grade'],
+        'elevationHigh': json['elevation_high'] == null ? undefined : json['elevation_high'],
+        'elevationLow': json['elevation_low'] == null ? undefined : json['elevation_low'],
+        'startLatlng': json['start_latlng'] == null ? undefined : json['start_latlng'],
+        'endLatlng': json['end_latlng'] == null ? undefined : json['end_latlng'],
+        'climbCategory': json['climb_category'] == null ? undefined : json['climb_category'],
+        'city': json['city'] == null ? undefined : json['city'],
+        'state': json['state'] == null ? undefined : json['state'],
+        'country': json['country'] == null ? undefined : json['country'],
+        '_private': json['private'] == null ? undefined : json['private'],
+        'athletePrEffort': json['athlete_pr_effort'] == null ? undefined : SummaryPRSegmentEffortFromJSON(json['athlete_pr_effort']),
+        'athleteSegmentStats': json['athlete_segment_stats'] == null ? undefined : SummarySegmentEffortFromJSON(json['athlete_segment_stats']),
+        'createdAt': json['created_at'] == null ? undefined : (new Date(json['created_at'])),
+        'updatedAt': json['updated_at'] == null ? undefined : (new Date(json['updated_at'])),
+        'totalElevationGain': json['total_elevation_gain'] == null ? undefined : json['total_elevation_gain'],
+        'map': json['map'] == null ? undefined : PolylineMapFromJSON(json['map']),
+        'effortCount': json['effort_count'] == null ? undefined : json['effort_count'],
+        'athleteCount': json['athlete_count'] == null ? undefined : json['athlete_count'],
+        'hazardous': json['hazardous'] == null ? undefined : json['hazardous'],
+        'starCount': json['star_count'] == null ? undefined : json['star_count'],
     };
 }
 
-export function DetailedSegmentToJSON(value?: DetailedSegment | null): any {
-    if (value === undefined) {
-        return undefined;
+export function DetailedSegmentToJSON(json: any): DetailedSegment {
+    return DetailedSegmentToJSONTyped(json, false);
+}
+
+export function DetailedSegmentToJSONTyped(value?: DetailedSegment | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
-        'name': value.name,
-        'activity_type': value.activityType,
-        'distance': value.distance,
-        'average_grade': value.averageGrade,
-        'maximum_grade': value.maximumGrade,
-        'elevation_high': value.elevationHigh,
-        'elevation_low': value.elevationLow,
-        'start_latlng': value.startLatlng,
-        'end_latlng': value.endLatlng,
-        'climb_category': value.climbCategory,
-        'city': value.city,
-        'state': value.state,
-        'country': value.country,
-        'private': value._private,
-        'athlete_pr_effort': SummaryPRSegmentEffortToJSON(value.athletePrEffort),
-        'athlete_segment_stats': SummarySegmentEffortToJSON(value.athleteSegmentStats),
-        'created_at': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
-        'updated_at': value.updatedAt === undefined ? undefined : (value.updatedAt.toISOString()),
-        'total_elevation_gain': value.totalElevationGain,
-        'map': PolylineMapToJSON(value.map),
-        'effort_count': value.effortCount,
-        'athlete_count': value.athleteCount,
-        'hazardous': value.hazardous,
-        'star_count': value.starCount,
+        'id': value['id'],
+        'name': value['name'],
+        'activity_type': value['activityType'],
+        'distance': value['distance'],
+        'average_grade': value['averageGrade'],
+        'maximum_grade': value['maximumGrade'],
+        'elevation_high': value['elevationHigh'],
+        'elevation_low': value['elevationLow'],
+        'start_latlng': value['startLatlng'],
+        'end_latlng': value['endLatlng'],
+        'climb_category': value['climbCategory'],
+        'city': value['city'],
+        'state': value['state'],
+        'country': value['country'],
+        'private': value['_private'],
+        'athlete_pr_effort': SummaryPRSegmentEffortToJSON(value['athletePrEffort']),
+        'athlete_segment_stats': SummarySegmentEffortToJSON(value['athleteSegmentStats']),
+        'created_at': value['createdAt'] == null ? value['createdAt'] : value['createdAt'].toISOString(),
+        'updated_at': value['updatedAt'] == null ? value['updatedAt'] : value['updatedAt'].toISOString(),
+        'total_elevation_gain': value['totalElevationGain'],
+        'map': PolylineMapToJSON(value['map']),
+        'effort_count': value['effortCount'],
+        'athlete_count': value['athleteCount'],
+        'hazardous': value['hazardous'],
+        'star_count': value['starCount'],
     };
 }
 

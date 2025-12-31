@@ -12,7 +12,7 @@
  * Do not edit the class manually.
  */
 
-import { exists, mapValues } from '../runtime.js';
+import { mapValues } from '../runtime.js';
 /**
  * 
  * @export
@@ -30,10 +30,8 @@ export interface MetaActivity {
 /**
  * Check if a given object implements the MetaActivity interface.
  */
-export function instanceOfMetaActivity(value: object): boolean {
-    let isInstance = true;
-
-    return isInstance;
+export function instanceOfMetaActivity(value: object): value is MetaActivity {
+    return true;
 }
 
 export function MetaActivityFromJSON(json: any): MetaActivity {
@@ -41,25 +39,27 @@ export function MetaActivityFromJSON(json: any): MetaActivity {
 }
 
 export function MetaActivityFromJSONTyped(json: any, ignoreDiscriminator: boolean): MetaActivity {
-    if ((json === undefined) || (json === null)) {
+    if (json == null) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
+        'id': json['id'] == null ? undefined : json['id'],
     };
 }
 
-export function MetaActivityToJSON(value?: MetaActivity | null): any {
-    if (value === undefined) {
-        return undefined;
+export function MetaActivityToJSON(json: any): MetaActivity {
+    return MetaActivityToJSONTyped(json, false);
+}
+
+export function MetaActivityToJSONTyped(value?: MetaActivity | null, ignoreDiscriminator: boolean = false): any {
+    if (value == null) {
+        return value;
     }
-    if (value === null) {
-        return null;
-    }
+
     return {
         
-        'id': value.id,
+        'id': value['id'],
     };
 }
 
