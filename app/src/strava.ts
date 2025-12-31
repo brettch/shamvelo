@@ -161,7 +161,7 @@ export function start(tokenAccess: TokenAccess) {
 
   function buildApiConfiguration(token: Token): Configuration {
     return new Configuration({
-      accessToken: token.access_token,
+      accessToken: `Bearer ${token.access_token}`,
     });
   }
 }
