@@ -37,6 +37,11 @@ export const leaderboardConfigs: LeaderboardConfig[] = [
     name: 'Virtual Insanity',
     isActivityIncluded: activity => activity.type === ActivityType.VirtualRide,
   },
+  {
+    code: 'all',
+    name: 'It All Counts',
+    isActivityIncluded: activity => activity.type === ActivityType.Ride || activity.type === ActivityType.VirtualRide,
+  },
 ];
 
 export async function refreshAthleteSummary(athleteId: number): Promise<void> {
