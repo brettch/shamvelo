@@ -108,7 +108,6 @@ export function start(tokenAccess: TokenAccess) {
     async function getActivitiesPage(token: Token, page: number): Promise<SlimActivity[]> {
       console.log(`Getting athlete ${athleteId} activities page ${page}`);
       const api = new ActivitiesApi(buildApiConfiguration(token));
-      api.getLoggedInAthleteActivities({page: page, perPage: 100});
       const activities = (await api.getLoggedInAthleteActivities({page, perPage: 100}));
       const slimActivities = activities.map(pickActivityFields);
       return slimActivities;
