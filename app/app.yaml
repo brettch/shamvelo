@@ -1,3 +1,7 @@
 runtime: nodejs24
 # Provides 768MB of RAM. Leaderboard calcs exceed the 384MB limit of F1.
 instance_class: F2
+automatic_scaling:
+  # We get a warning if we don't specify a value.
+  # The default is 20 but we shouldn't need more than a handful.
+  max_instances: 10
