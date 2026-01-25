@@ -53,7 +53,7 @@ export async function refreshAthleteActivities(athleteId: number): Promise<void>
   }
 
   await activityPersist.deleteByAthlete(athleteId);
-  await activityPersist.setAll(activities);
+  await activityPersist.setAll(activities, 100);
 
   await leaderboard.refreshAthleteSummary(athleteId);
 }

@@ -7,7 +7,7 @@ export interface Persist<K, T> {
   getIfExists(id: K): Promise<T | undefined>
   getAll(): Promise<T[]>;
   set(this: void, item: T): Promise<void>;
-  setAll(items: T[]): Promise<void>;
+  setAll(items: T[], batchSize: number): Promise<void>;
   deleteItem(id: K): Promise<void>;
 }
 
@@ -75,9 +75,8 @@ export function createDb<K, AppT extends Identified<K>, DbT extends DocumentData
         .set(item);
   }
 
-  async function setAll(items: AppT[]): Promise<void> {
+  async function setAll(items: AppT[], batchSize: number): Promise<void> {
     console.log(`Saving ${items.length} ${collectionPath}`);
-    const batchSize = 100;
 
     function* chunkItems() {
       for (let i = 0; i < items.length; i += batchSize) {

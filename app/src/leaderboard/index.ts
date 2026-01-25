@@ -84,7 +84,7 @@ export async function refreshLeaderboard(): Promise<void> {
     )
     .flatMap(leaderboard => Object.values(leaderboard.year));
 
-  await leaderboardPersist.setAll(yearlySummaries);
+  await leaderboardPersist.setAll(yearlySummaries, 10);
 
   console.log('leaderboard refreshed');
 }
