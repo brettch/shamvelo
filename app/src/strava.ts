@@ -109,7 +109,9 @@ export function start(tokenAccess: TokenAccess) {
       console.log(`Getting athlete ${athleteId} activities page ${page}`);
       const api = new ActivitiesApi(buildApiConfiguration(token));
       const activities = (await api.getLoggedInAthleteActivities({page, perPage: 100}));
-      const slimActivities = activities.map(pickActivityFields);
+      // Some dodgy activities may not have a moving time field. Drop them.
+      const activitiesWithMovingTime = activities.filter(activity => activity.movingTime)
+      const slimActivities = activitiesWithMovingTime.map(pickActivityFields);
       return slimActivities;
     }
 
