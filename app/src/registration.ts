@@ -41,7 +41,7 @@ export function start(getToken: (id: number) => Promise<TokenWithId>, saveToken:
 
   async function registerUser(authorizationCode: string): Promise<number> {
     console.log('Getting OAuth token using authorization code ' + authorizationCode);
-    const rawToken = await strava.oauth.getToken(authorizationCode) as RefreshTokenResponse;
+    const rawToken = await strava.oauth.getToken(authorizationCode);
     const slimToken = pickTokenFields(rawToken);
     const id = await getIdForToken(slimToken);
     const tokenWithId = {
@@ -68,7 +68,7 @@ function getOAuthRequestAccessUrl(): string {
   console.log('Generating OAuth request access URL');
   // Force the type to any and then string. The types say the method returns a Promise which is incorrect.
   const accessUrl: unknown = strava.oauth.getRequestAccessURL({
-    scope : ['read', 'activity:read']
+    scope: 'read activity:read'
   });
   const accessUrlString = accessUrl as string;
   console.log('Access URL: ' + accessUrlString);
