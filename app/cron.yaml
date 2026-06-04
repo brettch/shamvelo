@@ -1,4 +1,0 @@
-cron:
-# - description: "refresh all activities"
-#   url: /refreshallactivities
-#   schedule: every sunday 12:00
