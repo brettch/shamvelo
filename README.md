@@ -70,32 +70,47 @@ All commands should be run from the `app` folder.
 
 ### One-time setup
 
-Verify your domain ownership and map it to the Cloud Run service.
-
-```bash
-gcloud domains verify bretth.com
-gcloud beta run domain-mappings create \
-  --service shamvelo \
-  --region australia-southeast1 \
-  --domain shamvelo.bretth.com
-```
-
-Add the CNAME record output by the above command at your DNS provider.
-
-Create secrets for Strava credentials.
+Create secrets for the Strava client credentials (from your `.env` file).
 
 ```bash
 gcloud secrets create strava-client-id --data-file=-
 gcloud secrets create strava-client-secret --data-file=-
-gcloud secrets create strava-redirect-uri --data-file=-
 ```
 
-Update the `strava-redirect-uri` secret value to `https://shamvelo.bretth.com/registercode` and set the same URL in your [Strava API application settings](https://www.strava.com/settings/api).
+The `strava-redirect-uri` secret is created in the first deploy step below (the URL is not known yet).
 
-### Build and deploy
+### First deploy
+
+Build and deploy to get the Cloud Run URL.
 
 ```bash
 gcloud builds submit --tag gcr.io/shamvelo/shamvelo
+gcloud run deploy shamvelo \
+  --region australia-southeast1 \
+  --memory 1Gi \
+  --cpu 1 \
+  --timeout 300 \
+  --set-env-vars "TZ=Australia/Melbourne,DATABASE_ID=production" \
+  --update-secrets "STRAVA_CLIENT_ID=strava-client-id:latest,STRAVA_CLIENT_SECRET=strava-client-secret:latest" \
+  --allow-unauthenticated
+```
+
+Note the service URL from the output (e.g. `https://shamvelo-xxxxx-uc.a.run.app`).
+
+### Complete the setup
+
+Create the redirect URI secret and configure Strava.
+
+```bash
+gcloud secrets create strava-redirect-uri --data-file=-
+# paste: https://shamvelo-xxxxx-uc.a.run.app/registercode
+```
+
+Also set the same URL as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
+
+### Redeploy with the redirect URI
+
+```bash
 gcloud run deploy shamvelo \
   --region australia-southeast1 \
   --memory 1Gi \
