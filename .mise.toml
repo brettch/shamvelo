@@ -2,6 +2,6 @@
 CLOUDSDK_ACTIVE_CONFIG_NAME = 'shamvelo'
 
 [tools]
-gcloud = "559.0.0"
-java = "26.0.0"
-node = "24.14.0"
+gcloud = "571.0.0"
+java = "26.0.1"
+node = "24.16.0"
