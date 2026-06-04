@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals';
-import { create, addActivity, PeriodSummary } from './period-summary.js';
+import { create, addActivity } from './period-summary.js';
 
 const activity = {
   id: 1,
@@ -25,7 +25,7 @@ test('new summary is initialized correctly', () => {
     eddingtonNumber: 0,
     longestRide: [],
     fastestRide: []
-  } as PeriodSummary);
+  });
 });
 
 test('single summary is initialized correctly', () => {
