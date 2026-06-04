@@ -1,3 +1,4 @@
+import { test, expect } from '@jest/globals';
 import { SlimAthlete } from '../strava.js';
 import { AthleteSummary, PeriodContainer, YearContainer as AthleteYearContainer, createAthleteSummaryId } from './athlete-summary.js';
 import { AthleteScore, Leaderboard, PeriodPoints, PeriodSummary, YearContainer as LeaderboardYearContainer, addAthlete, create, createYearContainerId } from './summary.js';

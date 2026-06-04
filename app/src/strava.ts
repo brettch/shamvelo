@@ -1,5 +1,5 @@
 import { ActivitiesApi, AthletesApi, Configuration, DetailedAthlete, SummaryActivity } from './strava/index.js';
-import { Token, TokenAccess, TokenWithId } from './registration.js';
+import { Token, TokenAccess } from './registration.js';
 
 // See https://developers.strava.com/docs/webhooks/ for details
 export interface StravaWebhookBody {

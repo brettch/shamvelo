@@ -1,3 +1,4 @@
+import { test, expect } from '@jest/globals';
 import { Identified, mapById } from './identified.js';
 
 interface IdentifiedString extends Identified<number> {

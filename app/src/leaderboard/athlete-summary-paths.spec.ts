@@ -1,3 +1,4 @@
+import { test, expect } from '@jest/globals';
 import { getPeriods } from './athlete-summary-paths.js';
 
 const date = new Date('2020-01-01T00:00:00Z');

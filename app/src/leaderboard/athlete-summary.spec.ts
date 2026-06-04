@@ -1,3 +1,4 @@
+import { test, expect } from '@jest/globals';
 import { create, addActivity, createAthleteSummaryId } from './athlete-summary.js';
 
 const activity = {

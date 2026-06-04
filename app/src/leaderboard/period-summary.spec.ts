@@ -1,3 +1,4 @@
+import { test, expect } from '@jest/globals';
 import { create, addActivity, PeriodSummary } from './period-summary.js';
 
 const activity = {
