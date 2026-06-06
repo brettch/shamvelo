@@ -68,27 +68,7 @@ npm upgrade
 
 All commands should be run from the `app` folder.
 
-### Firebase
-
-**Note:** We're setting up Firebase here but aren't currently using it. We're leaving it for now in case we need it in future. It adds latency so we're accessing the site via Cloudflare redirects for now. Ignore the DNS steps for now.
-
-Enable Firebase for the current GCP project. Visit [Firebase Console](https://console.firebase.google.com/), create a project and pick the existing GCP project to add it to.
-
-Authenticate the Firebase CLI (one-time per machine):
-
-```bash
-npm run login:firebase
-```
-
-Add a DNS **CNAME record** pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after the first `npm run deploy:hosting`).
-
-Deploy Firebase Hosting (static assets + rewrites to Cloud Run)
-
-```bash
-npm run deploy:hosting
-```
-
-### One-time GCP setup
+### One-time setup
 
 Create secrets for the Strava credentials (from your `.env` file).
 

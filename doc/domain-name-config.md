@@ -22,17 +22,18 @@ We have a couple of options:
     * _May_ encounter issues caused by redirects. Although the risk seems quite low.
 * Create a Cloudflare worker that proxies requests through.
   * Pros
-    * Same as Firebase.
+    * Same as Firebase (always shows the custom domain in the URL).
+    * Negligible latency — the proxy adds ~5ms.
   * Cons
-    * Let's check the latency ...
+    * None found in practice.
 
 ## Outcome
 
-I'll go with Cloudflare Redirect approach initially. It's nice to have snappy performance and I already have to create a DNS entry so I'm not adding many more moving parts. I can switch to Firestore if/when I need it.
+I'll go with Cloudflare Worker approach initially. It's nice to have snappy performance and always shows `shamvelo.bretth.com` in the browser. I can switch to Firebase if/when I need it.
 
 ## Setup
 
-Create a DNS AAAA entry called `shamvelo` pointing to `100::`. Ensure the "Proxy Status" is "Proxied".
+Create a DNS AAAA entry called `shamvelo` pointing to `100::` (a dummy IPv6 address — with Proxy Status enabled, Cloudflare intercepts traffic at the edge before it reaches this address). Ensure the "Proxy Status" is set to "Proxied".
 
 Visit Workers Routes, and create a new Cloudflare Worker called `shamvelo-proxy` with following code:
 
@@ -53,4 +54,4 @@ export default {
 
 Back in Workers Routes, add a route with route set to `shamvelo.bretth.com/*` and set the worker to the `shamvelo-proxy` created above.
 
-Under the domain's SSL/TLS -> Edge Certificates section, ensure the Always Use HTTPS is set. Without this if we hit the site without HTTPS, Cloud Run will redirect the user to HTTPS on the Cloud Run URL.
+Under the domain's **SSL/TLS → Edge Certificates** section, ensure **Always Use HTTPS** is enabled. Without this, a user hitting `http://shamvelo.bretth.com` gets redirected by Cloud Run directly to the `.run.app` URL, exposing the backend URL in their address bar.
