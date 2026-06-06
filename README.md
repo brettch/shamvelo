@@ -84,8 +84,8 @@ The `strava-redirect-uri` secret is created in the first deploy step below (the 
 Build and deploy to get the Cloud Run URL.
 
 ```bash
-gcloud builds submit --tag gcr.io/shamvelo/shamvelo
 gcloud run deploy shamvelo \
+  --source . \
   --region australia-southeast1 \
   --memory 1Gi \
   --cpu 1 \
@@ -112,6 +112,7 @@ Also set the same URL as the **Authorization Callback URL** in your [Strava API 
 
 ```bash
 gcloud run deploy shamvelo \
+  --source . \
   --region australia-southeast1 \
   --memory 1Gi \
   --cpu 1 \

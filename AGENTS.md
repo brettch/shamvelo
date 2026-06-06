@@ -10,7 +10,7 @@
 | `npm test` | Jest on `dist/` — requires `build` first |
 | `npm run test:watch` | Jest watch mode |
 
-Deploy: `gcloud builds submit --tag gcr.io/PROJECT_ID/shamvelo` then `gcloud run deploy shamvelo` (run from `app/`). See README.md for full deploy steps.
+Deploy: `gcloud run deploy shamvelo --source .` (run from `app/`). See README.md for full deploy steps.
 
 Strava client codegen (rare): `strava:openapi` + `strava:generate`.
 
