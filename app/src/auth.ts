@@ -62,5 +62,5 @@ export async function createSession(req: Request, res: Response): Promise<void> 
 
 export function destroySession(_req: Request, res: Response): void {
   res.clearCookie('__session', { path: '/' });
-  res.json({ status: 'ok' });
+  res.redirect('/login');
 }
