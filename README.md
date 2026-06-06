@@ -78,13 +78,11 @@ npm run login:firebase
 
 Add a **CNAME record** at your DNS provider pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after the first `npm run deploy:hosting`).
 
-Create secrets for the Strava credentials (from your `.env` file) and grant the service account access.
+Create secrets for the Strava credentials (from your `.env` file).
 
 ```bash
 echo -n "your-strava-client-id" | gcloud secrets create strava-client-id --data-file=-
 echo -n "your-strava-client-secret" | gcloud secrets create strava-client-secret --data-file=-
-echo -n "https://shamvelo.bretth.com/registercode" | \
-  gcloud secrets create strava-redirect-uri --data-file=-
 ```
 
 Set `https://shamvelo.bretth.com/registercode` as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
@@ -110,8 +108,8 @@ gcloud run deploy shamvelo \
   --memory 1Gi \
   --cpu 1 \
   --timeout 300 \
-  --set-env-vars "TZ=Australia/Melbourne,DATABASE_ID=production" \
-  --update-secrets "STRAVA_CLIENT_ID=strava-client-id:latest,STRAVA_CLIENT_SECRET=strava-client-secret:latest,STRAVA_REDIRECT_URI=strava-redirect-uri:latest" \
+  --set-env-vars "TZ=Australia/Melbourne,DATABASE_ID=production,STRAVA_REDIRECT_URI=https://shamvelo.bretth.com/registercode" \
+  --update-secrets "STRAVA_CLIENT_ID=strava-client-id:latest,STRAVA_CLIENT_SECRET=strava-client-secret:latest" \
   --allow-unauthenticated
 ```
 
