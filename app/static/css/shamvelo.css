@@ -1,0 +1,133 @@
+:root {
+  --shamvelo-green: #2d8a4e;
+  --shamvelo-green-light: #e8f5e9;
+  --shamvelo-dark: #1a1a2e;
+}
+
+body {
+  background: #f5f7fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-size: 1.25rem;
+}
+
+main.container {
+  flex: 1;
+}
+
+.footer {
+  border-top: 1px solid #e9ecef;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+}
+
+.card-header {
+  font-weight: 600;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.table > :not(caption) > * > * {
+  border-bottom-color: #e9ecef;
+}
+
+.table th {
+  font-weight: 600;
+  color: #495057;
+  border-top: none;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background: #f8f9fa;
+}
+
+.jersey-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.jersey-table .table th:first-child {
+  width: 280px;
+}
+
+.leaderboard-card .list-group-item {
+  border: none;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  transition: background 0.15s;
+}
+
+.leaderboard-card .list-group-item:hover {
+  background: #f8f9fa;
+}
+
+.leaderboard-card .list-group-item:last-child {
+  border-bottom: none;
+}
+
+.login-card {
+  max-width: 400px;
+}
+
+.btn-google {
+  background: #fff;
+  border: 1px solid #dadce0;
+  color: #3c4043;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.6rem 1.5rem;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.btn-google:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.btn-google img {
+  width: 20px;
+  height: 20px;
+}
+
+h1, h2, h3 {
+  color: #1a1a2e;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 1.35rem;
+}
+
+.jersey-table h2 {
+  font-size: 1.1rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}

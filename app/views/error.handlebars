@@ -1,24 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Shamvelo - Error</title>
-
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SL23R2Z45H"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-
-		gtag('config', 'G-SL23R2Z45H');
-	</script>
-</head>
-<body>
-
-<p>Oops!</p>
-
-<p>{{ error.description }}</p>
-
-</body>
-</html>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card text-center">
+      <div class="card-body py-5">
+        <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+        <h1 class="h4 mt-3">Oops!</h1>
+        <p class="text-muted mb-0">{{ error.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,42 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Shamvelo - Home</title>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-trophy me-2"></i>Leaderboards
+      </div>
+      <div class="list-group list-group-flush">
+        {{#each leaderboards}}
+        <a href="leaderboard/{{this.code}}/year" class="list-group-item list-group-item-action d-flex align-items-center">
+          <i class="bi bi-arrow-right-circle me-3 text-secondary"></i>
+          <span>{{this.name}}</span>
+        </a>
+        {{/each}}
+      </div>
+    </div>
 
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SL23R2Z45H"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
+    <form action="./refreshallactivities" method="POST">
+      <button type="submit" name="btnRefreshAllActivities" class="btn btn-outline-secondary w-100">
+        <i class="bi bi-arrow-repeat me-2"></i>Refresh All Activities
+      </button>
+    </form>
+  </div>
 
-		gtag('config', 'G-SL23R2Z45H');
-	</script>
-</head>
-<body>
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-people me-2"></i>Registered Athletes
+      </div>
+      <div class="list-group list-group-flush">
+        {{#each athletes}}
+        <a href="./athlete/{{this.id}}" class="list-group-item list-group-item-action d-flex align-items-center">
+          <i class="bi bi-person-circle me-3 text-secondary"></i>
+          <span>{{this.firstname}} {{this.lastname}}</span>
+        </a>
+        {{/each}}
+      </div>
+    </div>
 
-<h1>Leaderboards</h1>
-<ul>
-	{{#each leaderboards}}
-	<li><a href="leaderboard/{{this.code}}/year">{{this.name}}</a></li>
-	{{/each}}
-</ul>
-<form action="./refreshallactivities" method="POST">
-	<input type="submit" name="btnRefreshAllActivities" value="Refresh All Activities"/>
-</form>
-
-
-<h1>Registered Athletes</h1>
-<ul>
-	{{#each athletes}}
-	<li><a href="./athlete/{{this.id}}">{{this.firstname}} {{this.lastname}}</a></li>
-	{{/each}}
-</ul>
-<a href="register"><img src="./static/img/btn_strava_connectwith_orange.svg" alt="Connect with Strava"/></a>
-<p><img src="./static/img/api_logo_pwrdBy_strava_horiz_gray.svg" height="auto" width="150px"></p>
-<form action="/auth/logout" method="POST">
-	<button type="submit">Logout</button>
-</form>
-</body>
-</html>
+    <a href="register" class="btn btn-success w-100">
+      <img src="/static/img/btn_strava_connectwith_orange.svg" height="28" alt="Connect with Strava" class="me-2">
+      Connect with Strava
+    </a>
+  </div>
+</div>

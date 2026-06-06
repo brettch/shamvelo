@@ -23,7 +23,9 @@ import { StravaWebhookBody } from './strava.js';
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
   res.render('error.handlebars', {
-    error : { description : description }
+    error : { description : description },
+    title: 'Error',
+    showLogout: true,
   });
 }
 
@@ -36,7 +38,9 @@ function sendError<B, L extends Record<string, unknown>, S extends number>(res: 
   }
 
   res.render('error.handlebars', {
-    error : { description : 'An unexpected error has occurred.' }
+    error : { description : 'An unexpected error has occurred.' },
+    title: 'Error',
+    showLogout: true,
   });
 }
 
@@ -80,6 +84,7 @@ app.use('/static', express.static('static'));
 // Public routes that don't require authentication.
 app.get('/login', function(req, res) {
   res.render('login.handlebars', {
+    layout: false,
     apiKey: appConfig.firebaseApiKey,
     authDomain: appConfig.firebaseAuthDomain,
     projectId: appConfig.firebaseProjectId,
@@ -97,6 +102,8 @@ app.get('/', function (_, res) {
     .then((athletes) => res.render('home.handlebars', {
       athletes : athletes,
       leaderboards : leaderboard.leaderboardConfigs,
+      title: 'Home',
+      showLogout: true,
     }))
     .catch((err) => sendError(res, err));
 });
@@ -142,7 +149,7 @@ app.get('/athlete/:id', function(req, res) {
   }
 
   athletePersist.get(athleteId)
-    .then(athlete => ({athlete}))
+    .then(athlete => ({athlete, title: `${athlete.firstname} ${athlete.lastname}`, showLogout: true}))
     .then(athlete => res.render('athlete.handlebars', athlete))
     .catch(err => sendError(res, err));
 });
@@ -213,7 +220,7 @@ app.get('/leaderboard/:code/year/:year', function(req, res) {
   console.log(`Displaying details for year ${year}`);
 
   getYearView(req.params.code, year)
-    .then(yearView => res.render('year.handlebars', yearView))
+    .then(yearView => res.render('year.handlebars', { ...yearView, title: `Leaderboard: ${yearView.displayName}`, showLogout: true }))
     .catch((err) => sendError(res, err));
 });
 
@@ -236,7 +243,7 @@ app.get('/leaderboard/:code/year/:year/month/:month', function(req, res) {
   console.log(`Displaying details for year ${year} and month ${month}`);
 
   getMonthView(req.params.code, year, month)
-    .then(monthView => res.render('period.handlebars', monthView))
+    .then(monthView => res.render('period.handlebars', { ...monthView, title: `Leaderboard: ${monthView.displayName}`, showLogout: true }))
     .catch((err) => sendError(res, err));
 });
 
@@ -259,7 +266,7 @@ app.get('/leaderboard/:code/year/:year/week/:week', function(req, res) {
   console.log(`Displaying details for year ${year} and week ${week}`);
 
   getWeekView(req.params.code, year, week)
-    .then(weekView => res.render('period.handlebars', weekView))
+    .then(weekView => res.render('period.handlebars', { ...weekView, title: `Leaderboard: ${weekView.displayName}`, showLogout: true }))
     .catch((err) => sendError(res, err));
 });
 

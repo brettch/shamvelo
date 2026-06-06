@@ -1,36 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Shamvelo - Athlete</title>
-
-	<!-- Google tag (gtag.js) -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-SL23R2Z45H"></script>
-	<script>
-		window.dataLayer = window.dataLayer || [];
-		function gtag(){dataLayer.push(arguments);}
-		gtag('js', new Date());
-
-		gtag('config', 'G-SL23R2Z45H');
-	</script>
-</head>
-<body>
-
-<h1>{{athlete.firstname}} {{athlete.lastname}}</h1>
-<div>
-<form action="./{{athlete.id}}/refresh" method="POST">
-	<input type="submit" name="btnRefresh" value="Refresh Athlete"/>
-</form>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-person-circle me-2"></i>{{athlete.firstname}} {{athlete.lastname}}
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-3">
+          <a href="https://www.strava.com/athletes/{{athlete.id}}" class="btn btn-outline-danger" target="_blank" rel="noopener">
+            <i class="bi bi-strava me-2"></i>View on Strava
+          </a>
+          <form action="./{{athlete.id}}/refresh" method="POST">
+            <button type="submit" name="btnRefresh" class="btn btn-outline-primary w-100">
+              <i class="bi bi-arrow-clockwise me-2"></i>Refresh Athlete
+            </button>
+          </form>
+          <form action="./{{athlete.id}}/refreshactivities" method="POST">
+            <button type="submit" name="btnRefresh" class="btn btn-outline-primary w-100">
+              <i class="bi bi-arrow-repeat me-2"></i>Refresh Activities
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div>
-<form action="./{{athlete.id}}/refreshactivities" method="POST">
-	<input type="submit" name="btnRefresh" value="Refresh Activities"/>
-</form>
-</div>
-<div>
-<a href="https://www.strava.com/athletes/{{athlete.id}}">View on Strava</a>
-</div>
-
-</body>
-</html>
-
