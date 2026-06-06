@@ -9,6 +9,8 @@ import bodyParser from 'body-parser';
 // Add express middleware.
 // Logging
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import { ensureAuthenticated, createSession, destroySession } from './auth.js';
 // Handlebars templating engine
 import { create as createHandlebars } from 'express-handlebars';
 
@@ -50,6 +52,8 @@ app.use(bodyParser.urlencoded({
 }));
 // Parse request bodies with encoding application/json
 app.use(bodyParser.json());
+// Parse cookies.
+app.use(cookieParser());
 
 // Register the handlebars page templating engine.
 const hbs = createHandlebars({
@@ -72,6 +76,20 @@ app.set('view engine', 'handlebars');
 
 // Serve static content.
 app.use('/static', express.static('static'));
+
+// Public routes that don't require authentication.
+app.get('/login', function(req, res) {
+  res.render('login.handlebars', {
+    apiKey: appConfig.firebaseApiKey,
+    authDomain: appConfig.firebaseAuthDomain,
+    projectId: appConfig.firebaseProjectId,
+  });
+});
+app.post('/auth/session', createSession);
+app.post('/auth/logout', destroySession);
+
+// All routes after this point require a valid Firebase Auth session.
+app.use(ensureAuthenticated);
 
 // Configure the home page to be the default.
 app.get('/', function (_, res) {

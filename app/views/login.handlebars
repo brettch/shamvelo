@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Shamvelo - Sign In</title>
+</head>
+<body>
+	<h1>Sign in to Shamvelo</h1>
+	<button id="sign-in">Sign in with Google</button>
+
+	<script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/11.3.0/firebase-auth-compat.js"></script>
+	<script>
+		firebase.initializeApp({
+			apiKey: '{{{apiKey}}}',
+			authDomain: '{{{authDomain}}}',
+			projectId: '{{{projectId}}}',
+		});
+
+		document.getElementById('sign-in').addEventListener('click', async () => {
+			try {
+				const provider = new firebase.auth.GoogleAuthProvider();
+				const result = await firebase.auth().signInWithPopup(provider);
+				const idToken = await result.user.getIdToken();
+
+				const response = await fetch('/auth/session', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ idToken }),
+				});
+
+				if (response.ok) {
+					window.location.href = '/';
+				} else {
+					alert('Sign in failed');
+				}
+			} catch (err) {
+				console.error(err);
+				alert('Sign in failed');
+			}
+		});
+	</script>
+</body>
+</html>

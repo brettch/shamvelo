@@ -2,7 +2,7 @@
 
 ## What is it?
 
-Shamvelo is a simple application for allowing a small group of friends to share and compare Strava statistics.  It is a Cloud Run/Firestore application that uses OAuth authorisation to register and retrieve athlete details from the Strava API and then stores the data in a database for analysis and summary.  All interaction is via a web interface.
+Shamvelo is a simple application for allowing a small group of friends to share and compare Strava statistics.  It is a Cloud Run/Firestore application that uses OAuth authorisation to register and retrieve athlete details from the Strava API and then stores the data in a database for analysis and summary.  All interaction is via a web interface.  Access requires signing in with a Google account via Firebase Authentication (except the Strava webhook endpoint which must remain public).
 
 ## Local setup and development
 
@@ -87,6 +87,28 @@ gcloud projects add-iam-policy-binding shamvelo \
   --role roles/secretmanager.secretAccessor
 ```
 
+### Firebase Authentication setup
+
+This application uses Firebase Authentication with Google sign-in. Add Firebase
+to your existing GCP project.
+
+1. Go to the [Firebase Console](https://console.firebase.google.com) and
+   **Add project**. Select your existing GCP project `shamvelo`.
+2. **Authentication** → **Sign-in providers** → **Enable Google**.
+3. **Authentication** → **Settings** → **Authorized domains** → add
+   `shamvelo.bretth.com`.
+4. **Project settings** → **General** → **Your apps** → **Add app** → **Web**.
+   Copy the `firebaseConfig` values (`apiKey`, `authDomain`, `projectId`).
+5. Add them to `.env` as `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, and
+   `FIREBASE_PROJECT_ID`.
+6. Grant the Cloud Run service account permission to create session cookies.
+
+   ```bash
+   gcloud projects add-iam-policy-binding shamvelo \
+     --member="serviceAccount:404013849600-compute@developer.gserviceaccount.com" \
+     --role="roles/firebaseauth.admin"
+   ```
+
 ### Cloudflare Worker setup
 
 See [Domain Name Configuration](./doc/domain-name-config.md) for details.
@@ -94,14 +116,15 @@ See [Domain Name Configuration](./doc/domain-name-config.md) for details.
 ### Deploy
 
 ```bash
-# Deploy Cloud Run
+# Source environment variables, then deploy Cloud Run.
+source .env && \
 gcloud run deploy shamvelo \
   --source . \
   --region australia-southeast1 \
   --memory 1Gi \
   --cpu 1 \
   --timeout 300 \
-  --set-env-vars "TZ=Australia/Melbourne,DATABASE_ID=production,STRAVA_REDIRECT_URI=https://shamvelo.bretth.com/registercode" \
+  --set-env-vars "TZ=${TZ},DATABASE_ID=${DATABASE_ID},STRAVA_REDIRECT_URI=${STRAVA_REDIRECT_URI},FIREBASE_API_KEY=${FIREBASE_API_KEY},FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN},FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}" \
   --update-secrets "STRAVA_CLIENT_ID=strava-client-id:latest,STRAVA_CLIENT_SECRET=strava-client-secret:latest" \
   --allow-unauthenticated
 ```
