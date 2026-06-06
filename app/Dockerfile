@@ -1,11 +1,11 @@
-FROM node:24.16.0-slim AS build
+FROM node:24.16.0-alpine3.23 AS build
 WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY src/ src/
 RUN npm run build
 
-FROM node:24.16.0-slim
+FROM node:24.16.0-alpine3.23
 WORKDIR /app
 COPY --from=build /build/dist/index.cjs dist/index.cjs
 COPY views/ views/
