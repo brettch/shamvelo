@@ -70,17 +70,13 @@ All commands should be run from the `app` folder.
 
 ### One-time setup
 
-Point your domain to Firebase Hosting. Install the Firebase CLI and initialize hosting:
+Authenticate the Firebase CLI (one-time per machine):
 
 ```bash
-npm install -g firebase-tools
-firebase login
-firebase init hosting
+npm run login:firebase
 ```
 
-When asked for the public directory, enter `static`. When asked about single-page app and rewrites, answer no (the `firebase.json` is already configured for Cloud Run rewrites).
-
-Add a **CNAME record** at your DNS provider pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after `firebase init hosting` completes, or run `firebase deploy --only hosting` and check the output).
+Add a **CNAME record** at your DNS provider pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after the first `npm run deploy:hosting`).
 
 Create secrets for the Strava credentials (from your `.env` file) and grant the service account access.
 
@@ -105,7 +101,7 @@ gcloud projects add-iam-policy-binding shamvelo \
 
 ```bash
 # Deploy Firebase Hosting (static assets + rewrites to Cloud Run)
-firebase deploy --only hosting
+npm run deploy:hosting
 
 # Deploy Cloud Run
 gcloud run deploy shamvelo \

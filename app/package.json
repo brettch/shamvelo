@@ -19,7 +19,9 @@
     "test": "node --experimental-vm-modules ./node_modules/.bin/jest dist",
     "test:watch": "jest --watch",
     "strava:openapi": "mkdir -p openapi && curl https://developers.strava.com/swagger/swagger.json -o openapi/strava.json",
-    "strava:generate": "npx openapi-generator-cli generate --generator-name typescript-fetch --input-spec openapi/strava.json --output src/strava --additional-properties importFileExtension=.js,supportsES6=true --skip-validate-spec"
+    "strava:generate": "npx openapi-generator-cli generate --generator-name typescript-fetch --input-spec openapi/strava.json --output src/strava --additional-properties importFileExtension=.js,supportsES6=true --skip-validate-spec",
+    "deploy:hosting": "firebase deploy --only hosting --project shamvelo",
+    "login:firebase": "firebase login"
   },
   "type": "module",
   "dependencies": {
@@ -45,6 +47,7 @@
     "eslint": "10.4.1",
     "jest": "30.4.2",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.60.1"
+    "typescript-eslint": "8.60.1",
+    "firebase-tools": "15.19.1"
   }
 }

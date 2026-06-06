@@ -10,7 +10,7 @@
 | `npm test` | Jest on `dist/` — requires `build` first |
 | `npm run test:watch` | Jest watch mode |
 
-Deploy: `firebase deploy --only hosting` then `gcloud run deploy shamvelo --source .` (run from `app/`). See README.md for full deploy steps.
+Deploy: `npm run deploy:hosting` then `gcloud run deploy shamvelo --source .` (run from `app/`). See README.md for full deploy steps.
 
 Strava client codegen (rare): `strava:openapi` + `strava:generate`.
 
