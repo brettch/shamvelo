@@ -26,7 +26,7 @@ main.container {
 }
 
 .card {
-  border: none;
+  border: 1px solid #dee2e6;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   margin-bottom: 1rem;
 }
@@ -39,6 +39,10 @@ main.container {
 
 .table > :not(caption) > * > * {
   border-bottom-color: #e9ecef;
+}
+
+.card-body .table {
+  border-top: 1px solid #dee2e6;
 }
 
 .table th {
