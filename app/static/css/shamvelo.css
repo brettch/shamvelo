@@ -51,9 +51,6 @@ main.container {
   border-top: none;
 }
 
-.table-striped > tbody > tr:nth-of-type(odd) > * {
-  background: #f8f9fa;
-}
 
 .jersey-dot {
   display: inline-block;
