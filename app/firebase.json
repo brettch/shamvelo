@@ -1,0 +1,15 @@
+{
+  "hosting": {
+    "public": "static",
+    "ignore": ["firebase.json", "**/.*"],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "shamvelo",
+          "region": "australia-southeast1"
+        }
+      }
+    ]
+  }
+}

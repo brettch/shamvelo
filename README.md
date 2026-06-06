@@ -70,17 +70,28 @@ All commands should be run from the `app` folder.
 
 ### One-time setup
 
+Point your domain to Firebase Hosting. Install the Firebase CLI and initialize hosting:
+
+```bash
+npm install -g firebase-tools
+firebase login
+firebase init hosting
+```
+
+When asked for the public directory, enter `static`. When asked about single-page app and rewrites, answer no (the `firebase.json` is already configured for Cloud Run rewrites).
+
+Add a **CNAME record** at your DNS provider pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after `firebase init hosting` completes, or run `firebase deploy --only hosting` and check the output).
+
 Create secrets for the Strava credentials (from your `.env` file) and grant the service account access.
 
 ```bash
-# Create secrets, piping values from stdin via echo
 echo -n "your-strava-client-id" | gcloud secrets create strava-client-id --data-file=-
 echo -n "your-strava-client-secret" | gcloud secrets create strava-client-secret --data-file=-
-echo -n "https://shamvelo-404013849600.australia-southeast1.run.app/registercode" | \
+echo -n "https://shamvelo.bretth.com/registercode" | \
   gcloud secrets create strava-redirect-uri --data-file=-
 ```
 
-Also set the redirect URI as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
+Set `https://shamvelo.bretth.com/registercode` as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
 
 Grant the Cloud Run service account access to read secrets.
 
@@ -93,6 +104,10 @@ gcloud projects add-iam-policy-binding shamvelo \
 ### Deploy
 
 ```bash
+# Deploy Firebase Hosting (static assets + rewrites to Cloud Run)
+firebase deploy --only hosting
+
+# Deploy Cloud Run
 gcloud run deploy shamvelo \
   --source . \
   --region australia-southeast1 \
