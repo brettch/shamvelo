@@ -70,6 +70,8 @@ All commands should be run from the `app` folder.
 
 ### One-time setup
 
+Enable Firebase for the current GCP project. Visit [Firebase Console](https://console.firebase.google.com/), create a project and pick the existing GCP project to add it to.
+
 Authenticate the Firebase CLI (one-time per machine):
 
 ```bash
