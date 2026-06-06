@@ -79,6 +79,14 @@ gcloud secrets create strava-client-secret --data-file=-
 
 The `strava-redirect-uri` secret is created in the first deploy step below (the URL is not known yet).
 
+Grant the Cloud Run service account access to read secrets.
+
+```bash
+gcloud projects add-iam-policy-binding shamvelo \
+  --member serviceAccount:404013849600-compute@developer.gserviceaccount.com \
+  --role roles/secretmanager.secretAccessor
+```
+
 ### First deploy
 
 Build and deploy to get the Cloud Run URL.
