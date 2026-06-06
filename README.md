@@ -68,7 +68,9 @@ npm upgrade
 
 All commands should be run from the `app` folder.
 
-### One-time setup
+### Firebase
+
+**Note:** We're setting up Firebase here but aren't currently using it. We're leaving it for now in case we need it in future. It adds latency so we're accessing the site via Cloudflare redirects for now. Ignore the DNS steps for now.
 
 Enable Firebase for the current GCP project. Visit [Firebase Console](https://console.firebase.google.com/), create a project and pick the existing GCP project to add it to.
 
@@ -78,7 +80,15 @@ Authenticate the Firebase CLI (one-time per machine):
 npm run login:firebase
 ```
 
-Add a **CNAME record** at your DNS provider pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after the first `npm run deploy:hosting`).
+Add a DNS **CNAME record** pointing `shamvelo.bretth.com` to Firebase Hosting (the target is shown after the first `npm run deploy:hosting`).
+
+Deploy Firebase Hosting (static assets + rewrites to Cloud Run)
+
+```bash
+npm run deploy:hosting
+```
+
+### One-time GCP setup
 
 Create secrets for the Strava credentials (from your `.env` file).
 
@@ -97,12 +107,13 @@ gcloud projects add-iam-policy-binding shamvelo \
   --role roles/secretmanager.secretAccessor
 ```
 
+### Cloudflare Worker setup
+
+See [Domain Name Configuration](./doc/domain-name-config.md) for details.
+
 ### Deploy
 
 ```bash
-# Deploy Firebase Hosting (static assets + rewrites to Cloud Run)
-npm run deploy:hosting
-
 # Deploy Cloud Run
 gcloud run deploy shamvelo \
   --source . \
