@@ -73,15 +73,14 @@ All commands should be run from the `app` folder.
 Create secrets for the Strava credentials (from your `.env` file) and grant the service account access.
 
 ```bash
-gcloud secrets create strava-client-id --data-file=-
-gcloud secrets create strava-client-secret --data-file=-
-gcloud secrets create strava-redirect-uri --data-file=-
+# Create secrets, piping values from stdin via echo
+echo -n "your-strava-client-id" | gcloud secrets create strava-client-id --data-file=-
+echo -n "your-strava-client-secret" | gcloud secrets create strava-client-secret --data-file=-
+echo -n "https://shamvelo-404013849600.australia-southeast1.run.app/registercode" | \
+  gcloud secrets create strava-redirect-uri --data-file=-
 ```
 
-When prompted for `strava-redirect-uri`, paste:
-`https://shamvelo-404013849600.australia-southeast1.run.app/registercode`
-
-Also set that same URL as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
+Also set the redirect URI as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
 
 Grant the Cloud Run service account access to read secrets.
 
