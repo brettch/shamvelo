@@ -26,6 +26,7 @@
   "type": "module",
   "dependencies": {
     "@google-cloud/firestore": "8.6.0",
+    "@google-cloud/tasks": "6.2.3",
     "body-parser": "2.2.2",
     "cookie-parser": "1.4.7",
     "date-fns": "4.4.0",

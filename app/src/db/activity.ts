@@ -5,6 +5,7 @@ import { Db, Persist, createDb } from "./persist.js";
 export interface ActivityPersist extends Persist<number, SlimActivity> {
   getByAthlete(athleteId: number): Promise<SlimActivity[]>;
   deleteByAthlete(athleteId: number): Promise<void>;
+  deleteStaleByAthlete(athleteId: number, excludeBatchId: string): Promise<void>;
 }
 
 export function createActivityPersist(fs: Firestore): ActivityPersist {
@@ -32,10 +33,30 @@ export function createActivityPersist(fs: Firestore): ActivityPersist {
     )
   }
 
+  async function deleteStaleByAthlete(athleteId: number, excludeBatchId: string): Promise<void> {
+    console.log(`Deleting stale activities for athlete ${athleteId}, excluding batch ${excludeBatchId}`);
+
+    const allActivities = await getByAthlete(athleteId);
+    const staleIds = allActivities
+      .filter(a => a.refreshBatchId !== excludeBatchId)
+      .map(a => a.id);
+
+    const batchSize = 100;
+    const collection = fs.collection('activities');
+    for (let i = 0; i < staleIds.length; i += batchSize) {
+      const deleteBatch = fs.batch();
+      for (const id of staleIds.slice(i, i + batchSize)) {
+        deleteBatch.delete(collection.doc(id.toString()));
+      }
+      await deleteBatch.commit();
+    }
+  }
+
   return {
     ...db,
     deleteByAthlete,
     getByAthlete,
+    deleteStaleByAthlete,
   };
 }
 

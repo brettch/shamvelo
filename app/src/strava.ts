@@ -36,7 +36,8 @@ type SlimActivityPicked = Required<Pick<SummaryActivity, "id" | "distance" | "mo
 export interface SlimActivity extends SlimActivityPicked {
   athlete: {
     id: number,
-  }
+  },
+  refreshBatchId?: string;
 }
 
 function pickActivityFields(activity: SummaryActivity): SlimActivity {
@@ -63,7 +64,8 @@ export function start(tokenAccess: TokenAccess) {
     getAthleteWithToken,
     getAthlete,
     getActivity,
-    getActivities
+    getActivities,
+    getActivitiesPageRange,
   };
 
   async function getAthleteWithToken(token: Token): Promise<SlimAthlete> {
@@ -102,36 +104,36 @@ export function start(tokenAccess: TokenAccess) {
     }
   }
 
+  async function getActivitiesPage(athleteId: number, token: Token, page: number): Promise<SlimActivity[]> {
+    console.log(`Getting athlete ${athleteId} activities page ${page}`);
+    const api = new ActivitiesApi(buildApiConfiguration(token));
+    const activities = (await api.getLoggedInAthleteActivities({page, perPage: 100}));
+    // Some dodgy activities may not have a moving time field. Drop them.
+    const activitiesWithMovingTime = activities.filter(activity => activity.movingTime)
+    const slimActivities = activitiesWithMovingTime.map(pickActivityFields);
+    return slimActivities;
+  }
+
+  async function getActivitiesPagesFrom(token: Token, athleteId: number, pageFrom: number, pageCount: number): Promise<SlimActivity[]> {
+    const requests = Array
+      .from(Array(pageCount).keys()) // number range from 0
+      .map(pageOffset => pageFrom + pageOffset) // add page offset
+      .map(page => getActivitiesPage(athleteId, token, page)); // request the page from strava
+
+    const results = await Promise.all(requests);
+    const mergedResults = results
+      .reduce((a, b) => a.concat(b));
+
+    return mergedResults;
+  }
+
   async function* getActivities(athleteId: number): AsyncGenerator<SlimActivity> {
     console.log(`Getting athlete ${athleteId} activities`);
-
-    async function getActivitiesPage(token: Token, page: number): Promise<SlimActivity[]> {
-      console.log(`Getting athlete ${athleteId} activities page ${page}`);
-      const api = new ActivitiesApi(buildApiConfiguration(token));
-      const activities = (await api.getLoggedInAthleteActivities({page, perPage: 100}));
-      // Some dodgy activities may not have a moving time field. Drop them.
-      const activitiesWithMovingTime = activities.filter(activity => activity.movingTime)
-      const slimActivities = activitiesWithMovingTime.map(pickActivityFields);
-      return slimActivities;
-    }
-
-    async function getActivitiesPagesFrom(token: Token, pageFrom: number, pageCount: number): Promise<SlimActivity[]> {
-      const requests = Array
-        .from(Array(pageCount).keys()) // number range from 0
-        .map(pageOffset => pageFrom + pageOffset) // add page offset
-        .map(page => getActivitiesPage(token, page)); // request the page from strava
-
-      const results = await Promise.all(requests);
-      const mergedResults = results
-        .reduce((a, b) => a.concat(b));
-
-      return mergedResults;
-    }
 
     const concurrency = 10;
     for (let page = 1; true; page += concurrency) {
       const activities = await invokeActionWithTokenRefresh(
-        token => getActivitiesPagesFrom(token, page, concurrency),
+        token => getActivitiesPagesFrom(token, athleteId, page, concurrency),
         athleteId,
       );
 
@@ -144,6 +146,13 @@ export function start(tokenAccess: TokenAccess) {
         yield activity;
       }
     }
+  }
+
+  async function getActivitiesPageRange(athleteId: number, pageFrom: number, pageCount: number): Promise<SlimActivity[]> {
+    return invokeActionWithTokenRefresh(
+      token => getActivitiesPagesFrom(token, athleteId, pageFrom, pageCount),
+      athleteId,
+    );
   }
 
   async function invokeActionWithTokenRefresh<T>(action: (token: Token) => Promise<T>, athleteId: number) {

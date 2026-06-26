@@ -1,18 +1,20 @@
 import './config.js';
 import * as leaderboard from './leaderboard/index.js';
-import { start as startStrava } from './strava.js';
+import { start as startStrava, SlimActivity } from './strava.js';
 import { stringify } from './util.js';
 import { Token, start as startRegistration } from './registration.js';
 import { createFirestore } from './db/persist.js';
 import { createAthletePersist } from './db/athlete.js';
 import { createTokenPersist } from './db/token.js';
 import { createActivityPersist } from './db/activity.js';
+import { createRefreshStatePersist } from './db/refresh-state.js';
 
 // Start the database.
 const firestore = createFirestore();
 export const activityPersist = createActivityPersist(firestore);
 export const athletePersist = createAthletePersist(firestore);
 export const tokenPersist = createTokenPersist(firestore);
+export const refreshStatePersist = createRefreshStatePersist(firestore);
 
 const { registration, tokenAccess } = startRegistration(
   tokenPersist.get,
@@ -23,6 +25,7 @@ export { registration };
 
 // Start the Strava client.
 const strava = startStrava(tokenAccess);
+export { strava };
 
 async function getIdForToken(token: Token): Promise<number> {
   const athlete = await strava.getAthleteWithToken(token);
@@ -43,36 +46,31 @@ export async function refreshAthlete(athleteId: number): Promise<void> {
   await athletePersist.set(athlete);
 }
 
-// Refresh an athlete's activities in our database.
-export async function refreshAthleteActivities(athleteId: number): Promise<void> {
-  console.log('Refreshing athlete activities ' + athleteId);
+export async function processActivityRefreshChunk(
+  athleteId: number,
+  batchStart: number,
+  pageConcurrency: number,
+  batchId: string,
+  writeBatchSize: number,
+): Promise<SlimActivity[]> {
+  const activities = await strava.getActivitiesPageRange(athleteId, batchStart, pageConcurrency);
 
-  const activities = [];
-  for await (const activity of strava.getActivities(athleteId)) {
-    activities.push(activity);
+  if (activities.length > 0) {
+    const tagged = activities.map(a => ({ ...a, refreshBatchId: batchId }));
+    await activityPersist.setAll(tagged, writeBatchSize);
   }
 
-  await activityPersist.deleteByAthlete(athleteId);
-  await activityPersist.setAll(activities, 100);
-
-  await leaderboard.refreshAthleteSummary(athleteId);
+  return activities;
 }
 
-export async function refreshAllAthleteActivities(): Promise<void> {
-  console.log('Refreshing all athlete activities');
+export async function sweepStaleActivities(athleteId: number, batchId: string): Promise<void> {
+  await activityPersist.deleteStaleByAthlete(athleteId, batchId);
+}
 
-  // Refresh all athletes in parallel.
-  const refreshPromises = [];
-  for (const athlete of await athletePersist.getAll()) {
-    refreshPromises.push(refreshAthleteActivities(athlete.id));
-  }
-
-  // Wait for all refreshes to complete.
-  for (const refreshPromise of refreshPromises) {
-    await refreshPromise;
-  }
-
-  console.log('Completed refreshing all athlete activities');
+export async function finalizeActivityRefresh(athleteId: number, batchId: string): Promise<void> {
+  await sweepStaleActivities(athleteId, batchId);
+  await leaderboard.refreshAthleteSummary(athleteId);
+  await leaderboard.refreshLeaderboard();
 }
 
 export async function refreshActivity(activityId: number, athleteId: number): Promise<void> {

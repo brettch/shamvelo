@@ -75,6 +75,8 @@ Create secrets for the Strava credentials (from your `.env` file).
 ```bash
 echo -n "your-strava-client-id" | gcloud secrets create strava-client-id --data-file=-
 echo -n "your-strava-client-secret" | gcloud secrets create strava-client-secret --data-file=-
+# Generate a token with: openssl rand -hex 16
+echo -n "abc123..." | gcloud secrets create tasks-auth-token --data-file=-
 ```
 
 Set `https://shamvelo.bretth.com/registercode` as the **Authorization Callback URL** in your [Strava API application settings](https://www.strava.com/settings/api).
@@ -109,6 +111,53 @@ to your existing GCP project.
      --role="roles/firebaseauth.admin"
    ```
 
+### Cloud Tasks setup
+
+Activity refreshes are processed asynchronously via a Cloud Tasks queue. Each
+refresh creates a chain of tasks that fetches activity pages from Strava,
+persists them, and finally recalculates the leaderboard.
+
+Create the task queue.
+
+```bash
+gcloud tasks queues create shamvelo-refresh \
+    --location=us-central1 \
+    --max-concurrent-dispatches=5 \
+    --max-dispatches-per-second=0.67 \
+    --max-attempts=3
+```
+
+Grant the Cloud Run service account permission to create tasks.
+
+```bash
+gcloud projects add-iam-policy-binding shamvelo \
+  --member="serviceAccount:404013849600-compute@developer.gserviceaccount.com" \
+  --role="roles/cloudtasks.enqueuer"
+```
+
+Grant the default compute service account permission to invoke Cloud Run (so
+Cloud Tasks can call back to the `/tasks/refresh` endpoint).
+
+```bash
+gcloud projects add-iam-policy-binding shamvelo \
+  --member="serviceAccount:404013849600-compute@developer.gserviceaccount.com" \
+  --role="roles/run.invoker"
+```
+
+Add the following to `.env`:
+
+```bash
+CLOUD_TASKS_QUEUE=shamvelo-refresh
+CLOUD_TASKS_LOCATION=us-central1
+CLOUD_TASKS_SERVICE_URL=https://shamvelo-xxxxx-uc.a.run.app
+# Generate a token with: openssl rand -hex 16
+TASKS_AUTH_TOKEN=abc123...
+```
+
+The `CLOUD_TASKS_SERVICE_URL` must be set to your Cloud Run service URL (it
+appears in the deploy output). The `TASKS_AUTH_TOKEN` is a shared secret used
+to authenticate Cloud Tasks callbacks. Generate one with `openssl rand -hex 16`.
+
 ### Cloudflare Worker setup
 
 See [Domain Name Configuration](./doc/domain-name-config.md) for details.
@@ -124,8 +173,8 @@ gcloud run deploy shamvelo \
   --memory 1Gi \
   --cpu 1 \
   --timeout 300 \
-  --set-env-vars "TZ=${TZ},DATABASE_ID=${DATABASE_ID},STRAVA_REDIRECT_URI=${STRAVA_REDIRECT_URI},FIREBASE_API_KEY=${FIREBASE_API_KEY},FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN},FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}" \
-  --update-secrets "STRAVA_CLIENT_ID=strava-client-id:latest,STRAVA_CLIENT_SECRET=strava-client-secret:latest" \
+  --set-env-vars "TZ=${TZ},DATABASE_ID=${DATABASE_ID},STRAVA_REDIRECT_URI=${STRAVA_REDIRECT_URI},FIREBASE_API_KEY=${FIREBASE_API_KEY},FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN},FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID},CLOUD_TASKS_QUEUE=${CLOUD_TASKS_QUEUE},CLOUD_TASKS_LOCATION=${CLOUD_TASKS_LOCATION},CLOUD_TASKS_SERVICE_URL=${CLOUD_TASKS_SERVICE_URL}" \
+  --update-secrets "STRAVA_CLIENT_ID=strava-client-id:latest,STRAVA_CLIENT_SECRET=strava-client-secret:latest,TASKS_AUTH_TOKEN=tasks-auth-token:latest" \
   --allow-unauthenticated
 ```
 

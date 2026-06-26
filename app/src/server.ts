@@ -16,9 +16,10 @@ import { create as createHandlebars } from 'express-handlebars';
 
 import * as leaderboard from './leaderboard/index.js';
 import { Response } from 'express-serve-static-core';
-import { athletePersist, deleteActivity, refreshActivity, refreshAllAthleteActivities, refreshAthlete, refreshAthleteActivities, registerAthlete, registration } from './engine.js';
+import { athletePersist, deleteActivity, refreshActivity, refreshAthlete, registerAthlete, registration } from './engine.js';
 import { getLatestMonthId, getLatestWeekId, getLatestYearId, getMonthView, getWeekView, getYearView } from './leaderboard/view.js';
 import { StravaWebhookBody } from './strava.js';
+import { RefreshPayload, dispatchActivity, refreshAthleteActivities } from './refresh-activities.js';
 
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
@@ -92,6 +93,22 @@ app.get('/login', function(req, res) {
 });
 app.post('/auth/session', createSession);
 app.post('/auth/logout', destroySession);
+
+// Cloud Tasks callback — receives refresh-task payloads from the task queue.
+// Protected by a shared secret in the X-Tasks-Auth-Token header.
+app.post('/tasks/refresh', bodyParser.json(), function(req, res) {
+  if (appConfig.tasksAuthToken && req.headers['x-tasks-auth-token'] !== appConfig.tasksAuthToken) {
+    res.status(403).send({ error: 'Forbidden' });
+    return;
+  }
+
+  dispatchActivity(req.body as RefreshPayload)
+    .then(() => res.send({}))
+    .catch(err => {
+      console.log('Task handler error:', err);
+      res.status(500).send({ error: 'Task handler error' });
+    });
+});
 
 // All routes after this point require a valid Firebase Auth session.
 app.use(ensureAuthenticated);
@@ -182,24 +199,7 @@ app.post('/athlete/:id/refreshactivities', function(req, res) {
   }
   
   refreshAthleteActivities(athleteId)
-    .then(() => leaderboard.refreshLeaderboard())
     .then(() => res.redirect('../' + athleteId))
-    .catch(err => sendError(res, err));
-});
-
-// Refresh all activities.  Intended for use by a web browser.
-app.post('/refreshallactivities', function(req, res) {
-  refreshAllAthleteActivities()
-    .then(() => leaderboard.refreshLeaderboard())
-    .then(() => res.redirect('..'))
-    .catch(err => sendError(res, err));
-});
-
-// Refresh all activities.  Intended for use by a cron trigger.
-app.get('/refreshallactivities', function(_, res) {
-  refreshAllAthleteActivities()
-    .then(() => leaderboard.refreshLeaderboard())
-    .then(() => res.send(''))
     .catch(err => sendError(res, err));
 });
 
