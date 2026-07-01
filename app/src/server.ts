@@ -16,10 +16,10 @@ import { create as createHandlebars } from 'express-handlebars';
 
 import * as leaderboard from './leaderboard/index.js';
 import { Response } from 'express-serve-static-core';
-import { athletePersist, deleteActivity, refreshActivity, refreshAthlete, registerAthlete, registration } from './engine.js';
+import { athletePersist, refreshAthlete, registerAthlete, registration } from './engine.js';
 import { getLatestMonthId, getLatestWeekId, getLatestYearId, getMonthView, getWeekView, getYearView } from './leaderboard/view.js';
 import { StravaWebhookBody } from './strava.js';
-import { RefreshPayload, dispatchActivity, refreshAthleteActivities } from './refresh-activities.js';
+import { RefreshPayload, dispatchActivity, refreshAthleteActivities, enqueueRefreshActivity } from './refresh-activities.js';
 
 // Send an error message back to the user.
 function sendErrorMessage<B, L extends Record<string, unknown>, S extends number>(res: Response<B, L, S>, description: string) {
@@ -82,6 +82,10 @@ app.set('view engine', 'handlebars');
 // Serve static content.
 app.use('/static', express.static('static'));
 
+// All routes after this point require a valid Firebase Auth session,
+// except paths listed in PUBLIC_PATHS (auth.ts).
+app.use(ensureAuthenticated);
+
 // Public routes that don't require authentication.
 app.get('/login', function(req, res) {
   res.render('login.handlebars', {
@@ -109,9 +113,6 @@ app.post('/tasks/refresh', bodyParser.json(), function(req, res) {
       res.status(500).send({ error: 'Task handler error' });
     });
 });
-
-// All routes after this point require a valid Firebase Auth session.
-app.use(ensureAuthenticated);
 
 // Configure the home page to be the default.
 app.get('/', function (_, res) {
@@ -299,20 +300,10 @@ app.post('/strava-webhook', (req: Request<Record<string, never>, Record<string, 
   const authorized = !(updates?.authorized === 'false');
   console.log('authorized:', authorized);
 
-  // We can about activities that are added and removed.
+  // We care about activities that are added and removed.
   if (objectType === 'activity') {
-
-    if ((aspectType === 'create' || aspectType === 'update') && authorized) {
-      refreshActivity(objectId, ownerId)
-        .then(() => leaderboard.refreshLeaderboard())
-        .then(() => console.log('activity refreshed successfully'))
-        .catch(err => console.log(err));
-    } else if (aspectType === 'delete' || authorized === false) {
-      deleteActivity(objectId)
-        .then(() => leaderboard.refreshLeaderboard())
-        .then(() => console.log('activity deleted successfully'))
-        .catch(err => console.log(err));
-    }
+    enqueueRefreshActivity({ type: 'webhook', aspectType, objectId, ownerId, authorized })
+      .catch(err => console.log('Failed to enqueue webhook task:', err));
   }
 
   res.send({});

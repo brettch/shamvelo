@@ -13,13 +13,11 @@
     "url": "git@github.com:brettch/shamvelo.git"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.cjs --format=cjs --minify",
-    "build:tsc": "tsc",
+    "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/index.cjs",
+    "start": "node dist/index.js",
     "lint": "eslint .",
-    "test": "npm run build:tsc && node --experimental-vm-modules ./node_modules/.bin/jest dist",
-    "test:watch": "jest --watch",
+    "test": "npm run build && node --experimental-vm-modules ./node_modules/.bin/jest dist",
     "strava:openapi": "mkdir -p openapi && curl https://developers.strava.com/swagger/swagger.json -o openapi/strava.json",
     "strava:generate": "npx openapi-generator-cli generate --generator-name typescript-fetch --input-spec openapi/strava.json --output src/strava --additional-properties importFileExtension=.js,supportsES6=true --skip-validate-spec"
   },

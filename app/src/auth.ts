@@ -18,6 +18,7 @@ const PUBLIC_PATHS = [
   '/login',
   '/auth/session',
   '/auth/logout',
+  '/tasks/refresh',
 ];
 
 export async function ensureAuthenticated(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -1,5 +1,6 @@
 import { appConfig } from './config.js';
-import { athletePersist, refreshStatePersist, processActivityRefreshChunk, finalizeActivityRefresh } from './engine.js';
+import { athletePersist, refreshStatePersist, processActivityRefreshChunk, finalizeActivityRefresh, refreshActivity, deleteActivity } from './engine.js';
+import * as leaderboard from './leaderboard/index.js';
 
 const ACTIVITIES_PER_PAGE = 100;
 const LOCAL_TASK_DELAY_MS = 100;
@@ -25,7 +26,15 @@ export interface FinalizeRefresh {
   batchId: string;
 }
 
-export type RefreshPayload = InitRefresh | ChunkRefresh | FinalizeRefresh;
+export interface WebhookActivityEvent {
+  type: 'webhook';
+  aspectType: 'create' | 'update' | 'delete';
+  objectId: number;
+  ownerId: number;
+  authorized: boolean;
+}
+
+export type RefreshPayload = InitRefresh | ChunkRefresh | FinalizeRefresh | WebhookActivityEvent;
 
 export async function enqueueRefreshActivity(payload: RefreshPayload): Promise<void> {
   const serviceUrl = appConfig.cloudTasksServiceUrl;
@@ -75,10 +84,6 @@ async function enqueueCloudActivity(payload: RefreshPayload, serviceUrl: string)
           'X-Tasks-Auth-Token': appConfig.tasksAuthToken,
         },
         body: bodyBytes,
-        oidcToken: {
-          serviceAccountEmail: undefined,
-          audience: serviceUrl,
-        },
       },
     },
   });
@@ -100,7 +105,22 @@ export async function dispatchActivity(payload: RefreshPayload): Promise<void> {
       return handleChunk(payload.athleteId, payload.batchStart, payload.batchId);
     case 'finalize':
       return handleFinalize(payload.athleteId, payload.batchId);
+    case 'webhook':
+      return handleWebhookEvent(payload);
   }
+}
+
+async function handleWebhookEvent(payload: WebhookActivityEvent): Promise<void> {
+  console.log(`[webhook] processing ${payload.aspectType} activity ${payload.objectId} for athlete ${payload.ownerId}`);
+
+  if (payload.aspectType === 'delete' || !payload.authorized) {
+    await deleteActivity(payload.objectId);
+  } else {
+    await refreshActivity(payload.objectId, payload.ownerId);
+  }
+
+  await leaderboard.refreshLeaderboard();
+  console.log('[webhook] event processed successfully');
 }
 
 async function handleInit(athleteId: number): Promise<void> {
